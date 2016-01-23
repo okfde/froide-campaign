@@ -30,23 +30,22 @@ class Command(BaseCommand):
         pb_cache = {}
 
         reader = unicodecsv.DictReader(open(filename))
-        InformationObject.objects.filter(campaign=campaign).delete()
 
         for line in reader:
             line['publicbody'] = 'deutscher-bundestag'
             title = line['titel']
-            ident = line['ref']
+            ident = line['ref'].strip()
             if not ident:
                 continue
             context = {
                 'cat': line['kat'],
                 'year': line['jahr']
             }
-            ordering = re.sub(r'(\d+)/(\d+)([A-Z]+\d*)', '\\2-\\1-\\3', ident)
-            slug = ident.replace('/', '-').lower()
+            ordering = re.sub(r'^(.*)\D(\d+)/(\d+)$', '\\3-\\2-\\1', ident)
+            slug = ident.replace('/', '-').replace(' ', '-').lower()
             try:
                 InformationObject.objects.get(campaign=campaign, ident=ident)
-                raise ValueError()
+                continue
             except InformationObject.DoesNotExist:
                 pass
             pb_slug = line['publicbody']
