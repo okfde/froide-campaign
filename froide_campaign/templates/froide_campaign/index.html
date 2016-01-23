@@ -1,0 +1,16 @@
+{% extends "froide_campaign/base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block main %}
+<h2>{% trans "Current Campaigns" %}</h2>
+<ul>
+{% for campaign in campaigns %}
+  <li>
+    <a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a>
+  </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

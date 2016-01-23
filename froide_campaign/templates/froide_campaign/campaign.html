@@ -1,0 +1,71 @@
+{% extends "froide_campaign/base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block main %}
+<h2>{{ campaign.title }}</h2>
+
+<form method="GET" action=".">
+  <div class="input-group">
+   <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if query %}{{ query }}{% endif %}">
+   <span class="input-group-btn">
+     <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
+   </span>
+  </div><!-- /input-group -->
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Jahr</th>
+      <th>Referenz</th>
+      <th>Titel</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for object in object_list %}
+  <tr>
+    <td class="center">
+      {% if object.foirequest %}
+        {{ object.foirequest.readable_status }}
+      {% else %}
+        <a class="btn btn-default" href="{{ object.make_request_url }}">
+          {% trans "Make request" %}
+        </a>
+      {% endif %}
+    </td>
+    <td>
+      {{ object.context.year }}
+    </td>
+    <td>
+      {{ object.ident }}
+    </td>
+    <td>
+      {% if object.foirequest %}
+        <a href="{{ object.foirequest.get_absolute_url }}">
+      {% endif %}
+      {{ object.title }}
+      {% if object.foirequest %}
+        </a>
+      {% endif %}
+      {% with documents=object.documents.all %}
+        {% if documents %}
+          <ul class="media-list">
+          {% for attachment in documents %}
+            <li class="media">
+              {% include "foirequest/snippets/attachment_item.html" %}
+            </li>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+{% with getvars="&q="|add:query %}
+  {% include "pagination/pagination.html" with page_obj=object_list %}
+{% endwith %}
+{% endblock %}
