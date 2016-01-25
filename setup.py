@@ -34,7 +34,11 @@ setup(
     author='Stefan Wehrmeyer',
     author_email='mail@stefanwehrmeyer.com',
     packages=find_packages(),
-    install_requires=['froide', 'jsonfield'],
+    install_requires=[
+        'froide',
+        'jsonfield',
+        'django-filter'
+    ],
     include_package_data=True,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
