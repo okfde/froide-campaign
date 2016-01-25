@@ -33,6 +33,7 @@ def filter_status(qs, status):
 
 class InformationObjectFilter(django_filters.FilterSet):
     STATUS_CHOICES = (
+        ('', _('All')),
         (0, _('No request yet')),
         (1, _('Pending request')),
         (2, _('Resolved request')),
