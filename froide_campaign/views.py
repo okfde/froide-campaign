@@ -79,7 +79,7 @@ def campaign_page(request, campaign_slug):
     except EmptyPage:
         iobjs = paginator.page(paginator.num_pages)
 
-    no_page_query = QueryDict(request.GET.urlencode(), mutable=True)
+    no_page_query = QueryDict(request.GET.urlencode().encode('utf-8'), mutable=True)
     no_page_query.pop('page', None)
 
     return render(request, 'froide_campaign/campaign.html', {
