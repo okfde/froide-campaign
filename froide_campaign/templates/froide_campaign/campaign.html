@@ -7,11 +7,11 @@
 <h2>{{ campaign.title }}</h2>
 
 <div class="progress">
-  <div class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
-    <span class="sr-only">{{ progress_done }}% {% trans "Complete" %}</span>
+  <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
+    <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
   </div>
-  <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
-    <span class="sr-only">{{ progress_pending }}% {% trans "Pending" %}</span>
+  <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
+    <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
   </div>
 </div>
 

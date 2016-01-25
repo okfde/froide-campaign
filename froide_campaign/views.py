@@ -64,6 +64,7 @@ def campaign_page(request, campaign_slug):
     total_count = qs.count()
     pending_count = qs.filter(foirequest__isnull=False).count()
     done_count = qs.filter(foirequest__status='resolved').count()
+    pending_count -= done_count
     qs = InformationObject.objects.filter(campaign=campaign)
 
     filtered = InformationObjectFilter(request.GET, queryset=qs)
@@ -90,5 +91,5 @@ def campaign_page(request, campaign_slug):
         'done_count': done_count,
         'pending_count': pending_count,
         'progress_pending': str(round(pending_count / float(total_count) * 100, 1)),
-        'progress_done': str(round((pending_count - done_count) / float(total_count) * 100, 1)),
+        'progress_done': str(round(done_count / float(total_count) * 100, 1)),
     })
