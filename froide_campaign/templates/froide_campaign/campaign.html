@@ -6,6 +6,15 @@
 {% block main %}
 <h2>{{ campaign.title }}</h2>
 
+<div class="progress">
+  <div class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
+    <span class="sr-only">{{ progress_done }}% {% trans "Complete" %}</span>
+  </div>
+  <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
+    <span class="sr-only">{{ progress_pending }}% {% trans "Pending" %}</span>
+  </div>
+</div>
+
 <form method="GET" action=".">
   <div class="input-group">
    <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">

@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-25 11:01+0100\n"
-"PO-Revision-Date: 2016-01-25 11:02+0100\n"
+"POT-Creation-Date: 2016-01-25 13:44+0100\n"
+"PO-Revision-Date: 2016-01-25 13:45+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.org>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -30,31 +30,43 @@ msgstr "Hat Dokumente"
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: forms.py:8 views.py:36
-msgid "No request yet"
-msgstr "Noch keine Anfrage"
-
-#: forms.py:9 views.py:37
-msgid "Pending request"
-msgstr "Anfrage läuft"
-
-#: forms.py:10 views.py:38
-msgid "Resolved request"
-msgstr "Anfrage abgeschlossen"
-
 #: templates/froide_campaign/campaign.html:11
-#: templates/froide_campaign/campaign.html:13
+msgid "Complete"
+msgstr "Abgeschlossen"
+
+#: templates/froide_campaign/campaign.html:14
+msgid "Pending"
+msgstr "Laufend"
+
+#: templates/froide_campaign/campaign.html:20
+#: templates/froide_campaign/campaign.html:22
 msgid "Search"
 msgstr "Suchen"
 
-#: templates/froide_campaign/campaign.html:35
-msgid "Make request"
-msgstr "Anfragen!"
-
-#: templates/froide_campaign/campaign.html:71
+#: templates/froide_campaign/campaign.html:27
 msgid "Filter by status"
 msgstr "Filtern nach Zustand"
+
+#: templates/froide_campaign/campaign.html:50
+msgid "Make request"
+msgstr "Anfragen!"
 
 #: templates/froide_campaign/index.html:7
 msgid "Current Campaigns"
 msgstr "Aktuelle Kampagnen"
+
+#: views.py:37
+msgid "All"
+msgstr "Alle"
+
+#: views.py:38
+msgid "No request yet"
+msgstr "Noch keine Anfrage"
+
+#: views.py:39
+msgid "Pending request"
+msgstr "Anfrage läuft"
+
+#: views.py:40
+msgid "Resolved request"
+msgstr "Anfrage abgeschlossen"

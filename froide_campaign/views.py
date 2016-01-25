@@ -59,6 +59,11 @@ class InformationObjectFilter(django_filters.FilterSet):
 @cache_anonymous_page(15 * 60)
 def campaign_page(request, campaign_slug):
     campaign = get_object_or_404(Campaign, slug=campaign_slug)
+
+    qs = InformationObject.objects.filter(campaign=campaign)
+    total_count = qs.count()
+    pending_count = qs.filter(foirequest__isnull=False).count()
+    done_count = qs.filter(foirequest__status='resolved').count()
     qs = InformationObject.objects.filter(campaign=campaign)
 
     filtered = InformationObjectFilter(request.GET, queryset=qs)
@@ -80,5 +85,10 @@ def campaign_page(request, campaign_slug):
         'campaign': campaign,
         'object_list': iobjs,
         'filtered': filtered,
-        'getvars': '&' + no_page_query.urlencode()  # pagination
+        'getvars': '&' + no_page_query.urlencode(),  # pagination
+        'total_count': total_count,
+        'done_count': done_count,
+        'pending_count': pending_count,
+        'progress_pending': str(round(pending_count / float(total_count) * 100, 1)),
+        'progress_done': str(round((pending_count - done_count) / float(total_count) * 100, 1)),
     })
