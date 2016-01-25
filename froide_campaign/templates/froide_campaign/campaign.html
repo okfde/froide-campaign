@@ -30,60 +30,62 @@
     {{ filtered.form.page }}
   </div>
   <div class="col-lg-9 col-lg-pull-3 col-md-8 col-md-pull-4">
-    <table class="table">
-      <thead>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Jahr</th>
+            <th>Referenz</th>
+            <th>Titel</th>
+          </tr>
+        </thead>
+        <tbody>
+      {% for object in object_list %}
         <tr>
-          <th>Status</th>
-          <th>Jahr</th>
-          <th>Referenz</th>
-          <th>Titel</th>
-        </tr>
-      </thead>
-      <tbody>
-    {% for object in object_list %}
-      <tr>
-        <td class="center">
-          {% if object.foirequest %}
-            {{ object.foirequest.readable_status }}
-          {% else %}
-            <a class="btn btn-default" href="{{ object.make_request_url }}">
-              {% trans "Make request" %}
-            </a>
-          {% endif %}
-        </td>
-        <td>
-          {{ object.context.year }}
-        </td>
-        <td>
-          {{ object.ident }}
-        </td>
-        <td>
-          {% if object.foirequest %}
-            <a href="{{ object.foirequest.get_absolute_url }}">
-          {% endif %}
-          {{ object.title }}
-          {% if object.foirequest %}
-            </a>
-          {% endif %}
-          {% with documents=object.documents.all %}
-            {% if documents %}
-              <ul>
-              {% for attachment in documents %}
-                <li>
-                  <a href="{{ attachment.get_absolute_url }}">
-                    <span class="glyphicon glyphicon-paperclip"></span>
-                    {{ attachment.name|truncatechars:20 }}
-                  </a>
-                </li>
-              {% endfor %}
-              </ul>
+          <td class="center">
+            {% if object.foirequest %}
+              {{ object.foirequest.readable_status }}
+            {% else %}
+              <a class="btn btn-default" href="{{ object.make_request_url }}">
+                {% trans "Make request" %}
+              </a>
             {% endif %}
-          {% endwith %}
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-    </table>
+          </td>
+          <td>
+            {{ object.context.year }}
+          </td>
+          <td>
+            {{ object.ident }}
+          </td>
+          <td>
+            {% if object.foirequest %}
+              <a href="{{ object.foirequest.get_absolute_url }}">
+            {% endif %}
+            {{ object.title }}
+            {% if object.foirequest %}
+              </a>
+            {% endif %}
+            {% with documents=object.documents.all %}
+              {% if documents %}
+                <ul>
+                {% for attachment in documents %}
+                  <li>
+                    <a href="{{ attachment.get_absolute_url }}">
+                      <span class="glyphicon glyphicon-paperclip"></span>
+                      {{ attachment.name|truncatechars:20 }}
+                    </a>
+                  </li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% include "pagination/pagination.html" with page_obj=object_list %}
