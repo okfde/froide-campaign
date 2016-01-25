@@ -47,7 +47,7 @@ class InformationObjectFilter(django_filters.FilterSet):
     class Meta:
         model = InformationObject
         fields = []
-        order_by = ['ordering']
+        order_by = ['-ordering']
 
     def filter_query(self, queryset, value):
         return queryset.filter(
