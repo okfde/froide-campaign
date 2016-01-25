@@ -62,7 +62,8 @@
               {% for attachment in documents %}
                 <li>
                   <a href="{{ attachment.get_absolute_url }}">
-                    <span class="glyphicon glyphicon-paperclip"></span> {{ attachment.name }}
+                    <span class="glyphicon glyphicon-paperclip"></span>
+                    {{ attachment.name|truncatechars:20 }}
                   </a>
                 </li>
               {% endfor %}
