@@ -8,7 +8,7 @@
 
 <form method="GET" action=".">
   <div class="input-group">
-   <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{{ filtered.form.q.value }}">
+   <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
    <span class="input-group-btn">
      <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
    </span>
