@@ -58,10 +58,12 @@
           {% endif %}
           {% with documents=object.documents.all %}
             {% if documents %}
-              <ul class="media-list">
+              <ul>
               {% for attachment in documents %}
-                <li class="media">
-                  {% include "foirequest/snippets/attachment_item.html" %}
+                <li>
+                  <a href="{{ attachment.get_absolute_url }}">
+                    <span class="glyphicon glyphicon-paperclip"></span> {{ attachment.name }}
+                  </a>
                 </li>
               {% endfor %}
               </ul>
