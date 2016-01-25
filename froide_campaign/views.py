@@ -90,6 +90,7 @@ def campaign_page(request, campaign_slug):
         'total_count': total_count,
         'done_count': done_count,
         'pending_count': pending_count,
+        'getvars_complete': request.GET.urlencode(),
         'progress_pending': str(round(pending_count / float(total_count) * 100, 1)),
         'progress_done': str(round(done_count / float(total_count) * 100, 1)),
     })
