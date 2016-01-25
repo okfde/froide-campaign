@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext_lazy as _
 from django.http import QueryDict
+from django.db.models import Q
 from django import forms
 
 import django_filters
@@ -51,9 +52,8 @@ class InformationObjectFilter(django_filters.FilterSet):
         order_by = ['-ordering']
 
     def filter_query(self, queryset, value):
-        return queryset.filter(
-            title__icontains=value
-        )
+        return queryset.filter(Q(title__icontains=value) |
+                               Q(ident__icontains=value))
 
 
 @cache_anonymous_page(15 * 60)
