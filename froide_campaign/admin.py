@@ -11,8 +11,8 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 class InformationObjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'publicbody', 'foirequest',)
-    list_filter = ('foirequest__status', 'foirequest__resolution',
+    list_display = ('title', 'ident', 'publicbody', 'foirequest',)
+    list_filter = ('campaign', 'foirequest__status', 'foirequest__resolution',
                     make_nullfilter('foirequest', _(u'Has request')),
                     make_nullfilter('documents', _(u'Has documents')),
                     make_nullfilter('publicbody', _(u'Has public body'))
