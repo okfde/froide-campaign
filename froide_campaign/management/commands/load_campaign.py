@@ -33,25 +33,34 @@ class Command(BaseCommand):
 
         for line in reader:
             line['publicbody'] = 'deutscher-bundestag'
-            title = line['titel']
-            ident = line['ref'].strip()
-            if not ident:
-                continue
+            title = line['Titel']
+            ident = line['Aktenzeichen']
+            ordering = re.sub(r'^(.*) - (\d+)/(\d+)$', '\\3-\\2-\\1', line['Aktenzeichen'])
+            ordering = ordering.replace(' ', '')
             context = {
-                'cat': line['kat'],
-                'year': line['jahr']
+                'year': line['Jahr'],
+                'status': line['Status'],
+                'abteilung': line['Abteilung']
             }
-            ordering = re.sub(r'^(.*)\D(\d+)/(\d+)$', '\\3-\\2-\\1', ident)
-            slug = ident.replace('/', '-').replace(' ', '-').lower()
+            slug = line['ID'].replace('/', '-').replace(' ', '-').lower()
             try:
-                InformationObject.objects.get(campaign=campaign, ident=ident)
-                continue
+                iobj = InformationObject.objects.get(campaign=campaign, ordering=ordering)
             except InformationObject.DoesNotExist:
-                pass
+                print('Not found %s' % ordering)
+                continue
             pb_slug = line['publicbody']
             if pb_slug not in pb_cache:
                 pb_cache[pb_slug] = PublicBody.objects.get(slug=pb_slug)
             pb = pb_cache[pb_slug]
+            if iobj is not None:
+                iobj.slug = slug
+                iobj.ordering = ordering
+                iobj.ident = ident
+                iobj.title = title
+                iobj.context = context
+                iobj.save()
+                continue
+
             InformationObject.objects.create(
                 campaign=campaign,
                 title=title,
