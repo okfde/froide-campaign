@@ -65,7 +65,6 @@ def campaign_page(request, campaign_slug):
     pending_count = qs.filter(foirequest__isnull=False).count()
     done_count = qs.filter(foirequest__status='resolved').count()
     pending_count -= done_count
-    qs = InformationObject.objects.filter(campaign=campaign)
 
     filtered = InformationObjectFilter(request.GET, queryset=qs)
 
@@ -82,6 +81,10 @@ def campaign_page(request, campaign_slug):
     no_page_query = QueryDict(request.GET.urlencode().encode('utf-8'), mutable=True)
     no_page_query.pop('page', None)
 
+    random_objects = None
+    if request.GET.get('random'):
+        random_objects = qs.filter(foirequest__isnull=True).order_by('?')[:5]
+
     return render(request, 'froide_campaign/campaign.html', {
         'campaign': campaign,
         'object_list': iobjs,
@@ -93,4 +96,5 @@ def campaign_page(request, campaign_slug):
         'getvars_complete': request.GET.urlencode(),
         'progress_pending': str(round(pending_count / float(total_count) * 100, 1)),
         'progress_done': str(round(done_count / float(total_count) * 100, 1)),
+        'random_objects': random_objects
     })

@@ -5,28 +5,56 @@
 {% load markdown_deux_tags %}
 
 {% block main %}
+{% url "campaign-page" campaign_slug=campaign.slug as campaign_url %}
+
 <h2>{{ campaign.title }}</h2>
 
 {% if campaign.description %}
   {{ campaign.description|markdown }}
 {% endif %}
 
-<div class="progress">
-  <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
-    <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
-  </div>
-  <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
-    <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
+<form method="GET" action=".">
+
+<div class="row">
+  <div class="col-lg-9 col-md-8">
+
+    {% if random_objects %}
+      <h3>{% trans "Maybe interesting?" %}</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Jahr</th>
+            <th>Referenz</th>
+            <th>Titel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for object in random_objects %}
+            {% include "froide_campaign/_info_object.html" %}
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+
+    <div class="progress">
+      <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
+        <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
+      </div>
+      <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
+        <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
+      </div>
+    </div>
+
+    <div class="input-group">
+     <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
+     <span class="input-group-btn">
+       <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
+     </span>
+    </div>
   </div>
 </div>
-
-<form method="GET" action=".">
-  <div class="input-group">
-   <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
-   <span class="input-group-btn">
-     <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
-   </span>
-  </div>
 <div class="row">
   <div class="col-lg-3 col-lg-push-9 col-md-4 col-md-push-8">
     <h3>{% trans "Filter by status" %}</h3>
@@ -46,48 +74,8 @@
           </tr>
         </thead>
         <tbody>
-      {% url "campaign-page" campaign_slug=campaign.slug as campaign_url %}
       {% for object in object_list %}
-        <tr>
-          <td class="center">
-            {% if object.foirequest %}
-              {{ object.foirequest.readable_status }}
-            {% else %}
-              <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
-                {% trans "Make request" %}
-              </a>
-            {% endif %}
-          </td>
-          <td>
-            {{ object.context.year }}
-          </td>
-          <td>
-            {{ object.ident }}
-          </td>
-          <td>
-            {% if object.foirequest %}
-              <a href="{{ object.foirequest.get_absolute_url }}">
-            {% endif %}
-            {{ object.title }}
-            {% if object.foirequest %}
-              </a>
-            {% endif %}
-            {% with documents=object.documents.all %}
-              {% if documents %}
-                <ul>
-                {% for attachment in documents %}
-                  <li>
-                    <a href="{{ attachment.get_absolute_url }}">
-                      <span class="glyphicon glyphicon-paperclip"></span>
-                      {{ attachment.name|truncatechars:20 }}
-                    </a>
-                  </li>
-                {% endfor %}
-                </ul>
-              {% endif %}
-            {% endwith %}
-          </td>
-        </tr>
+        {% include "froide_campaign/_info_object.html" %}
       {% endfor %}
       </tbody>
       </table>
