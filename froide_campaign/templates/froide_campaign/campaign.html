@@ -48,7 +48,7 @@
             {% if object.foirequest %}
               {{ object.foirequest.readable_status }}
             {% else %}
-              <a class="btn btn-default" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
+              <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
                 {% trans "Make request" %}
               </a>
             {% endif %}
