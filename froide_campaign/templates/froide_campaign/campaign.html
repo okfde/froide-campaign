@@ -2,9 +2,14 @@
 
 {% load i18n %}
 {% load static from staticfiles %}
+{% load markdown_deux_tags %}
 
 {% block main %}
 <h2>{{ campaign.title }}</h2>
+
+{% if campaign.description %}
+  {{ campaign.description|markdown }}
+{% endif %}
 
 <div class="progress">
   <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">

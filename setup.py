@@ -37,7 +37,8 @@ setup(
     install_requires=[
         'froide',
         'jsonfield',
-        'django-filter'
+        'django-filter',
+        'django-markdown-deux'
     ],
     include_package_data=True,
     classifiers=[

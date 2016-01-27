@@ -20,6 +20,8 @@ class Campaign(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
 
+    description = models.TextField(blank=True)
+
     template = models.TextField(blank=True)
 
     def __str__(self):
