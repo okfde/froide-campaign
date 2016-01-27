@@ -3,12 +3,13 @@ from .models import Campaign, InformationObject
 
 def connect_info_object(sender, **kwargs):
     reference = kwargs.get('reference')
-    if reference is None:
+    if not reference:
         return
-    if 'campaign' not in reference:
+    if not reference.startswith('campaign:'):
         return
+    namespace, campaign_value = reference.split(':', 1)
     try:
-        campaign, slug = reference['campaign'].split('@', 1)
+        campaign, slug = campaign_value.split('@', 1)
     except (ValueError, IndexError):
         return
 
