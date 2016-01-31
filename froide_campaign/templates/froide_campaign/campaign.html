@@ -9,6 +9,16 @@
 
 <h2>{{ campaign.title }}</h2>
 
+
+<div class="progress">
+  <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
+    <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
+  </div>
+  <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
+    <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
+  </div>
+</div>
+
 {% if campaign.description %}
   {{ campaign.description|markdown }}
 {% endif %}
@@ -18,39 +28,11 @@
 <div class="row">
   <div class="col-lg-9 col-md-8">
 
-    {% if random_objects %}
-      <h3>{% trans "Maybe interesting?" %}</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Jahr</th>
-            <th>Referenz</th>
-            <th>Titel</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for object in random_objects %}
-            {% include "froide_campaign/_info_object.html" %}
-          {% endfor %}
-        </tbody>
-      </table>
-    {% endif %}
-
-
-    <div class="progress">
-      <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
-        <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
-      </div>
-      <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
-        <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
-      </div>
-    </div>
-
     <div class="input-group">
      <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
      <span class="input-group-btn">
        <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
+       <button class="btn btn-default" name="random" value="1" type="submit">{% trans "Zufall" %}</button>
      </span>
     </div>
   </div>
