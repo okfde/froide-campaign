@@ -46,8 +46,10 @@ class InformationObject(models.Model):
 
     context = JSONField(blank=True)
 
-    publicbody = models.ForeignKey(PublicBody, null=True, blank=True)
-    foirequest = models.ForeignKey(FoiRequest, null=True, blank=True)
+    publicbody = models.ForeignKey(PublicBody, null=True, blank=True,
+                                   on_delete=models.SET_NULL)
+    foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
+                                    on_delete=models.SET_NULL)
 
     documents = models.ManyToManyField(FoiAttachment, blank=True)
 
