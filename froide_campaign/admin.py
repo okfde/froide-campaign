@@ -26,14 +26,18 @@ class InformationObjectAdmin(admin.ModelAdmin):
     actions = ['clean_requests']
 
     def clean_requests(self, request, queryset):
-        from froide.foirequest.models import FoiRequest
-
         queryset = queryset.filter(foirequest__isnull=False)
+        queryset = queryset.select_related('foirequest')
         a_day_ago = timezone.now() - timedelta(days=1)
-        queryset = queryset.filter(foirequest__firstmessage__lt=a_day_ago)
-        queryset.exclude(
-            foirequest__visibility=FoiRequest.VISIBLE_TO_PUBLIC
-        ).update(foirequest=None)
+        for iobj in queryset:
+            if iobj.foirequest is None:
+                continue
+            if iobj.foirequest.first_message >= a_day_ago:
+                continue
+            if iobj.foirequest.is_visible():
+                continue
+            iobj.foirequest = None
+            iobj.save()
         return None
     clean_requests.short_description = _("Clean out bad requests")
 
