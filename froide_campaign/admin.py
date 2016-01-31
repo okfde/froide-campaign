@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 from froide.helper.admin_utils import make_nullfilter
 
@@ -19,6 +22,20 @@ class InformationObjectAdmin(admin.ModelAdmin):
     )
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
+
+    actions = ['clean_requests']
+
+    def clean_requests(self, request, queryset):
+        from froide.foirequest.models import FoiRequest
+
+        queryset = queryset.filter(foirequest__isnull=False)
+        a_day_ago = timezone.now() - timedelta(days=1)
+        queryset = queryset.filter(foirequest__firstmessage__lt=a_day_ago)
+        queryset.exclude(
+            foirequest__visibility=FoiRequest.VISIBLE_TO_PUBLIC
+        ).update(foirequest=None)
+        return None
+    clean_requests.short_description = _("Clean out bad requests")
 
 
 admin.site.register(Campaign, CampaignAdmin)
