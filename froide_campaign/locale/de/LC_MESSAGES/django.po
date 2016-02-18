@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-25 13:44+0100\n"
-"PO-Revision-Date: 2016-01-25 13:45+0100\n"
+"POT-Creation-Date: 2016-02-18 16:30+0100\n"
+"PO-Revision-Date: 2016-02-18 16:31+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.org>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,38 +18,52 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.5\n"
 
-#: admin.py:16
+#: admin.py:19
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:17
+#: admin.py:20
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:18
+#: admin.py:21
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: templates/froide_campaign/campaign.html:11
+#: admin.py:42
+msgid "Clean out bad requests"
+msgstr "Schlechte Anfragen entkoppeln"
+
+#: templates/froide_campaign/_info_object.html:9
+msgid "Make request"
+msgstr "Anfragen!"
+
+#: templates/froide_campaign/_info_object_no_foi.html:6
+msgid "Search online"
+msgstr "Dokument suchen"
+
+#: templates/froide_campaign/campaign.html:14
+#: templates/froide_campaign/campaign.html:15
 msgid "Complete"
 msgstr "Abgeschlossen"
 
-#: templates/froide_campaign/campaign.html:14
+#: templates/froide_campaign/campaign.html:17
+#: templates/froide_campaign/campaign.html:18
 msgid "Pending"
 msgstr "Laufend"
 
-#: templates/froide_campaign/campaign.html:20
-#: templates/froide_campaign/campaign.html:22
+#: templates/froide_campaign/campaign.html:33
+#: templates/froide_campaign/campaign.html:35
 msgid "Search"
 msgstr "Suchen"
 
-#: templates/froide_campaign/campaign.html:27
+#: templates/froide_campaign/campaign.html:36
+msgid "Random"
+msgstr "Zufall"
+
+#: templates/froide_campaign/campaign.html:43
 msgid "Filter by status"
 msgstr "Filtern nach Zustand"
-
-#: templates/froide_campaign/campaign.html:50
-msgid "Make request"
-msgstr "Anfragen!"
 
 #: templates/froide_campaign/index.html:7
 msgid "Current Campaigns"

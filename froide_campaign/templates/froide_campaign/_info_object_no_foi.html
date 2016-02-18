@@ -31,7 +31,7 @@
           <li>
             <a href="{{ attachment.get_absolute_url }}" title="{{ object.title }}">
               <span class="glyphicon glyphicon-paperclip"></span>
-              {% trans "Download document here" %}
+              {{ attachment.name|truncatechars:20 }}
             </a>
           </li>
         {% endfor %}
