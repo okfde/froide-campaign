@@ -4,7 +4,15 @@
 {% load static from staticfiles %}
 {% load markdown_deux_tags %}
 
+{% block extra_head %}
+{{ block.super }}
+{% if not campaign.requires_foi %}
+<link rel="stylesheet" href="{% static "css/confetti.css" %}">
+{% endif %}
+{% endblock %}
+
 {% block main %}
+
 {% url "campaign-page" campaign_slug=campaign.slug as campaign_url %}
 
 <h2>{{ campaign.title }}</h2>
@@ -71,4 +79,22 @@
 </div>
 {% include "pagination/pagination.html" with page_obj=object_list %}
 </form>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+{% if not campaign.requires_foi %}
+<script type="text/javascript" src="{% static "js/jquery.confetti.min.js" %}"></script>
+<script>
+$(function(){
+  $('html').click(function(e){
+    $('[class*=confetti]').remove();
+    $('html').confetti({
+      x: e.pageX,
+      y: e.pageY,
+    });
+  });
+});
+</script>
+{% endif %}
 {% endblock %}
