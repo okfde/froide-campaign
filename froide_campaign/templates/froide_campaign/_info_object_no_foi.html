@@ -2,13 +2,9 @@
 
 <tr>
   <td class="center">
-    {% if object.foirequest %}
-      {{ object.foirequest.readable_status }}
-    {% else %}
-      <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
-        {% trans "Make request" %}
-      </a>
-    {% endif %}
+    <a class="btn btn-primary" href="{{ object.get_search_url }}">
+      {% trans "Search online" %}
+    </a>
   </td>
   <td>
     {{ object.context.year }}
@@ -24,6 +20,10 @@
     {% if object.foirequest %}
       </a>
     {% endif %}
+    <br/>
+    {% if object.foirequest %}
+      {{ object.foirequest.readable_status }}
+    {% endif %}
     {% with documents=object.documents.all %}
       {% if documents %}
         <ul>
@@ -31,7 +31,7 @@
           <li>
             <a href="{{ attachment.get_absolute_url }}" title="{{ object.title }}">
               <span class="glyphicon glyphicon-paperclip"></span>
-              {{ attachment.name|truncatechars:20 }}
+              {% trans "Download document here" %}
             </a>
           </li>
         {% endfor %}

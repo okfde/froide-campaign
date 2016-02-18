@@ -8,6 +8,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
+from django.utils.http import urlquote
 
 from jsonfield import JSONField
 
@@ -23,6 +24,9 @@ class Campaign(models.Model):
     description = models.TextField(blank=True)
 
     template = models.TextField(blank=True)
+
+    requires_foi = models.BooleanField(default=True)
+    search_url = models.CharField(max_length=1024, blank=True)
 
     def __str__(self):
         return self.title
@@ -58,6 +62,12 @@ class InformationObject(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_search_url(self):
+        return self.campaign.search_url.format(
+            title=urlquote(self.title),
+            ident=urlquote(self.ident)
+        )
 
     def make_request_url(self):
         if self.publicbody is None:
