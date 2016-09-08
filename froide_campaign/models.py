@@ -75,7 +75,6 @@ class InformationObject(models.Model):
         verbose_name = _('Information object')
         verbose_name_plural = _('Information objects')
 
-
     def __str__(self):
         return self.title
 
