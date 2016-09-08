@@ -26,6 +26,7 @@ class Campaign(models.Model):
 
     description = models.TextField(blank=True)
 
+    subject_template = models.CharField(max_length=255, blank=True)
     template = models.TextField(blank=True)
 
     requires_foi = models.BooleanField(default=True)
@@ -41,6 +42,11 @@ class Campaign(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('campaign-page', (), {'campaign_slug': self.slug})
+
+    def get_subject_template(self):
+        if self.subject_template:
+            return Template(self.subject_template)
+        return Template('{{ title }}')
 
     def get_template(self):
         return Template(self.template)
@@ -83,17 +89,18 @@ class InformationObject(models.Model):
         if self.publicbody is None:
             return None
         pb_slug = self.publicbody.slug
+        context = Context({
+            'title': self.title,
+            'ident': self.ident,
+            'context': self.context
+        })
         url = reverse('foirequest-make_request', kwargs={'public_body': pb_slug})
-        subject = u'%s – %s' % (self.ident, self.title)
+        subject = self.campaign.get_subject_template().render(context)
         if len(subject) > 250:
             subject = subject[:250] + '...'
         query = urlencode({
             'subject': subject.encode('utf-8'),
-            'body': self.campaign.get_template().render(Context({
-                'title': self.title,
-                'ident': self.ident,
-                'context': self.context
-                })).encode('utf-8'),
+            'body': self.campaign.get_template().render(context).encode('utf-8'),
             'ref': ('campaign:%s@%s' % (self.campaign.pk, self.slug)).encode('utf-8')
         })
         return '%s?%s' % (url, query)
