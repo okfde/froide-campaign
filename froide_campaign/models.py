@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
 from django.utils.http import urlquote
+from django.utils.translation import ugettext_lazy as _
 
 from jsonfield import JSONField
 
@@ -21,12 +22,18 @@ class Campaign(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
 
+    public = models.BooleanField(default=False)
+
     description = models.TextField(blank=True)
 
     template = models.TextField(blank=True)
 
     requires_foi = models.BooleanField(default=True)
     search_url = models.CharField(max_length=1024, blank=True)
+
+    class Meta:
+        verbose_name = _('Campaign')
+        verbose_name_plural = _('Campaigns')
 
     def __str__(self):
         return self.title
@@ -58,7 +65,10 @@ class InformationObject(models.Model):
     documents = models.ManyToManyField(FoiAttachment, blank=True)
 
     class Meta:
-        ordering = ('-ordering',)
+        ordering = ('-ordering', 'title')
+        verbose_name = _('Information object')
+        verbose_name_plural = _('Information objects')
+
 
     def __str__(self):
         return self.title

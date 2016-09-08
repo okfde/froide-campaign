@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext_lazy as _
 from django.http import QueryDict
@@ -15,7 +15,7 @@ from .models import Campaign, InformationObject
 @cache_anonymous_page(15 * 60)
 def index(request):
     return render(request, 'froide_campaign/index.html', {
-        'campaigns': Campaign.objects.all(),
+        'campaigns': Campaign.objects.filter(public=True),
     })
 
 
@@ -59,6 +59,8 @@ class InformationObjectFilter(django_filters.FilterSet):
 @cache_anonymous_page(15 * 60)
 def campaign_page(request, campaign_slug):
     campaign = get_object_or_404(Campaign, slug=campaign_slug)
+    if not campaign.public and not request.user.is_staff:
+        raise Http404
 
     qs = InformationObject.objects.filter(campaign=campaign)
     total_count = qs.count()
