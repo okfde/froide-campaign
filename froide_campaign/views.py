@@ -70,7 +70,6 @@ def campaign_page(request, campaign_slug):
 
     filtered = InformationObjectFilter(request.GET, queryset=qs)
 
-    random_objects = None
     if request.GET.get('random'):
         filtered = qs.filter(foirequest__isnull=True).order_by('?')
 
@@ -95,6 +94,6 @@ def campaign_page(request, campaign_slug):
         'done_count': done_count,
         'pending_count': pending_count,
         'getvars_complete': request.GET.urlencode(),
-        'progress_pending': str(round(pending_count / float(total_count) * 100, 1)),
-        'progress_done': str(round(done_count / float(total_count) * 100, 1)),
+        'progress_pending': 0 if total_count == 0 else str(round(pending_count / float(total_count) * 100, 1)),
+        'progress_done': 0 if total_count == 0 else str(round(done_count / float(total_count) * 100, 1)),
     })
