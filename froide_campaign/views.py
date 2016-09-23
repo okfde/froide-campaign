@@ -42,14 +42,17 @@ class InformationObjectFilter(django_filters.FilterSet):
     q = django_filters.MethodFilter(action='filter_query')
     page = django_filters.NumberFilter(action=lambda x, y: x,
                                        widget=forms.HiddenInput)
-    status = django_filters.ChoiceFilter(choices=STATUS_CHOICES,
-                                         action=filter_status,
-                                         widget=django_filters.widgets.LinkWidget)
+    status = django_filters.ChoiceFilter(
+            choices=STATUS_CHOICES,
+            action=filter_status,
+            widget=django_filters.widgets.LinkWidget)
 
     class Meta:
         model = InformationObject
         fields = []
-        order_by = ['-ordering']
+        order_by = (
+            ('-ordering', 'Ordering'),
+        )
 
     def filter_query(self, queryset, value):
         return queryset.filter(Q(title__icontains=value) |
@@ -82,7 +85,8 @@ def campaign_page(request, campaign_slug):
     except EmptyPage:
         iobjs = paginator.page(paginator.num_pages)
 
-    no_page_query = QueryDict(request.GET.urlencode().encode('utf-8'), mutable=True)
+    no_page_query = QueryDict(request.GET.urlencode().encode('utf-8'),
+                              mutable=True)
     no_page_query.pop('page', None)
 
     return render(request, 'froide_campaign/campaign.html', {
@@ -94,6 +98,8 @@ def campaign_page(request, campaign_slug):
         'done_count': done_count,
         'pending_count': pending_count,
         'getvars_complete': request.GET.urlencode(),
-        'progress_pending': 0 if total_count == 0 else str(round(pending_count / float(total_count) * 100, 1)),
-        'progress_done': 0 if total_count == 0 else str(round(done_count / float(total_count) * 100, 1)),
+        'progress_pending': 0 if total_count == 0 else str(
+                round(pending_count / float(total_count) * 100, 1)),
+        'progress_done': 0 if total_count == 0 else str(
+                round(done_count / float(total_count) * 100, 1)),
     })
