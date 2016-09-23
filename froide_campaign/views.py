@@ -42,17 +42,24 @@ class InformationObjectFilter(django_filters.FilterSet):
     q = django_filters.MethodFilter(action='filter_query')
     page = django_filters.NumberFilter(action=lambda x, y: x,
                                        widget=forms.HiddenInput)
+
     status = django_filters.ChoiceFilter(
             choices=STATUS_CHOICES,
             action=filter_status,
             widget=django_filters.widgets.LinkWidget)
 
+    o = django_filters.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('-ordering', 'ordering'),
+            ('first_name', 'first_name'),
+            ('last_name', 'last_name'),
+        ),
+    )
+
     class Meta:
         model = InformationObject
-        fields = []
-        order_by = (
-            ('-ordering', 'Ordering'),
-        )
+        fields = ['status', 'page', 'q']
 
     def filter_query(self, queryset, value):
         return queryset.filter(Q(title__icontains=value) |
