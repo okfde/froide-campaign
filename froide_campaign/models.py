@@ -18,11 +18,39 @@ from froide.foirequest.models import FoiRequest, FoiAttachment
 
 
 @python_2_unicode_compatible
+class CampaignPage(models.Model):
+    title = models.CharField(max_length=255)
+    slug = models.SlugField()
+
+    description = models.TextField(blank=True)
+    public = models.BooleanField(default=False)
+
+    campaigns = models.ManyToManyField('Campaign')
+
+    class Meta:
+        verbose_name = _('Campaign page')
+        verbose_name_plural = _('Campaign pages')
+
+    def __str__(self):
+        return self.title
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('campaign-page', (), {'slug': self.slug})
+
+    @property
+    def requires_foi(self):
+        return all(c.requires_foi for c in self.campaigns.all())
+
+
+@python_2_unicode_compatible
 class Campaign(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
 
     public = models.BooleanField(default=False)
+
+    category = models.CharField(max_length=255, blank=True)
 
     description = models.TextField(blank=True)
 
@@ -38,10 +66,6 @@ class Campaign(models.Model):
 
     def __str__(self):
         return self.title
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ('campaign-page', (), {'campaign_slug': self.slug})
 
     def get_subject_template(self):
         if self.subject_template:
