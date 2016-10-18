@@ -4,6 +4,9 @@
   <td>
     {% if object.foirequest %}
       {{ object.foirequest.readable_status }}
+      {% if object.campaign.category %}
+        – {{ object.campaign.category }}
+      {% endif %}
     {% else %}
       <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
         {% if object.campaign.category %}
