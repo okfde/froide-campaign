@@ -124,6 +124,6 @@ class InformationObject(models.Model):
         query = urlencode({
             'subject': subject.encode('utf-8'),
             'body': self.campaign.get_template().render(context).encode('utf-8'),
-            'ref': ('campaign:%s@%s' % (self.campaign.pk, self.slug)).encode('utf-8')
+            'ref': ('campaign:%s@%s' % (self.campaign.pk, self.pk)).encode('utf-8')
         })
         return '%s?%s' % (url, query)

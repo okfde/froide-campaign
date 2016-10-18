@@ -24,7 +24,14 @@ def connect_info_object(sender, **kwargs):
         return
 
     try:
-        iobj = InformationObject.objects.get(campaign=campaign, slug=slug)
+        kwargs = {
+            'pk': int(slug)
+        }
+    except ValueError:
+        kwargs = {'slug': slug}
+
+    try:
+        iobj = InformationObject.objects.get(campaign=campaign, **kwargs)
     except InformationObject.DoesNotExist:
         return
 
