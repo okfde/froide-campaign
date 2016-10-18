@@ -26,7 +26,7 @@ class CSVImporter(object):
 
         title = line.pop('title')
         slug = line.pop('slug', slugify(title))
-        slug = slug[:50]
+        slug = slug[:255]
         iobj = None
         try:
             iobj = InformationObject.objects.get(campaign=campaign, slug=slug)

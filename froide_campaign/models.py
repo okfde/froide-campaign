@@ -82,7 +82,7 @@ class InformationObject(models.Model):
 
     ident = models.CharField(max_length=255)
     title = models.CharField(max_length=1000)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
 
     context = JSONField(blank=True)
