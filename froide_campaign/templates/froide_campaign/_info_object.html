@@ -6,7 +6,11 @@
       {{ object.foirequest.readable_status }}
     {% else %}
       <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
-        {% trans "Make request" %}
+        {% if object.campaign.category %}
+          {% blocktrans with name=object.campaign.category %}Request {{ name }}{% endblocktrans %}
+        {% else %}
+          {% trans "Make request" %}
+        {% endif %}
       </a>
     {% endif %}
   </td>

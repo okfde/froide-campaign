@@ -5,19 +5,24 @@
 {% load markdown_deux_tags %}
 
 {% block extra_head %}
-{{ block.super }}
-{% if not campaign.requires_foi %}
-<link rel="stylesheet" href="{% static "css/confetti.css" %}">
-{% endif %}
+  {{ block.super }}
+  {% if not campaign_page.requires_foi %}
+    <link rel="stylesheet" href="{% static "css/confetti.css" %}">
+  {% endif %}
+  <style>
+    ul > li > a.selected {
+      color: #333;
+    }
+  </style>
 {% endblock %}
 
 {% block main %}
 
-{% url "campaign-page" campaign_slug=campaign.slug as campaign_url %}
+{% url "campaign-page" slug=campaign_page.slug as campaign_url %}
 
-<h2>{{ campaign.title }}</h2>
+<h2>{{ campaign_page.title }}</h2>
 
-{% if campaign.requires_foi %}
+{% if campaign_page.requires_foi %}
 <div class="progress">
   <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
     <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
@@ -28,8 +33,8 @@
 </div>
 {% endif %}
 
-{% if campaign.description %}
-  {{ campaign.description|markdown }}
+{% if campaign_page.description %}
+  {{ campaign_page.description|markdown }}
 {% endif %}
 
 <form method="GET" action=".">
@@ -51,6 +56,9 @@
     <h3>{% trans "Filter by status" %}</h3>
       {{ filtered.form.status}}
 
+      <h3>{% trans "Filter by type" %}</h3>
+        {{ filtered.form.campaign }}
+
     {{ filtered.form.page }}
   </div>
   <div class="col-lg-9 col-lg-pull-3 col-md-8 col-md-pull-4">
@@ -64,7 +72,7 @@
         </thead>
         <tbody>
           {% for object in object_list %}
-            {% if campaign.requires_foi %}
+            {% if object.campaign.requires_foi %}
               {% include "froide_campaign/_info_object.html" %}
             {% else %}
               {% include "froide_campaign/_info_object_no_foi.html" %}
@@ -80,19 +88,19 @@
 {% endblock %}
 
 {% block scripts %}
-{{ block.super }}
-{% if not campaign.requires_foi %}
-<script type="text/javascript" src="{% static "js/jquery.confetti.min.js" %}"></script>
-<script>
-$(function(){
-  $('html').click(function(e){
-    $('[class*=confetti]').remove();
-    $('html').confetti({
-      x: e.pageX,
-      y: e.pageY,
+  {{ block.super }}
+  {% if not campaign_page.requires_foi %}
+    <script type="text/javascript" src="{% static "js/jquery.confetti.min.js" %}"></script>
+    <script>
+    $(function(){
+      $('html').click(function(e){
+        $('[class*=confetti]').remove();
+        $('html').confetti({
+          x: e.pageX,
+          y: e.pageY,
+        });
+      });
     });
-  });
-});
-</script>
-{% endif %}
+    </script>
+  {% endif %}
 {% endblock %}

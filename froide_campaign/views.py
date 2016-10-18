@@ -9,13 +9,13 @@ import django_filters
 
 from froide.helper.cache import cache_anonymous_page
 
-from .models import Campaign, InformationObject
+from .models import CampaignPage, InformationObject
 
 
 @cache_anonymous_page(15 * 60)
 def index(request):
     return render(request, 'froide_campaign/index.html', {
-        'campaigns': Campaign.objects.filter(public=True),
+        'campaigns': CampaignPage.objects.filter(public=True),
     })
 
 
@@ -32,7 +32,7 @@ def filter_status(qs, status):
     return qs
 
 
-class InformationObjectFilter(django_filters.FilterSet):
+class InformationObjectFilterSet(django_filters.FilterSet):
     STATUS_CHOICES = (
         ('', _('All')),
         (0, _('No request yet')),
@@ -59,7 +59,16 @@ class InformationObjectFilter(django_filters.FilterSet):
 
     class Meta:
         model = InformationObject
-        fields = ['status', 'page', 'q']
+        fields = ['status', 'page', 'q', 'campaign']
+
+    def __init__(self, *args, **kwargs):
+        self.campaigns = kwargs.pop('campaigns')
+        self.base_filters['campaign'] = django_filters.ModelChoiceFilter(queryset=self.campaigns,
+        widget=django_filters.widgets.LinkWidget, method='filter_campaign')
+        super(InformationObjectFilterSet, self).__init__(*args, **kwargs)
+
+    def filter_campaign(self, queryset, name, value):
+        return queryset.filter(campaign=value)
 
     def filter_query(self, queryset, value):
         return queryset.filter(Q(title__icontains=value) |
@@ -67,18 +76,22 @@ class InformationObjectFilter(django_filters.FilterSet):
 
 
 @cache_anonymous_page(15 * 60)
-def campaign_page(request, campaign_slug):
-    campaign = get_object_or_404(Campaign, slug=campaign_slug)
-    if not campaign.public and not request.user.is_staff:
+def campaign_page(request, slug):
+    campaign_page = get_object_or_404(CampaignPage, slug=slug)
+    if not campaign_page.public and not request.user.is_staff:
         raise Http404
 
-    qs = InformationObject.objects.filter(campaign=campaign)
+    campaigns = campaign_page.campaigns.all()
+    qs = InformationObject.objects.filter(campaign__in=campaigns)
+
     total_count = qs.count()
     pending_count = qs.filter(foirequest__isnull=False).count()
     done_count = qs.filter(foirequest__status='resolved').count()
     pending_count -= done_count
 
-    filtered = InformationObjectFilter(request.GET, queryset=qs)
+    qs = qs.select_related('campaign')
+
+    filtered = InformationObjectFilterSet(request.GET, queryset=qs, campaigns=campaigns)
 
     if request.GET.get('random'):
         filtered = qs.filter(foirequest__isnull=True).order_by('?')
@@ -97,7 +110,7 @@ def campaign_page(request, campaign_slug):
     no_page_query.pop('page', None)
 
     return render(request, 'froide_campaign/campaign.html', {
-        'campaign': campaign,
+        'campaign_page': campaign_page,
         'object_list': iobjs,
         'filtered': filtered,
         'getvars': '&' + no_page_query.urlencode(),  # pagination
