@@ -88,9 +88,12 @@ def campaign_page(request, slug):
     qs = InformationObject.objects.filter(campaign__in=campaigns)
 
     total_count = qs.count()
+    resolved_count = qs.filter(resolved=True).count()
     pending_count = qs.filter(foirequest__isnull=False).count()
     done_count = qs.filter(foirequest__status='resolved').count()
+
     pending_count -= done_count
+    done_count += resolved_count
 
     qs = qs.select_related('campaign')
 
