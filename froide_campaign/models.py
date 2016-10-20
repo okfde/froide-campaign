@@ -92,6 +92,10 @@ class InformationObject(models.Model):
     foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
                                     on_delete=models.SET_NULL)
 
+    resolved = models.BooleanField(default=False)
+    resolution_text = models.TextField(blank=True)
+    resolution_link = models.CharField(max_length=255, blank=True)
+
     documents = models.ManyToManyField(FoiAttachment, blank=True)
 
     class Meta:
