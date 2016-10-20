@@ -22,13 +22,15 @@ def index(request):
 def filter_status(qs, status):
     if status:
         if status == '0':
-            qs = qs.filter(foirequest__isnull=True)
+            qs = qs.filter(foirequest__isnull=True, resolved=False)
         elif status == '1':
-            qs = qs.filter(foirequest__isnull=False).exclude(
+            qs = qs.filter(foirequest__isnull=False, resolved=False).exclude(
                            foirequest__status='resolved')
         elif status == '2':
-            qs = qs.filter(foirequest__isnull=False,
+            qs = qs.filter(foirequest__isnull=False, resolved=False,
                            foirequest__status='resolved')
+        elif status == '3':
+            qs = qs.filter(resolved=True)
     return qs
 
 
@@ -38,6 +40,7 @@ class InformationObjectFilterSet(django_filters.FilterSet):
         (0, _('No request yet')),
         (1, _('Pending request')),
         (2, _('Resolved request')),
+        (3, _('Information already public')),
     )
     q = django_filters.MethodFilter(action='filter_query')
     page = django_filters.NumberFilter(action=lambda x, y: x,
