@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-18 18:30+0200\n"
-"PO-Revision-Date: 2016-10-18 18:31+0100\n"
+"POT-Creation-Date: 2016-10-20 12:45+0200\n"
+"PO-Revision-Date: 2016-10-20 12:45+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.org>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.5\n"
 
-#: admin.py:29
+#: admin.py:30
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:30
+#: admin.py:31
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:31
+#: admin.py:32
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:71
+#: admin.py:72
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
@@ -54,11 +54,11 @@ msgstr "Kampagne"
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models.py:99
+#: models.py:103
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models.py:100
+#: models.py:104
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
@@ -66,12 +66,16 @@ msgstr "Informationsobjekte"
 msgid "Upload information objects as CSV"
 msgstr "Informationsobjekte als CSV hochladen"
 
-#: templates/froide_campaign/_info_object.html:10
+#: templates/froide_campaign/_info_object.html:11 views.py:43
+msgid "Information already public"
+msgstr "Information schon öffentlich"
+
+#: templates/froide_campaign/_info_object.html:15
 #, python-format
 msgid "Request %(name)s"
 msgstr "%(name)s anfragen"
 
-#: templates/froide_campaign/_info_object.html:12
+#: templates/froide_campaign/_info_object.html:17
 msgid "Make request"
 msgstr "Anfragen!"
 
@@ -110,18 +114,18 @@ msgstr "Filtern nach Typ"
 msgid "Current Campaigns"
 msgstr "Aktuelle Kampagnen"
 
-#: views.py:37
+#: views.py:39
 msgid "All"
 msgstr "Alle"
 
-#: views.py:38
+#: views.py:40
 msgid "No request yet"
 msgstr "Noch keine Anfrage"
 
-#: views.py:39
+#: views.py:41
 msgid "Pending request"
 msgstr "Anfrage läuft"
 
-#: views.py:40
+#: views.py:42
 msgid "Resolved request"
 msgstr "Anfrage abgeschlossen"

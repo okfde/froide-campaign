@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-18 18:30+0200\n"
+"POT-Creation-Date: 2016-10-20 12:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: admin.py:29
+#: admin.py:30
 msgid "Has request"
 msgstr ""
 
-#: admin.py:30
+#: admin.py:31
 msgid "Has documents"
 msgstr ""
 
-#: admin.py:31
+#: admin.py:32
 msgid "Has public body"
 msgstr ""
 
-#: admin.py:71
+#: admin.py:72
 msgid "Clean out bad requests"
 msgstr ""
 
@@ -53,11 +53,11 @@ msgstr ""
 msgid "Campaigns"
 msgstr ""
 
-#: models.py:99
+#: models.py:103
 msgid "Information object"
 msgstr ""
 
-#: models.py:100
+#: models.py:104
 msgid "Information objects"
 msgstr ""
 
@@ -65,12 +65,16 @@ msgstr ""
 msgid "Upload information objects as CSV"
 msgstr ""
 
-#: templates/froide_campaign/_info_object.html:10
+#: templates/froide_campaign/_info_object.html:11 views.py:43
+msgid "Information already public"
+msgstr ""
+
+#: templates/froide_campaign/_info_object.html:15
 #, python-format
 msgid "Request %(name)s"
 msgstr ""
 
-#: templates/froide_campaign/_info_object.html:12
+#: templates/froide_campaign/_info_object.html:17
 msgid "Make request"
 msgstr ""
 
@@ -109,18 +113,18 @@ msgstr ""
 msgid "Current Campaigns"
 msgstr ""
 
-#: views.py:37
+#: views.py:39
 msgid "All"
 msgstr ""
 
-#: views.py:38
+#: views.py:40
 msgid "No request yet"
 msgstr ""
 
-#: views.py:39
+#: views.py:41
 msgid "Pending request"
 msgstr ""
 
-#: views.py:40
+#: views.py:42
 msgid "Resolved request"
 msgstr ""
