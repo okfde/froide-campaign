@@ -36,7 +36,6 @@ def filter_status(qs, status):
 
 class InformationObjectFilterSet(django_filters.FilterSet):
     STATUS_CHOICES = (
-        ('', _('All')),
         (0, _('No request yet')),
         (1, _('Pending request')),
         (2, _('Resolved request')),
@@ -97,14 +96,15 @@ def campaign_page(request, slug):
 
     qs = qs.select_related('campaign')
 
-    filtered = InformationObjectFilterSet(request.GET, queryset=qs, campaigns=campaigns)
-    filtered = filtered.qs
+    filterset = InformationObjectFilterSet(request.GET, queryset=qs, campaigns=campaigns)
 
     if request.GET.get('random'):
-        filtered = qs.filter(foirequest__isnull=True).order_by('?')
+        qs = qs.filter(foirequest__isnull=True).order_by('?')
+    else:
+        qs = filterset.qs
 
     page = request.GET.get('page')
-    paginator = Paginator(filtered, 100)
+    paginator = Paginator(qs, 100)
     try:
         iobjs = paginator.page(page)
     except PageNotAnInteger:
@@ -119,7 +119,7 @@ def campaign_page(request, slug):
     return render(request, 'froide_campaign/campaign.html', {
         'campaign_page': campaign_page,
         'object_list': iobjs,
-        'filtered': filtered,
+        'filtered': filterset,
         'getvars': '&' + no_page_query.urlencode(),  # pagination
         'total_count': total_count,
         'done_count': done_count,
