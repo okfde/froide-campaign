@@ -19,7 +19,7 @@ def index(request):
     })
 
 
-def filter_status(qs, status):
+def filter_status(qs, name, status):
     if status:
         if status == '0':
             qs = qs.filter(foirequest__isnull=True, resolved=False)
@@ -42,7 +42,7 @@ class InformationObjectFilterSet(django_filters.FilterSet):
         (3, _('Information already public')),
     )
     q = django_filters.CharFilter(method='filter_query')
-    page = django_filters.NumberFilter(method=lambda x, y: x,
+    page = django_filters.NumberFilter(method=lambda x, y, z: x,
                                        widget=forms.HiddenInput)
 
     status = django_filters.ChoiceFilter(
@@ -72,7 +72,7 @@ class InformationObjectFilterSet(django_filters.FilterSet):
     def filter_campaign(self, queryset, name, value):
         return queryset.filter(campaign=value)
 
-    def filter_query(self, queryset, value):
+    def filter_query(self, queryset, name, value):
         return queryset.filter(Q(title__icontains=value) |
                                Q(ident__icontains=value))
 
