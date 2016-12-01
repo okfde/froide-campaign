@@ -42,13 +42,13 @@ class InformationObjectFilterSet(django_filters.FilterSet):
         (2, _('Resolved request')),
         (3, _('Information already public')),
     )
-    q = django_filters.MethodFilter(action='filter_query')
-    page = django_filters.NumberFilter(action=lambda x, y: x,
+    q = django_filters.CharFilter(method='filter_query')
+    page = django_filters.NumberFilter(method=lambda x, y: x,
                                        widget=forms.HiddenInput)
 
     status = django_filters.ChoiceFilter(
             choices=STATUS_CHOICES,
-            action=filter_status,
+            method=filter_status,
             widget=django_filters.widgets.LinkWidget)
 
     o = django_filters.OrderingFilter(
@@ -98,6 +98,7 @@ def campaign_page(request, slug):
     qs = qs.select_related('campaign')
 
     filtered = InformationObjectFilterSet(request.GET, queryset=qs, campaigns=campaigns)
+    filtered = filtered.qs
 
     if request.GET.get('random'):
         filtered = qs.filter(foirequest__isnull=True).order_by('?')
