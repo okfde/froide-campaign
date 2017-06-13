@@ -10,7 +10,7 @@
     {% if object.foirequest %}
       <a href="{{ object.foirequest.get_absolute_url }}">
     {% endif %}
-    {{ object.title }}
+    {{ object.get_description }}
     {% if object.foirequest %}
       </a>
     {% endif %}

@@ -22,14 +22,14 @@
   <td>
     {% if object.foirequest %}
       <a href="{{ object.foirequest.get_absolute_url }}">
-        {{ object.title }}
+        {{ object.get_description }}
       </a>
     {% elif object.resolved %}
       {% if object.resolution_link %}
         <a href="{{ object.resolution_link }}">
       {% endif %}
 
-      {{ object.title }}
+      {{ object.get_description }}
 
       {% if object.resolution_link %}
         </a>
@@ -38,7 +38,7 @@
         <p>{{ object.resolution_text }}</p>
       {% endif %}
     {% else %}
-      {{ object.title }}
+      {{ object.get_description }}
     {% endif %}
     {% with documents=object.documents.all %}
       {% if documents %}

@@ -6,6 +6,7 @@ except ImportError:
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
 from django.utils.http import urlquote
@@ -67,6 +68,11 @@ class Campaign(models.Model):
     def __str__(self):
         return self.title
 
+    def get_description_template(self):
+        if self.description:
+            return Template(self.description)
+        return Template('{{ title }}')
+
     def get_subject_template(self):
         if self.subject_template:
             return Template(self.subject_template)
@@ -106,6 +112,19 @@ class InformationObject(models.Model):
     def __str__(self):
         return self.title
 
+    def get_context(self):
+        return Context({
+            'title': self.title,
+            'ident': self.ident,
+            'context': self.context,
+            'publicbody': self.publicbody
+        })
+
+    def get_description(self):
+        template = self.campaign.get_description_template()
+        context = self.get_context()
+        return mark_safe(template.render(context))
+
     def get_search_url(self):
         return self.campaign.search_url.format(
             title=urlquote(self.title),
@@ -116,11 +135,7 @@ class InformationObject(models.Model):
         if self.publicbody is None:
             return None
         pb_slug = self.publicbody.slug
-        context = Context({
-            'title': self.title,
-            'ident': self.ident,
-            'context': self.context
-        })
+        context = self.get_context()
         url = reverse('foirequest-make_request', kwargs={'public_body': pb_slug})
         subject = self.campaign.get_subject_template().render(context)
         if len(subject) > 250:
