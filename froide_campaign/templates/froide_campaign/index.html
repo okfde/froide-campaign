@@ -6,9 +6,9 @@
 {% block main %}
 <h2>{% trans "Current Campaigns" %}</h2>
 <ul>
-{% for campaign in campaigns %}
+{% for campaign_page in campaign_pages %}
   <li>
-    <a href="{{ campaign.get_absolute_url }}">{{ campaign.title }}</a>
+    <a href="{{ campaign_page.get_absolute_url }}">{{ campaign_page.title }}</a>
   </li>
 {% endfor %}
 </ul>

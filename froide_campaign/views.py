@@ -15,7 +15,7 @@ from .models import CampaignPage, InformationObject
 @cache_anonymous_page(15 * 60)
 def index(request):
     return render(request, 'froide_campaign/index.html', {
-        'campaigns': CampaignPage.objects.filter(public=True),
+        'campaign_pages': CampaignPage.objects.filter(public=True),
     })
 
 
