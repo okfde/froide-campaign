@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext_lazy as _
 from django.http import QueryDict
-from django.db.models import Q
 from django import forms
 
 import django_filters
