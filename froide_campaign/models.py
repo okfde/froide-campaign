@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import functools
 try:
     from urllib.parse import urlencode
 except ImportError:
@@ -12,9 +13,38 @@ from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.postgres.fields import JSONField
+from django.contrib.postgres.search import (SearchVectorField, SearchVector,
+        SearchVectorExact, SearchQuery)
 
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
+
+
+class SearchVectorStartsWith(SearchVectorExact):
+    """This lookup scans for full text index entries that BEGIN with
+    a given phrase, like:
+    will get translated to
+        ts_query('Foobar:* & Baz:* & Quux:*')
+    """
+    lookup_name = 'startswith'
+
+    def process_rhs(self, qn, connection):
+        if not hasattr(self.rhs, 'resolve_expression'):
+            config = getattr(self.lhs, 'config', None)
+            self.rhs = SearchQuery(self.rhs, config=config)
+        rhs, rhs_params = super(SearchVectorExact, self).process_rhs(qn, connection)
+        rhs = '(to_tsquery(%s::regconfig, %s))'
+        rhs_params[1] = ' & '.join('%s:*' % s for s in rhs_params[1].split())
+        return rhs, rhs_params
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s @@ %s' % (lhs, rhs), params
+
+
+SearchVectorField.register_lookup(SearchVectorStartsWith)
 
 
 @python_2_unicode_compatible
@@ -81,6 +111,32 @@ class Campaign(models.Model):
         return Template(self.template)
 
 
+class InformationObjectManager(models.Manager):
+
+    SEARCH_LANG = 'simple'
+
+    def get_search_vector(self):
+        fields = [
+            ('title', 'A'),
+            ('search_text', 'A'),
+        ]
+        return functools.reduce(lambda a, b: a + b,
+            [SearchVector(f, weight=w, config=self.SEARCH_LANG) for f, w in fields])
+
+    def update_search_index(self):
+        for iobj in InformationObject.objects.all():
+            iobj.search_text = iobj.get_search_text()
+            iobj.save()
+
+        InformationObject.objects.update(search_vector=self.get_search_vector())
+
+    def search(self, qs, query):
+        if query:
+            query = SearchQuery(query, config=self.SEARCH_LANG)
+            qs = qs.filter(search_vector__startswith=query)
+        return qs
+
+
 @python_2_unicode_compatible
 class InformationObject(models.Model):
     campaign = models.ForeignKey(Campaign)
@@ -102,6 +158,11 @@ class InformationObject(models.Model):
     resolution_link = models.CharField(max_length=255, blank=True)
 
     documents = models.ManyToManyField(FoiAttachment, blank=True)
+
+    search_text = models.TextField(blank=True)
+    search_vector = SearchVectorField(default='')
+
+    objects = InformationObjectManager()
 
     class Meta:
         ordering = ('-ordering', 'title')
@@ -129,6 +190,9 @@ class InformationObject(models.Model):
             title=urlquote(self.title),
             ident=urlquote(self.ident)
         )
+
+    def get_search_text(self):
+        return ' '.join([self.publicbody.name] + list(self.context.values()))
 
     def make_request_url(self):
         if self.publicbody is None:

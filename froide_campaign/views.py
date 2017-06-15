@@ -73,8 +73,7 @@ class InformationObjectFilterSet(django_filters.FilterSet):
         return queryset.filter(campaign=value)
 
     def filter_query(self, queryset, name, value):
-        return queryset.filter(Q(title__icontains=value) |
-                               Q(ident__icontains=value))
+        return InformationObject.objects.search(queryset, value)
 
 
 @cache_anonymous_page(15 * 60)
