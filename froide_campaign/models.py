@@ -11,8 +11,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
-
-from jsonfield import JSONField
+from django.contrib.postgres.fields import JSONField
 
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
