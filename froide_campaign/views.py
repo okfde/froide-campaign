@@ -94,9 +94,14 @@ def campaign_page(request, slug):
 
     qs = qs.select_related('campaign')
 
-    filterset = InformationObjectFilterSet(request.GET, queryset=qs, campaigns=campaigns)
+    cleaned_query = QueryDict(request.GET.urlencode().encode('utf-8'),
+                              mutable=True)
+    random_qs = cleaned_query.pop('random', None)
 
-    if request.GET.get('random'):
+    filterset = InformationObjectFilterSet(cleaned_query, queryset=qs,
+                                           campaigns=campaigns)
+
+    if random_qs:
         qs = qs.filter(foirequest__isnull=True).order_by('?')
     else:
         qs = filterset.qs
@@ -110,19 +115,20 @@ def campaign_page(request, slug):
     except EmptyPage:
         iobjs = paginator.page(paginator.num_pages)
 
-    no_page_query = QueryDict(request.GET.urlencode().encode('utf-8'),
-                              mutable=True)
-    no_page_query.pop('page', None)
+    getvars_complete = cleaned_query.urlencode()
+
+    cleaned_query.pop('page', None)
+    getvars = cleaned_query.urlencode()
 
     return render(request, 'froide_campaign/campaign.html', {
         'campaign_page': campaign_page,
         'object_list': iobjs,
         'filtered': filterset,
-        'getvars': '&' + no_page_query.urlencode(),  # pagination
+        'getvars': '&' + getvars,  # pagination
         'total_count': total_count,
         'done_count': done_count,
         'pending_count': pending_count,
-        'getvars_complete': request.GET.urlencode(),
+        'getvars_complete': getvars_complete,
         'progress_pending': 0 if total_count == 0 else str(
                 round(pending_count / float(total_count) * 100, 1)),
         'progress_done': 0 if total_count == 0 else str(
