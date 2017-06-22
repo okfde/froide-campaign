@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-20 12:45+0200\n"
+"POT-Creation-Date: 2017-06-22 12:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,27 +37,27 @@ msgstr ""
 msgid "Froide Campaign App"
 msgstr ""
 
-#: models.py:31
+#: models.py:62
 msgid "Campaign page"
 msgstr ""
 
-#: models.py:32
+#: models.py:63
 msgid "Campaign pages"
 msgstr ""
 
-#: models.py:64
+#: models.py:97
 msgid "Campaign"
 msgstr ""
 
-#: models.py:65
+#: models.py:98
 msgid "Campaigns"
 msgstr ""
 
-#: models.py:103
+#: models.py:172
 msgid "Information object"
 msgstr ""
 
-#: models.py:104
+#: models.py:173
 msgid "Information objects"
 msgstr ""
 
@@ -65,16 +65,20 @@ msgstr ""
 msgid "Upload information objects as CSV"
 msgstr ""
 
-#: templates/froide_campaign/_info_object.html:11 views.py:43
+#: templates/froide_campaign/_info_object.html:16 views.py:41
 msgid "Information already public"
 msgstr ""
 
-#: templates/froide_campaign/_info_object.html:15
+#: templates/froide_campaign/_info_object.html:19
+msgid "Campaign currently suspended"
+msgstr ""
+
+#: templates/froide_campaign/_info_object.html:24
 #, python-format
 msgid "Request %(name)s"
 msgstr ""
 
-#: templates/froide_campaign/_info_object.html:17
+#: templates/froide_campaign/_info_object.html:26
 msgid "Make request"
 msgstr ""
 
@@ -101,11 +105,11 @@ msgstr ""
 msgid "Random"
 msgstr ""
 
-#: templates/froide_campaign/campaign.html:56
+#: templates/froide_campaign/campaign.html:57
 msgid "Filter by status"
 msgstr ""
 
-#: templates/froide_campaign/campaign.html:59
+#: templates/froide_campaign/campaign.html:60
 msgid "Filter by type"
 msgstr ""
 
@@ -113,18 +117,14 @@ msgstr ""
 msgid "Current Campaigns"
 msgstr ""
 
-#: views.py:39
-msgid "All"
-msgstr ""
-
-#: views.py:40
+#: views.py:38
 msgid "No request yet"
 msgstr ""
 
-#: views.py:41
+#: views.py:39
 msgid "Pending request"
 msgstr ""
 
-#: views.py:42
+#: views.py:40
 msgid "Resolved request"
 msgstr ""
