@@ -89,6 +89,8 @@ class Campaign(models.Model):
     template = models.TextField(blank=True)
 
     requires_foi = models.BooleanField(default=True)
+    paused = models.BooleanField(default=False)
+
     search_url = models.CharField(max_length=1024, blank=True)
 
     class Meta:
