@@ -4,61 +4,69 @@
 
 <tr>
   <td>
-    {% if object.foirequest %}
-      <a href="{{ object.foirequest.get_absolute_url }}">
-        {{ object.foirequest.readable_status }}
-        {% if object.campaign.category %}
-          – {{ object.campaign.category }}
-        {% endif %}
-      </a>
-    {% elif object.resolved %}
-      {% trans "Information already public" %}
-    {% else %}
-      <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
-        {% if object.campaign.category %}
-          {% blocktrans with name=object.campaign.category %}Request {{ name }}{% endblocktrans %}
-        {% else %}
-          {% trans "Make request" %}
-        {% endif %}
-      </a>
-    {% endif %}
-
-    {% if object.foirequest and request.user.is_authenticated and request.user != object.foirequest.user %}
-      {% follow_request_form object.foirequest request.user follow_only=True verbose=False %}
-    {% endif %}
-  </td>
-  <td>
-    {% if object.foirequest %}
-      {{ object.get_description }}
-    {% elif object.resolved %}
-      {% if object.resolution_link %}
-        <a href="{{ object.resolution_link }}">
-      {% endif %}
-
-      {{ object.get_description }}
-
-      {% if object.resolution_link %}
+    {% block action_column %}
+      {% if object.foirequest %}
+        <a href="{{ object.foirequest.get_absolute_url }}">
+          {{ object.foirequest.readable_status }}
+          {% if object.campaign.category %}
+            – {{ object.campaign.category }}
+          {% endif %}
+        </a>
+      {% elif object.resolved %}
+        {% trans "Information already public" %}
+      {% elif object.campaign.paused %}
+        <span class="btn btn-default" disabled="disabled">
+          {% trans "Campaign currently suspended" %}
+        </span>
+      {% else %}
+        <a class="btn btn-primary" href="{{ object.make_request_url }}&amp;redirect={{ campaign_url|urlencode }}{{ "?"|urlencode }}{{ getvars_complete|urlencode }}">
+          {% if object.campaign.category %}
+            {% blocktrans with name=object.campaign.category %}Request {{ name }}{% endblocktrans %}
+          {% else %}
+            {% trans "Make request" %}
+          {% endif %}
         </a>
       {% endif %}
-      {% if object.resolution_text %}
-        <p>{{ object.resolution_text }}</p>
+
+      {% if object.foirequest and request.user.is_authenticated and request.user != object.foirequest.user %}
+        {% follow_request_form object.foirequest request.user follow_only=True verbose=False %}
       {% endif %}
-    {% else %}
-      {{ object.get_description }}
-    {% endif %}
-    {% with documents=object.documents.all %}
-      {% if documents %}
-        <ul>
-        {% for attachment in documents %}
-          <li>
-            <a href="{{ attachment.get_absolute_url }}" title="{{ object.title }}">
-              <span class="glyphicon glyphicon-paperclip"></span>
-              {{ attachment.name|truncatechars:20 }}
-            </a>
-          </li>
-        {% endfor %}
-        </ul>
+    {% endblock %}
+  </td>
+  <td>
+    {% block description_column %}
+      {% if object.foirequest %}
+        {{ object.get_description }}
+      {% elif object.resolved %}
+        {% if object.resolution_link %}
+          <a href="{{ object.resolution_link }}">
+        {% endif %}
+
+        {{ object.get_description }}
+
+        {% if object.resolution_link %}
+          </a>
+        {% endif %}
+        {% if object.resolution_text %}
+          <p>{{ object.resolution_text }}</p>
+        {% endif %}
+      {% else %}
+        {{ object.get_description }}
       {% endif %}
-    {% endwith %}
+      {% with documents=object.documents.all %}
+        {% if documents %}
+          <ul>
+          {% for attachment in documents %}
+            <li>
+              <a href="{{ attachment.get_absolute_url }}" title="{{ object.title }}">
+                <span class="glyphicon glyphicon-paperclip"></span>
+                {{ attachment.name|truncatechars:20 }}
+              </a>
+            </li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    {% endblock %}
   </td>
 </tr>
