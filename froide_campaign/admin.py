@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 import unicodecsv
 
 from froide.helper.admin_utils import make_nullfilter
+from froide.helper.csv_utils import export_csv_response
 
 from .models import CampaignPage, Campaign, InformationObject
 from .utils import CSVImporter
@@ -34,7 +35,7 @@ class InformationObjectAdmin(admin.ModelAdmin):
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
 
-    actions = ['clean_requests']
+    actions = ['clean_requests', 'export_csv']
 
     def get_urls(self):
         urls = super(InformationObjectAdmin, self).get_urls()
@@ -44,6 +45,11 @@ class InformationObjectAdmin(admin.ModelAdmin):
                 name='froide_campaign-admin_upload'),
         ]
         return my_urls + urls
+
+    def export_csv(self, request, queryset):
+        queryset = queryset.select_related('foirequest', 'publicbody')
+        return export_csv_response(InformationObject.objects.export_csv(queryset))
+    export_csv.short_description = _("Export to CSV")
 
     def upload_information_objects(self, request):
         if not request.method == 'POST':

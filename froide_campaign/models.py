@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 import functools
+import json
 try:
     from urllib.parse import urlencode
 except ImportError:
@@ -18,6 +19,7 @@ from django.contrib.postgres.search import (SearchVectorField, SearchVector,
 
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
+from froide.helper.csv_utils import export_csv
 
 
 class SearchVectorStartsWith(SearchVectorExact):
@@ -139,6 +141,15 @@ class InformationObjectManager(models.Manager):
             qs = qs.filter(search_vector__startswith=query)
         return qs
 
+    def export_csv(self, queryset):
+        fields = ["id", "campaign_id", "ident", "title",
+            "slug", "publicbody", "foirequest_id",
+            "foirequest__status", "foirequest__resolution",
+            "foirequest__first_message", "resolved", "context_as_json"
+        ]
+
+        return export_csv(queryset, fields)
+
 
 @python_2_unicode_compatible
 class InformationObject(models.Model):
@@ -182,6 +193,10 @@ class InformationObject(models.Model):
             'context': self.context,
             'publicbody': self.publicbody
         })
+
+    @property
+    def context_as_json(self):
+        return json.dumps(self.context)
 
     def get_description(self):
         template = self.campaign.get_description_template()
