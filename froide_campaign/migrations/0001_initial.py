@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import jsonfield.fields
 
 
@@ -30,10 +31,10 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=1000)),
                 ('slug', models.SlugField()),
                 ('context', jsonfield.fields.JSONField()),
-                ('campaign', models.ForeignKey(to='froide_campaign.Campaign')),
+                ('campaign', models.ForeignKey(to='froide_campaign.Campaign', on_delete=django.db.models.deletion.CASCADE)),
                 ('documents', models.ManyToManyField(to='foirequest.FoiAttachment')),
-                ('foirequest', models.ForeignKey(to='foirequest.FoiRequest', null=True)),
-                ('publicbody', models.ForeignKey(to='publicbody.PublicBody', null=True)),
+                ('foirequest', models.ForeignKey(to='foirequest.FoiRequest', null=True, on_delete=django.db.models.deletion.SET_NULL)),
+                ('publicbody', models.ForeignKey(to='publicbody.PublicBody', null=True, on_delete=django.db.models.deletion.SET_NULL)),
             ],
         ),
     ]

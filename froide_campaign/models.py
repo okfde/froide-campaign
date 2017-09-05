@@ -153,7 +153,7 @@ class InformationObjectManager(models.Manager):
 
 @python_2_unicode_compatible
 class InformationObject(models.Model):
-    campaign = models.ForeignKey(Campaign)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
     ident = models.CharField(max_length=255)
     title = models.CharField(max_length=1000)

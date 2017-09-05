@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 import jsonfield.fields
 
 
@@ -39,11 +40,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='informationobject',
             name='foirequest',
-            field=models.ForeignKey(blank=True, to='foirequest.FoiRequest', null=True),
+            field=models.ForeignKey(blank=True, to='foirequest.FoiRequest', null=True, on_delete=django.db.models.deletion.SET_NULL),
         ),
         migrations.AlterField(
             model_name='informationobject',
             name='publicbody',
-            field=models.ForeignKey(blank=True, to='publicbody.PublicBody', null=True),
+            field=models.ForeignKey(blank=True, to='publicbody.PublicBody', null=True, on_delete=django.db.models.deletion.SET_NULL),
         ),
     ]
