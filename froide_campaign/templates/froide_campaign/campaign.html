@@ -45,15 +45,21 @@
     <div class="input-group">
      <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
      <span class="input-group-btn">
-       <button class="btn btn-default" type="submit">{% trans "Search" %}</button>
-       <button class="btn btn-default" name="random" value="1" type="submit">{% trans "Random" %}</button>
+       <button class="btn btn-success" type="submit">
+         <i class="fa fa-search" aria-hidden="true"></i>
+         {% trans "Search" %}
+       </button>
+       <button class="btn btn-secondary" name="random" value="1" type="submit">
+         <i class="fa fa-random" aria-hidden="true"></i>
+         {% trans "Random" %}
+       </button>
      </span>
     </div>
   </div>
 </div>
 </form>
 <div class="row">
-  <div class="col-lg-3 col-lg-push-9 col-md-4 col-md-push-8">
+  <div class="col-lg-3 order-2 col-md-4">
     <h3>{% trans "Filter by status" %}</h3>
       {{ filtered.form.status}}
 
@@ -62,7 +68,7 @@
 
     {{ filtered.form.page }}
   </div>
-  <div class="col-lg-9 col-lg-pull-3 col-md-8 col-md-pull-4">
+  <div class="col-lg-9  order-1 col-md-8">
     <div class="table-responsive">
       <table class="table">
         <thead>
