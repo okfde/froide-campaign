@@ -216,7 +216,7 @@ class InformationObject(models.Model):
             return None
         pb_slug = self.publicbody.slug
         context = self.get_context()
-        url = reverse('foirequest-make_request', kwargs={'public_body': pb_slug})
+        url = reverse('foirequest-make_request', kwargs={'publicbody_slug': pb_slug})
         subject = self.campaign.get_subject_template().render(context)
         if len(subject) > 250:
             subject = subject[:250] + '...'
