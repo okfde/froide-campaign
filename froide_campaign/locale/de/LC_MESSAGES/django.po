@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-22 12:08+0200\n"
-"PO-Revision-Date: 2017-06-22 12:11+0100\n"
+"POT-Creation-Date: 2018-02-01 19:36+0100\n"
+"PO-Revision-Date: 2018-02-01 19:38+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.org>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,47 +18,63 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.5\n"
 
-#: admin.py:30
+#: admin.py:31
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:31
+#: admin.py:32
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:32
+#: admin.py:33
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:72
+#: admin.py:52
+msgid "Export to CSV"
+msgstr "Export nach CSV"
+
+#: admin.py:78
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
-#: apps.py:8
+#: apps.py:9
 msgid "Froide Campaign App"
 msgstr "Froide Kampagnen-App"
 
-#: models.py:62
+#: apps.py:26 templates/froide_campaign/list_campaign_page.html:8
+msgid "Your campaigns"
+msgstr "Deine Kamapgnen"
+
+#: models.py:75
+msgid "User"
+msgstr "Nutzer"
+
+#: models.py:79
+msgid "Team"
+msgstr "Team"
+
+#: models.py:91
 msgid "Campaign page"
 msgstr "Kampagnenseite"
 
-#: models.py:63
+#: models.py:92
 msgid "Campaign pages"
 msgstr "Kampagnenseiten"
 
-#: models.py:97
+#: models.py:151
 msgid "Campaign"
 msgstr "Kampagne"
 
-#: models.py:98
+#: models.py:152
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models.py:172
+#: models.py:237
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models.py:173
+#: models.py:238
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
@@ -66,7 +82,7 @@ msgstr "Informationsobjekte"
 msgid "Upload information objects as CSV"
 msgstr "Informationsobjekte als CSV hochladen"
 
-#: templates/froide_campaign/_info_object.html:16 views.py:41
+#: templates/froide_campaign/_info_object.html:16 views.py:51
 msgid "Information already public"
 msgstr "Information schon öffentlich"
 
@@ -98,35 +114,88 @@ msgid "Pending"
 msgstr "Laufend"
 
 #: templates/froide_campaign/campaign.html:46
-#: templates/froide_campaign/campaign.html:48
+#: templates/froide_campaign/campaign.html:50
+#: templates/froide_campaign/embed.html:25
 msgid "Search"
 msgstr "Suchen"
 
-#: templates/froide_campaign/campaign.html:49
+#: templates/froide_campaign/campaign.html:54
 msgid "Random"
 msgstr "Zufall"
 
-#: templates/froide_campaign/campaign.html:57
+#: templates/froide_campaign/campaign.html:63
 msgid "Filter by status"
 msgstr "Filtern nach Zustand"
 
-#: templates/froide_campaign/campaign.html:60
+#: templates/froide_campaign/campaign.html:66
 msgid "Filter by type"
 msgstr "Filtern nach Typ"
+
+#: templates/froide_campaign/edit_campaign_page.html:28
+msgid "Update iframe"
+msgstr "Iframe akualisieren"
+
+#: templates/froide_campaign/edit_campaign_page.html:30
+msgid "Make iframe"
+msgstr "Iframe erstellen"
+
+#: templates/froide_campaign/edit_campaign_page.html:38
+msgid "Assign team to campaign page"
+msgstr "Weise Team zur Kampagnenseite zu"
+
+#: templates/froide_campaign/edit_campaign_page.html:39
+msgid "Set team for campaign page"
+msgstr "Team an Kampagnenseite zuweisen"
+
+#: templates/froide_campaign/embed.html:22
+msgid "topic"
+msgstr "Thema"
+
+#: templates/froide_campaign/embed.html:44
+#: templates/froide_campaign/embed.html:87
+msgid "Request this"
+msgstr "Anfragen"
+
+#: templates/froide_campaign/embed.html:53
+msgid "Show me other requests I can make"
+msgstr "Zeige mir drei neue Anfragen"
+
+#: templates/froide_campaign/embed.html:65
+#, python-format
+msgid ""
+"\n"
+"                  %(pending)s of %(total)s requests\n"
+"                "
+msgstr ""
+"\n"
+"                  %(pending)s von %(total)s Anfragen\n"
+"                "
+
+#: templates/froide_campaign/embed.html:88
+msgid "No search results or no requests left!"
+msgstr "Keine Suchergebnisse oder keine Anfragen übrig!"
+
+#: templates/froide_campaign/embed.html:89
+msgid "No requests left!"
+msgstr "Keine Anfragen übrig!"
 
 #: templates/froide_campaign/index.html:7
 msgid "Current Campaigns"
 msgstr "Aktuelle Kampagnen"
 
-#: views.py:38
+#: templates/froide_campaign/list_campaign_page.html:17
+msgid "Change"
+msgstr "Ändern"
+
+#: views.py:48
 msgid "No request yet"
 msgstr "Noch keine Anfrage"
 
-#: views.py:39
+#: views.py:49
 msgid "Pending request"
 msgstr "Anfrage läuft"
 
-#: views.py:40
+#: views.py:50
 msgid "Resolved request"
 msgstr "Anfrage abgeschlossen"
 
