@@ -24,6 +24,8 @@ class InformationObjectSerializer(serializers.HyperlinkedModelSerializer):
         )
 
     def get_publicbody_name(self, obj):
+        if obj.publicbody is None:
+            return ''
         return obj.publicbody.name
 
 
@@ -44,6 +46,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
             raise Http404
 
         qs = InformationObject.objects.filter(
+            publicbody__isnull=False,
             campaign_id__in=campaign_ids, foirequest__isnull=True
         ).select_related('campaign', 'publicbody').order_by('?')
         qs = qs[:self.RANDOM_COUNT]
@@ -63,6 +66,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
             return Response([])
 
         qs = InformationObject.objects.filter(
+            publicbody__isnull=False,
             campaign_id__in=campaign_ids, foirequest__isnull=True
         )
         qs = InformationObject.objects.search(qs, query)
