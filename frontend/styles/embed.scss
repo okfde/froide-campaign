@@ -1,0 +1,63 @@
+// Bootstrap imports
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/input-group";
+@import "bootstrap/scss/progress";
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.btn {
+  white-space: normal;
+}
+
+.embed-container {
+  margin: 1rem 2rem;
+}
+
+.request-container {
+  background-color: $gray-100;
+  padding: 1rem 2rem;
+}
+
+.search-box {
+  margin: 1rem 0 2rem;
+}
+
+.requests-loading {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+
+.more-button {
+  margin: 2rem 0 1rem;
+}
+
+.progress-section {
+  margin: 2rem 0 0;
+}
+
+.progress-label {
+  text-align: right;
+  color: $gray-500;
+}
+
+.request-row:not(:last-child) {
+  border-bottom: 2px solid white;
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.credits {
+  margin-top: -2rem;
+}
