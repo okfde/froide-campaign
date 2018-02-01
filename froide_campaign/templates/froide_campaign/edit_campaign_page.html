@@ -1,0 +1,44 @@
+{% extends "froide_campaign/base.html" %}
+
+{% load i18n %}
+{% load campaign_tags %}
+
+{% block main %}
+
+  <h2>{{ object.title }}</h2>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="iframe-container" style="outline: 1px dashed gray;">
+        {{ object.get_edit_iframe }}
+      </div>
+      {% script_tag "campaign/js/campaignembed_outer.js" %}
+    </div>
+    <div class="col-lg-4">
+      <h3>iframe settings</h3>
+
+      {% if object.embed %}
+      <textarea style="width:100%" readonly>{{ object.get_embed_iframe }}{% script_tag "campaign/js/campaignembed_outer.js" %}</textarea>
+      {% endif %}
+
+      <form action="{% url 'campaign-updated_embed' slug=object.slug %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+          {% if embed %}
+            {% trans "Update iframe" %}
+          {% else %}
+            {% trans "Make iframe" %}
+          {% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {% if team_form %}
+    {% trans "Assign team to campaign page" as legend %}
+    {% trans "Set team for campaign page" as submit_button %}
+    {% url 'campaign-set_team' slug=object.slug as submit_url %}
+    {% include "team/_assign_team_form.html" with object=object form=team_form submit_url=submit_url legend=legend submit_button=submit_button %}
+  {% endif %}
+
+{% endblock %}

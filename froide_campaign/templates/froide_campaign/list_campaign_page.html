@@ -1,0 +1,23 @@
+{% extends "froide_campaign/base.html" %}
+
+{% load i18n %}
+{% load static from staticfiles %}
+
+{% block main %}
+
+  <h2>{% trans "Your campaigns" %}</h2>
+
+  <ul>
+  {% for campaign_page in object_list %}
+    <li>
+      <a href="{{ campaign_page.get_absolute_url }}">
+        {{ campaign_page.title }}
+      </a> -
+      <a href="{% url 'campaign-edit' slug=campaign_page.slug %}">
+        {% trans "Change" %}
+      </a>
+    </li>
+  {% endfor %}
+  </ul>
+
+{% endblock %}

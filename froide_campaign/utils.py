@@ -1,6 +1,8 @@
 import logging
 
+from django.core.files.base import ContentFile
 from django.template.defaultfilters import slugify
+from django.template.loader import render_to_string
 
 from froide.publicbody.models import PublicBody
 
@@ -21,7 +23,8 @@ class CSVImporter(object):
     def import_csv_line(self, line):
         campaign_slug = line.pop('campaign')
         if campaign_slug not in self.campaign_cache:
-            self.campaign_cache[campaign_slug] = Campaign.objects.get(slug=campaign_slug)
+            campaign = Campaign.objects.get(slug=campaign_slug)
+            self.campaign_cache[campaign_slug] = campaign
         campaign = self.campaign_cache[campaign_slug]
 
         title = line.pop('title')
@@ -65,3 +68,11 @@ class CSVImporter(object):
             ordering=ordering,
             context=line
         )
+
+
+def make_embed(embed_file, template, context):
+    context.update({
+        'build': True
+    })
+    output = render_to_string(template, context=context)
+    embed_file.save('embed.html', ContentFile(output))

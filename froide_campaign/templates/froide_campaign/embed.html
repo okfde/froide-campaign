@@ -1,0 +1,105 @@
+{% load i18n staticfiles %}{% load campaign_tags %}<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{ object.title }}</title>
+    <base href="{{ SITE_URL }}" target="_parent">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!--[if IE 8]><script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.6.0/ie8.js"></script><![endif]-->
+    {% if build %}
+      <style media="screen">
+        {% output_static 'campaign/css/campaignembed.css' %}
+      </style>
+    {% else %}
+      <link href="{% static 'campaign/css/campaignembed.css' %}" rel="stylesheet">
+    {% endif %}
+  </head>
+  <body>
+    <div class="embed-container">
+      <div class="search-box">
+        <form id="searchform">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="{% trans 'topic' %}" aria-label="Search" id="search-input" autocomplete="off">
+            <div class="input-group-append">
+              <button class="btn btn-primary" type="submit">
+                {% trans "Search" %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="request-container">
+      <div id="request-list">
+        {% for iobj in object_list %}
+          <div class="row request-row">
+            <div class="col-9">
+              <h6>
+                {{ iobj.title }}<br/>
+                <small>{{ iobj.publicbody.name }}</small>
+              </h6>
+            </div>
+            <div class="col mr-auto">
+              <a href="{{ iobj.make_request_url }}" rel="noopener" class="btn btn-primary btn-block">
+                {% trans "Request this" %}
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="row more-button">
+        <div class="col-12">
+          <button class="btn btn-outline-primary btn-sm" onclick="Froide.getRandom()" id="load-more">
+            {% trans "Show me other requests I can make" %}
+          </button>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: {{ progress_pending }}%" aria-valuenow="{{ progress_pending }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <p class="progress-label">
+              <small>
+                {% blocktrans with total=total_count pending=pending_count %}
+                  {{ pending }} of {{ total }} requests
+                {% endblocktrans %}
+              </small>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="credits">
+        <div style="width: 100px">
+          {% output_static "img/logo/logo.svg" %}
+        </div>
+        <small>
+          <a href="{{ SITE_URL }}">
+            FragDenstaat.de
+          </a>
+        </small>
+      </div>
+    </div>
+    <script type="text/javascript">
+      window.Froide = window.Froide || {}
+      window.Froide.i18n = window.Froide.i18n || {}
+      window.Froide.i18n.requestThis = '{% trans "Request this" %}'
+      window.Froide.i18n.noResults = '{% trans "No search results or no requests left!" %}'
+      window.Froide.i18n.noRequestLeft = '{% trans "No requests left!" %}'
+      window.Froide.urls = window.Froide.urls || {}
+      window.Froide.urls.campaigninformationobjectRandom = '/api/v1/campaigninformationobject/random/'
+  window.Froide.urls.campaigninformationobjectSearch = '/api/v1/campaigninformationobject/search/'
+      window.Froide.campaignPageId = '{{ object.id }}'
+      window.Froide.campaignIds = [{% for campaign in object.campaigns.all %}'{{ campaign.id }}'{% if not forloop.last %},{% endif %}{% endfor %}]
+    </script>
+    {% if build %}
+      <script type="text/javascript">
+        {% output_static 'campaign/js/campaignembed.js' %}
+      </script>
+    {% else %}
+      <script src="{% static 'campaign/js/campaignembed.js' %}" charset="utf-8"></script>
+    {% endif %}
+
+  </body>
+</html>
