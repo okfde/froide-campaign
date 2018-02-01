@@ -18,19 +18,5 @@
     {% if object.foirequest %}
       {{ object.foirequest.readable_status }}
     {% endif %}
-    {% with documents=object.documents.all %}
-      {% if documents %}
-        <ul>
-        {% for attachment in documents %}
-          <li>
-            <a href="{{ attachment.get_absolute_url }}" title="{{ object.title }}">
-              <span class="glyphicon glyphicon-paperclip"></span>
-              {{ attachment.name|truncatechars:20 }}
-            </a>
-          </li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
   </td>
 </tr>
