@@ -7,7 +7,7 @@
 {% block extra_head %}
   {{ block.super }}
   {% if not campaign_page.requires_foi %}
-    <link rel="stylesheet" href="{% static "css/confetti.css" %}">
+    <link rel="stylesheet" href="{% static "campaign/css/confetti.css" %}">
   {% endif %}
   <style>
     ul > li > a.selected {
@@ -96,7 +96,7 @@
 {% block scripts %}
   {{ block.super }}
   {% if not campaign_page.requires_foi %}
-    <script type="text/javascript" src="{% static "js/jquery.confetti.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "campaign/js/jquery.confetti.min.js" %}"></script>
     <script>
     $(function(){
       $('html').click(function(e){
