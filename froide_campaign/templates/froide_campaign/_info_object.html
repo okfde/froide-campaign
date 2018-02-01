@@ -29,7 +29,7 @@
       {% endif %}
 
       {% if object.foirequest and request.user.is_authenticated and request.user != object.foirequest.user %}
-        {% follow_request_form object.foirequest request.user follow_only=True verbose=False %}
+        {% follow_request_form object.foirequest request follow_only=True verbose=False %}
       {% endif %}
     {% endblock %}
   </td>
