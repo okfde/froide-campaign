@@ -6,20 +6,25 @@ try:
 except ImportError:
     from urllib import urlencode
 
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
 from django.utils.http import urlquote
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.search import (SearchVectorField, SearchVector,
-        SearchVectorExact, SearchQuery)
+                                            SearchVectorExact, SearchQuery)
 
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
+from froide.team.models import Team
 from froide.helper.csv_utils import export_csv
+
+from .storage import OverwriteStorage
 
 
 class SearchVectorStartsWith(SearchVectorExact):
@@ -34,7 +39,9 @@ class SearchVectorStartsWith(SearchVectorExact):
         if not hasattr(self.rhs, 'resolve_expression'):
             config = getattr(self.lhs, 'config', None)
             self.rhs = SearchQuery(self.rhs, config=config)
-        rhs, rhs_params = super(SearchVectorExact, self).process_rhs(qn, connection)
+        rhs, rhs_params = super(SearchVectorExact, self).process_rhs(
+            qn, connection
+        )
         rhs = '(to_tsquery(%s::regconfig, %s))'
         parts = (s.replace("'", '') for s in rhs_params[1].split())
         rhs_params[1] = ' & '.join("'%s':*" % s for s in parts if s)
@@ -50,6 +57,10 @@ class SearchVectorStartsWith(SearchVectorExact):
 SearchVectorField.register_lookup(SearchVectorStartsWith)
 
 
+def get_embed_path(instance, filename):
+    return 'campaign/page/embed/{0}/index.html'.format(instance.slug)
+
+
 @python_2_unicode_compatible
 class CampaignPage(models.Model):
     title = models.CharField(max_length=255)
@@ -58,11 +69,30 @@ class CampaignPage(models.Model):
     description = models.TextField(blank=True)
     public = models.BooleanField(default=False)
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("User")
+    )
+    team = models.ForeignKey(
+        Team, null=True, blank=True,
+        on_delete=models.SET_NULL, verbose_name=_("Team")
+    )
+
+    settings = JSONField(default=dict)
+    embed = models.FileField(
+        blank=True, upload_to=get_embed_path,
+        storage=OverwriteStorage()
+    )
+
     campaigns = models.ManyToManyField('Campaign')
 
     class Meta:
         verbose_name = _('Campaign page')
         verbose_name_plural = _('Campaign pages')
+        permissions = (
+            ("can_use_campaigns", _("Can use campaigns")),
+        )
 
     def __str__(self):
         return self.title
@@ -70,9 +100,35 @@ class CampaignPage(models.Model):
     def get_absolute_url(self):
         return reverse('campaign-page', kwargs={'slug': self.slug})
 
+    def get_absolute_domain_embed_url(self):
+        return settings.SITE_URL + reverse('campaign-embed', kwargs={
+            'slug': self.slug
+        })
+
+    def get_edit_iframe(self, url=None):
+        if url is None:
+            url = self.get_absolute_domain_embed_url()
+        return format_html(
+            '<iframe src="{}" class="froide-campaign" '
+            'id="froide-campaign-{}" style="width:100%" '
+            'frameborder="0"></iframe>',
+            url,
+            str(self.id)
+        )
+
+    def get_embed_iframe(self):
+        if not self.embed:
+            return ''
+        url = settings.SITE_URL + self.embed.url
+        return self.get_edit_iframe(url)
+
     @property
     def requires_foi(self):
         return all(c.requires_foi for c in self.campaigns.all())
+
+    def is_public(self):
+        # necessary for auth can_read_object
+        return self.public
 
 
 @python_2_unicode_compatible
@@ -124,15 +180,16 @@ class InformationObjectManager(models.Manager):
             ('title', 'A'),
             ('search_text', 'A'),
         ]
-        return functools.reduce(lambda a, b: a + b,
-            [SearchVector(f, weight=w, config=self.SEARCH_LANG) for f, w in fields])
+        return functools.reduce(lambda a, b: a + b, [
+            SearchVector(
+                f, weight=w, config=self.SEARCH_LANG) for f, w in fields])
 
     def update_search_index(self):
         for iobj in InformationObject.objects.all():
             iobj.search_text = iobj.get_search_text()
             iobj.save()
-
-        InformationObject.objects.update(search_vector=self.get_search_vector())
+        search_vector = self.get_search_vector()
+        InformationObject.objects.update(search_vector=search_vector)
 
     def search(self, qs, query):
         if query:
@@ -141,7 +198,8 @@ class InformationObjectManager(models.Manager):
         return qs
 
     def export_csv(self, queryset):
-        fields = ["id", "campaign_id", "ident", "title",
+        fields = [
+            "id", "campaign_id", "ident", "title",
             "slug", "publicbody", "foirequest_id",
             "foirequest__status", "foirequest__resolution",
             "foirequest__first_message", "resolved", "context_as_json"
@@ -164,7 +222,7 @@ class InformationObject(models.Model):
     publicbody = models.ForeignKey(PublicBody, null=True, blank=True,
                                    on_delete=models.SET_NULL)
     foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
-                                    on_delete=models.SET_NULL)
+                                   on_delete=models.SET_NULL)
 
     resolved = models.BooleanField(default=False)
     resolution_text = models.TextField(blank=True)
@@ -216,13 +274,23 @@ class InformationObject(models.Model):
             return None
         pb_slug = self.publicbody.slug
         context = self.get_context()
-        url = reverse('foirequest-make_request', kwargs={'publicbody_slug': pb_slug})
+        url = reverse('foirequest-make_request', kwargs={
+            'publicbody_slug': pb_slug
+        })
         subject = self.campaign.get_subject_template().render(context)
         if len(subject) > 250:
             subject = subject[:250] + '...'
-        query = urlencode({
+        body = self.campaign.get_template().render(context).encode('utf-8')
+        ref = ('campaign:%s@%s' % (self.campaign.pk, self.pk)).encode('utf-8')
+        query = {
             'subject': subject.encode('utf-8'),
-            'body': self.campaign.get_template().render(context).encode('utf-8'),
-            'ref': ('campaign:%s@%s' % (self.campaign.pk, self.pk)).encode('utf-8')
-        })
+            'body': body,
+            'ref': ref
+        }
+        hide_features = (
+            'hide_public', 'hide_full_text', 'hide_similar', 'hide_publicbody',
+            'hide_draft'
+        )
+        query.update({f: b'1' for f in hide_features})
+        query = urlencode(query)
         return '%s?%s' % (url, query)
