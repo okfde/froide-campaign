@@ -18,6 +18,7 @@ from .utils import CSVImporter
 
 class CampaignPageAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
+    raw_id_fields = ('user', 'team')
 
 
 class CampaignAdmin(admin.ModelAdmin):
@@ -26,11 +27,12 @@ class CampaignAdmin(admin.ModelAdmin):
 
 class InformationObjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'ident', 'campaign', 'publicbody', 'foirequest',)
-    list_filter = ('campaign', 'foirequest__status', 'foirequest__resolution',
-                    'resolved',
-                    make_nullfilter('foirequest', _(u'Has request')),
-                    make_nullfilter('documents', _(u'Has documents')),
-                    make_nullfilter('publicbody', _(u'Has public body'))
+    list_filter = (
+        'campaign', 'foirequest__status', 'foirequest__resolution',
+        'resolved',
+        make_nullfilter('foirequest', _(u'Has request')),
+        make_nullfilter('documents', _(u'Has documents')),
+        make_nullfilter('publicbody', _(u'Has public body'))
     )
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
@@ -48,7 +50,8 @@ class InformationObjectAdmin(admin.ModelAdmin):
 
     def export_csv(self, request, queryset):
         queryset = queryset.select_related('foirequest', 'publicbody')
-        return export_csv_response(InformationObject.objects.export_csv(queryset))
+        csv_generator = InformationObject.objects.export_csv(queryset)
+        return export_csv_response(csv_generator)
     export_csv.short_description = _("Export to CSV")
 
     def upload_information_objects(self, request):
