@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-01 19:36+0100\n"
-"PO-Revision-Date: 2018-02-01 20:18+0100\n"
+"POT-Creation-Date: 2018-03-29 18:01+0200\n"
+"PO-Revision-Date: 2018-03-29 18:01+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.org>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.7.5\n"
 
-#: admin.py:31
+#: admin.py:33
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:32
+#: admin.py:34
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:33
+#: admin.py:35
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:52
+#: admin.py:55
 msgid "Export to CSV"
 msgstr "Export nach CSV"
 
-#: admin.py:78
+#: admin.py:81
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
@@ -44,7 +44,7 @@ msgstr "Froide Kampagnen-App"
 
 #: apps.py:26 templates/froide_campaign/list_campaign_page.html:8
 msgid "Your campaigns"
-msgstr "Ihre Kamapgnen"
+msgstr "Ihre Kamaganen"
 
 #: models.py:75
 msgid "User"
@@ -62,19 +62,23 @@ msgstr "Kampagnenseite"
 msgid "Campaign pages"
 msgstr "Kampagnenseiten"
 
-#: models.py:151
+#: models.py:94
+msgid "Can use campaigns"
+msgstr "Ihre Kampagnen"
+
+#: models.py:154
 msgid "Campaign"
 msgstr "Kampagne"
 
-#: models.py:152
+#: models.py:155
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models.py:237
+#: models.py:240
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models.py:238
+#: models.py:241
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
