@@ -200,7 +200,7 @@ class InformationObjectManager(models.Manager):
     def export_csv(self, queryset):
         fields = [
             "id", "campaign_id", "ident", "title",
-            "slug", "publicbody", "foirequest_id",
+            "slug", "publicbody_id", "foirequest_id",
             "foirequest__status", "foirequest__resolution",
             "foirequest__first_message", "resolved", "context_as_json"
         ]
