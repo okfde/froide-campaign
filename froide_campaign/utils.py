@@ -34,9 +34,6 @@ class CSVImporter(object):
                 self.campaign_cache[campaign_id] = campaign
             campaign = self.campaign_cache[campaign_id]
 
-
-        campaign = self.campaign_cache[campaign_slug]
-
         title = line.pop('title')
         slug = line.pop('slug', slugify(title))
         slug = slug[:255]
