@@ -37,7 +37,7 @@ class InformationObjectAdmin(admin.ModelAdmin):
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
 
-    actions = ['clean_requests', 'export_csv']
+    actions = ['clean_requests', 'resolve_requests', 'export_csv']
 
     def get_urls(self):
         urls = super(InformationObjectAdmin, self).get_urls()
@@ -63,6 +63,19 @@ class InformationObjectAdmin(admin.ModelAdmin):
         importer = CSVImporter()
         importer.run(reader)
         return redirect('admin:froide_campaign_informationobject_changelist')
+
+    def resolve_requests(self, request, queryset):
+        queryset = queryset.filter(foirequest__isnull=False)
+        queryset = queryset.select_related('foirequest')
+        for iobj in queryset:
+            if iobj.foirequest is None:
+                continue
+            iobj.foirequest.status = 'resolved'
+            iobj.foirequest.resolution = 'successful'
+            iobj.foirequest.save()
+        return None
+    resolve_requests.short_description = _("Mark requests as "
+                                           "successfully resolved")
 
     def clean_requests(self, request, queryset):
         queryset = queryset.filter(foirequest__isnull=False)
