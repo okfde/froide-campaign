@@ -79,7 +79,7 @@ class CampaignPage(models.Model):
         on_delete=models.SET_NULL, verbose_name=_("Team")
     )
 
-    settings = JSONField(default=dict)
+    settings = JSONField(default=dict, blank=True)
     embed = models.FileField(
         blank=True, upload_to=get_embed_path,
         storage=OverwriteStorage()
