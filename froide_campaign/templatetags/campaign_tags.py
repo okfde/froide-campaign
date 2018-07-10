@@ -36,7 +36,9 @@ def output_static(path):
 
 @register.simple_tag
 def script_tag(path):
-    url = settings.SITE_URL + static(path)
+    url = static(path)
+    if not url.startswith('http'):
+        url = settings.SITE_URL + url
     filepath = finders.find(path)
     sri = subresource_integrity(filepath)
     return mark_safe(

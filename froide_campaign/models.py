@@ -119,7 +119,9 @@ class CampaignPage(models.Model):
     def get_embed_iframe(self):
         if not self.embed:
             return ''
-        url = settings.SITE_URL + self.embed.url
+        url = self.embed.url
+        if not url.startswith('http'):
+            url = settings.SITE_URL + url
         return self.get_edit_iframe(url)
 
     @property
