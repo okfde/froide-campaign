@@ -40,7 +40,7 @@
               </h6>
             </div>
             <div class="col mr-auto">
-              <a href="{{ iobj.make_request_url }}" rel="noopener" class="btn btn-primary btn-block">
+              <a href="{{ iobj.make_domain_request_url }}" rel="noopener" class="btn btn-primary btn-block">
                 {% trans "Request this" %}
               </a>
             </div>
@@ -88,8 +88,8 @@
       window.Froide.i18n.noResults = '{% trans "No search results or no requests left!" %}'
       window.Froide.i18n.noRequestLeft = '{% trans "No requests left!" %}'
       window.Froide.urls = window.Froide.urls || {}
-      window.Froide.urls.campaigninformationobjectRandom = '/api/v1/campaigninformationobject/random/'
-  window.Froide.urls.campaigninformationobjectSearch = '/api/v1/campaigninformationobject/search/'
+      window.Froide.urls.campaigninformationobjectRandom = '{{ SITE_URL }}/api/v1/campaigninformationobject/random/'
+  window.Froide.urls.campaigninformationobjectSearch = '{{ SITE_URL }}/api/v1/campaigninformationobject/search/'
       window.Froide.campaignPageId = '{{ object.id }}'
       window.Froide.campaignIds = [{% for campaign in object.campaigns.all %}'{{ campaign.id }}'{% if not forloop.last %},{% endif %}{% endfor %}]
     </script>

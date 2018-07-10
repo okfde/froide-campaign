@@ -296,3 +296,6 @@ class InformationObject(models.Model):
         query.update({f: b'1' for f in hide_features})
         query = urlencode(query)
         return '%s?%s' % (url, query)
+
+    def make_domain_request_url(self):
+        return settings.SITE_URL + self.make_request_url()

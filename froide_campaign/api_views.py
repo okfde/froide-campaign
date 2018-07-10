@@ -9,7 +9,7 @@ from .models import InformationObject
 
 
 class InformationObjectSerializer(serializers.HyperlinkedModelSerializer):
-    request_url = serializers.CharField(source='make_request_url')
+    request_url = serializers.CharField(source='make_domain_request_url')
     publicbody_name = serializers.SerializerMethodField(
         source='get_publicbody_name'
     )
