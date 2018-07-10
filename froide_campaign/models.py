@@ -110,7 +110,7 @@ class CampaignPage(models.Model):
             url = self.get_absolute_domain_embed_url()
         return format_html(
             '<iframe src="{}" class="froide-campaign" '
-            'id="froide-campaign-{}" style="width:100%" '
+            'id="froide-campaign-{}" style="width:100%;border:0" '
             'frameborder="0"></iframe>',
             url,
             str(self.id)
