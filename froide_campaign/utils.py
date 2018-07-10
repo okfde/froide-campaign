@@ -3,6 +3,7 @@ import logging
 from django.core.files.base import ContentFile
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+from django.conf import settings
 
 from froide.publicbody.models import PublicBody
 
@@ -76,7 +77,8 @@ class CSVImporter(object):
 
 def make_embed(embed_file, template, context):
     context.update({
-        'build': True
+        'build': True,
+        'SITE_URL': settings.SITE_URL
     })
     output = render_to_string(template, context=context)
     embed_file.save('embed.html', ContentFile(output))
