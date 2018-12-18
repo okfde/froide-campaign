@@ -28,5 +28,5 @@ urlpatterns = [
 api_router.register(
     r'campaigninformationobject',
     InformationObjectViewSet,
-    base_name='campaigninformationobject'
+    basename='campaigninformationobject'
 )

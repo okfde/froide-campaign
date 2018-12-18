@@ -3,7 +3,7 @@ from django.shortcuts import Http404
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import list_route
+from rest_framework.decorators import action
 
 from .models import InformationObject
 
@@ -37,7 +37,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return InformationObject.objects.none()
 
-    @list_route(methods=['get'])
+    @action(detail=False,methods=['get'])
     def random(self, request):
         campaign_ids = request.GET.getlist('campaign')
         try:
@@ -53,7 +53,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=['get'])
+    @action(detail=False, methods=['get'])
     def search(self, request):
         campaign_ids = request.GET.getlist('campaign')
         try:
