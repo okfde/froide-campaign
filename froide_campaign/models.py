@@ -1,16 +1,11 @@
-# -*- encoding: utf-8 -*-
 import functools
 import json
-try:
-    from urllib.parse import urlencode
-except ImportError:
-    from urllib import urlencode
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.encoding import python_2_unicode_compatible
 from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.html import format_html
@@ -61,7 +56,6 @@ def get_embed_path(instance, filename):
     return 'campaign/page/embed/{0}/index.html'.format(instance.slug)
 
 
-@python_2_unicode_compatible
 class CampaignPage(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
@@ -133,7 +127,6 @@ class CampaignPage(models.Model):
         return self.public
 
 
-@python_2_unicode_compatible
 class Campaign(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
@@ -210,7 +203,6 @@ class InformationObjectManager(models.Manager):
         return export_csv(queryset, fields)
 
 
-@python_2_unicode_compatible
 class InformationObject(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
