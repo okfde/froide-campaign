@@ -17,8 +17,10 @@ class FroideCampaignConfig(AppConfig):
 
         from froide.account.menu import menu_registry, MenuItem
         from froide.account.export import registry
+        from froide.account import account_merged
 
         registry.register(export_user_data)
+        account_merged.connect(merge_user)
 
         @menu_registry.register
         def get_campaign_menu_item(request):
@@ -29,6 +31,13 @@ class FroideCampaignConfig(AppConfig):
                 url=reverse('campaign-list'),
                 label=_('Your campaigns')
             )
+
+
+def merge_user(sender, old_user=None, new_user=None, **kwargs):
+    from froide.account.utils import move_ownership
+    from .models import CampaignPage
+
+    move_ownership(CampaignPage, 'user', old_user, new_user)
 
 
 def export_user_data(user):
@@ -74,5 +83,5 @@ def export_user_data(user):
                 'resolution_text': i.resolution_text,
                 'resolution_link': i.resolution_link,
             }
-            for p in campaign_pages]).encode('utf-8')
+            for i in campaign_pages]).encode('utf-8')
         )
