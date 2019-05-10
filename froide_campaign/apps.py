@@ -83,5 +83,5 @@ def export_user_data(user):
                 'resolution_text': i.resolution_text,
                 'resolution_link': i.resolution_link,
             }
-            for i in campaign_pages]).encode('utf-8')
+            for i in iobjs]).encode('utf-8')
         )
