@@ -263,7 +263,9 @@ class InformationObject(models.Model):
         )
 
     def get_search_text(self):
-        return ' '.join([self.publicbody.name if self.publicbody else ''] + list(self.context.values())).strip()
+        return ' '.join([
+            self.publicbody.name if self.publicbody else ''
+            ] + list(self.context.values())).strip()
 
     def make_request_url(self):
         if self.publicbody is None:
