@@ -5,6 +5,6 @@
     var iframeId = e.data[0];
     var iframe = document.getElementById(iframeId);
     var data      = e.data[2];
-    iframe.height = data + 'px';
+    iframe.style.height = data + 'px';
   }, false)
 }())
