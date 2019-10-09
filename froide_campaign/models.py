@@ -285,7 +285,7 @@ class InformationObject(models.Model):
         }
         hide_features = (
             'hide_public', 'hide_full_text', 'hide_similar', 'hide_publicbody',
-            'hide_draft'
+            'hide_draft', 'hide_editing'
         )
         query.update({f: b'1' for f in hide_features})
         query = urlencode(query)
