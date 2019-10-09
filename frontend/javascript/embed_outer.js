@@ -1,6 +1,6 @@
 (function(){
   window.addEventListener("message", function(e) {
-    if (e.origin !== "https://media.fragdenstaat.de" && e.origin !== "https://fragdenstaat.de" && e.origin !== "http://localhost:8000") {return;}
+    if (e.origin !== "https://media.frag-den-staat.de" && e.origin !== "https://fragdenstaat.de" && e.origin !== "http://localhost:8000") {return;}
 
     var iframeId = e.data[0];
     var iframe = document.getElementById(iframeId);
