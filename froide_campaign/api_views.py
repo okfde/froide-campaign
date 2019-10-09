@@ -37,7 +37,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return InformationObject.objects.none()
 
-    @action(detail=False,methods=['get'])
+    @action(detail=False, methods=['get'])
     def random(self, request):
         campaign_ids = request.GET.getlist('campaign')
         try:

@@ -179,8 +179,10 @@ class InformationObjectManager(models.Manager):
             SearchVector(
                 f, weight=w, config=self.SEARCH_LANG) for f, w in fields])
 
-    def update_search_index(self):
-        for iobj in InformationObject.objects.all():
+    def update_search_index(self, qs=None):
+        if qs is None:
+            qs = InformationObject.objects.all()
+        for iobj in qs:
             iobj.search_text = iobj.get_search_text()
             iobj.save()
         search_vector = self.get_search_vector()
@@ -261,7 +263,7 @@ class InformationObject(models.Model):
         )
 
     def get_search_text(self):
-        return ' '.join([self.publicbody.name] + list(self.context.values()))
+        return ' '.join([self.publicbody.name if self.publicbody else ''] + list(self.context.values())).strip()
 
     def make_request_url(self):
         if self.publicbody is None:

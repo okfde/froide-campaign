@@ -37,7 +37,7 @@ class InformationObjectAdmin(admin.ModelAdmin):
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
 
-    actions = ['clean_requests', 'resolve_requests', 'export_csv']
+    actions = ['clean_requests', 'resolve_requests', 'export_csv', 'update_search_index']
 
     def get_urls(self):
         urls = super(InformationObjectAdmin, self).get_urls()
@@ -53,6 +53,9 @@ class InformationObjectAdmin(admin.ModelAdmin):
         csv_generator = InformationObject.objects.export_csv(queryset)
         return export_csv_response(csv_generator)
     export_csv.short_description = _("Export to CSV")
+
+    def update_search_index(self, request, queryset):
+        InformationObject.objects.update_search_index(qs=queryset)
 
     def upload_information_objects(self, request):
         if not request.method == 'POST':
