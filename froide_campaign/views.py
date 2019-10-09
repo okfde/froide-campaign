@@ -186,7 +186,7 @@ class CampaignPageListView(AuthRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super(CampaignPageListView, self).get_queryset()
-        return get_user_queryset(qs, self.request)
+        return get_user_queryset(qs, self.request, has_team=True)
 
 
 class CampaignPageEditView(AuthRequiredMixin, DetailView):
