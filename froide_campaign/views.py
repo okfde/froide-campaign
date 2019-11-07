@@ -15,7 +15,7 @@ from froide.team.views import AssignTeamView
 
 from froide.helper.cache import cache_anonymous_page
 from froide.helper.auth import (can_read_object, can_manage_object,
-                                can_access_object, get_user_queryset)
+                                can_access_object, get_read_queryset)
 
 from .models import CampaignPage, InformationObject
 from .utils import make_embed
@@ -186,7 +186,7 @@ class CampaignPageListView(AuthRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = super(CampaignPageListView, self).get_queryset()
-        return get_user_queryset(qs, self.request, has_team=True)
+        return get_read_queryset(qs, self.request, has_team=True)
 
 
 class CampaignPageEditView(AuthRequiredMixin, DetailView):
