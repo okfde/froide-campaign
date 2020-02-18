@@ -29,7 +29,7 @@ class FroideCampaignConfig(AppConfig):
             return MenuItem(
                 section='before_settings', order=10,
                 url=reverse('campaign-list'),
-                label=_('Your campaigns')
+                label=_('My campaigns')
             )
 
 
