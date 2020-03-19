@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-18 18:23+0100\n"
-"PO-Revision-Date: 2020-02-18 18:24+0100\n"
+"POT-Creation-Date: 2020-03-19 18:13+0100\n"
+"PO-Revision-Date: 2020-03-19 18:14+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -50,39 +50,43 @@ msgstr "Froide Kampagnen-App"
 msgid "My campaigns"
 msgstr "Meine Kampagnen"
 
-#: models.py:69
-msgid "User"
-msgstr "Nutzer"
-
-#: models.py:73
-msgid "Team"
-msgstr "Team"
-
-#: models.py:85
-msgid "Campaign page"
-msgstr "Kampagnenseite"
-
-#: models.py:86
-msgid "Campaign pages"
-msgstr "Kampagnenseiten"
-
-#: models.py:88
-msgid "Can use campaigns"
-msgstr "Ihre Kampagnen"
-
-#: models.py:149
+#: cms_plugins.py:11 models.py:154
 msgid "Campaign"
 msgstr "Kampagne"
 
-#: models.py:150
+#: cms_plugins.py:12
+msgid "Campaign Requests"
+msgstr "Kampagnen-Anfragen"
+
+#: models.py:74
+msgid "User"
+msgstr "Nutzer"
+
+#: models.py:78
+msgid "Team"
+msgstr "Team"
+
+#: models.py:90
+msgid "Campaign page"
+msgstr "Kampagnenseite"
+
+#: models.py:91
+msgid "Campaign pages"
+msgstr "Kampagnenseiten"
+
+#: models.py:93
+msgid "Can use campaigns"
+msgstr "Ihre Kampagnen"
+
+#: models.py:155
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models.py:236
+#: models.py:241
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models.py:237
+#: models.py:242
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
@@ -198,6 +202,10 @@ msgstr "Ihre Kampagnen"
 #: templates/froide_campaign/list_campaign_page.html:17
 msgid "Change"
 msgstr "Ändern"
+
+#: templates/froide_campaign/plugins/campaign_requests.html:18
+msgid "Go to request"
+msgstr "Zur Anfrage"
 
 #: views.py:48
 msgid "No request yet"
