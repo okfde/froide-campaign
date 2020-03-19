@@ -14,6 +14,11 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.search import (SearchVectorField, SearchVector,
                                             SearchVectorExact, SearchQuery)
 
+try:
+    from cms.models.pluginmodel import CMSPlugin
+except ImportError:
+    CMSPlugin = None
+
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
 from froide.team.models import Team
@@ -295,3 +300,15 @@ class InformationObject(models.Model):
 
     def make_domain_request_url(self):
         return settings.SITE_URL + self.make_request_url()
+
+
+if CMSPlugin is not None:
+
+    class CampaignRequestsCMSPlugin(CMSPlugin):
+        campaign_page = models.ForeignKey(
+            CampaignPage, related_name='+',
+            on_delete=models.CASCADE
+        )
+
+        def __str__(self):
+            return str(self.campaign_page)
