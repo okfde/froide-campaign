@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, Http404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.http import QueryDict
 from django import forms
 
