@@ -30,9 +30,9 @@ class InformationObjectAdmin(admin.ModelAdmin):
     list_filter = (
         'campaign', 'foirequest__status', 'foirequest__resolution',
         'resolved',
-        make_nullfilter('foirequest', _(u'Has request')),
-        make_nullfilter('documents', _(u'Has documents')),
-        make_nullfilter('publicbody', _(u'Has public body'))
+        make_nullfilter('foirequest', _('Has request')),
+        make_nullfilter('documents', _('Has documents')),
+        make_nullfilter('publicbody', _('Has public body'))
     )
     raw_id_fields = ('publicbody', 'foirequest', 'documents')
     search_fields = ('title', 'ident')
