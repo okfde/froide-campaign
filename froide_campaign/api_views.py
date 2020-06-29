@@ -65,9 +65,15 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
         if not query:
             return Response([])
 
+        filters = {}
+        if not request.GET.get('has_request'):
+            filters = {
+                'foirequest__isnull': True
+            }
+
         qs = InformationObject.objects.filter(
             publicbody__isnull=False,
-            campaign_id__in=campaign_ids, foirequest__isnull=True
+            campaign_id__in=campaign_ids, **filters
         )
         qs = InformationObject.objects.search(qs, query)
         qs = qs.select_related('campaign', 'publicbody')
