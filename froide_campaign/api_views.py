@@ -14,13 +14,15 @@ class InformationObjectSerializer(serializers.HyperlinkedModelSerializer):
         source='get_publicbody_name'
     )
     description = serializers.CharField(source='get_description')
+    foirequest = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
 
         model = InformationObject
         fields = (
             'title', 'request_url',
-            'description', 'publicbody_name'
+            'description', 'publicbody_name',
+            'foirequest'
         )
 
     def get_publicbody_name(self, obj):
