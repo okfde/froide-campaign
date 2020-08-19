@@ -320,3 +320,12 @@ if CMSPlugin is not None:
 
         def __str__(self):
             return str(self.campaign_page)
+
+    class CampaignCMSPlugin(CMSPlugin):
+        campaign = models.ForeignKey(
+            Campaign, related_name='+',
+            on_delete=models.CASCADE
+        )
+
+        def __str__(self):
+            return str(self.campaign)
