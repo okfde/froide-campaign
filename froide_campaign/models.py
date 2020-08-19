@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.template import Template, Context
@@ -308,6 +309,11 @@ class InformationObject(models.Model):
 
     def make_domain_request_url(self):
         return settings.SITE_URL + self.make_request_url()
+
+
+    def get_froirequest_url(self):
+        if self.foirequest:
+            return self.foirequest.get_absolute_url()
 
 
 if CMSPlugin is not None:
