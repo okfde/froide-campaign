@@ -234,6 +234,8 @@ class InformationObject(models.Model):
     search_text = models.TextField(blank=True)
     search_vector = SearchVectorField(default='')
 
+    geo = gis_models.PointField(null=True, blank=True, geography=True)
+
     objects = InformationObjectManager()
 
     class Meta:
@@ -260,6 +262,12 @@ class InformationObject(models.Model):
         template = self.campaign.get_description_template()
         context = self.get_context()
         return mark_safe(template.render(context))
+
+    def get_latitude(self):
+        return self.geo.x
+
+    def get_longitude(self):
+        return self.geo.y
 
     def get_search_url(self):
         return self.campaign.search_url.format(
