@@ -20,6 +20,6 @@ class Command(BaseCommand):
 
         filename = options['filename']
 
-        reader = unicodecsv.DictReader(open(filename))
+        reader = unicodecsv.DictReader(open(filename, 'rb'))
         importer = CSVImporter()
         importer.run(reader)
