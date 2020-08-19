@@ -1,0 +1,13 @@
+{% load static %}
+{% load sekizai_tags %}
+
+<campaign-map
+    id="campaign-map-component"
+    :config="{{ config }}"
+    >
+</campaign-map>
+
+{% addtoblock 'js' %}
+  <script src="{% static 'js/common.js' %}" charset="utf-8"></script>
+  <script src="{% static 'js/campaign_map.js' %}" charset="utf-8"></script>
+{% endaddtoblock %}
