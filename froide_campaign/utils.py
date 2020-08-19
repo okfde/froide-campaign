@@ -1,6 +1,7 @@
 import logging
 
 from django.core.files.base import ContentFile
+from django.contrib.gis.geos import Point
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -64,6 +65,12 @@ class CSVImporter(object):
             iobj.save()
             return iobj
 
+        point = None
+        if 'lat' in line and 'lng' in line:
+            lat = float(line.pop('lat'))
+            lng = float(line.pop('lng'))
+            point = Point(lat, lng)
+
         return InformationObject.objects.create(
             campaign=campaign,
             title=title,
@@ -71,7 +78,8 @@ class CSVImporter(object):
             publicbody=pb,
             ident=slug[:255],
             ordering=ordering,
-            context=line
+            context=line,
+            geo=point
         )
 
 
