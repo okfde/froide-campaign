@@ -38,13 +38,18 @@ class InformationObjectLocationSerializer(InformationObjectSerializer):
     lat = serializers.FloatField(source='get_latitude')
     lng = serializers.FloatField(source='get_longitude')
     foirequest = serializers.CharField(source='get_froirequest_url')
+    foirequests = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='slug'
+     )
 
     class Meta:
 
         model = InformationObject
         fields = (
             'id', 'title', 'request_url',
-            'description', 'publicbody_name',
+            'description', 'publicbody_name', 'foirequests',
             'foirequest', 'lat', 'lng'
         )
 
@@ -87,8 +92,9 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
 
         requested = request.GET.get('requested')
         if requested and requested == '1':
-            qs = qs.filter(foirequest__isnull=False)
+            qs = qs.filter(foirequests__isnull=False)
 
+        '''
         radius = 10000
         try:
             radius = int(request.GET.get('radius'))
@@ -104,6 +110,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
 
         if point and radius:
             qs = qs.filter(geo__distance_lt=(point, Distance(km=radius)))
+        '''
 
 
         serializer = InformationObjectLocationSerializer(qs, many=True)
@@ -119,7 +126,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
 
         qs = InformationObject.objects.filter(
             publicbody__isnull=False,
-            campaign_id__in=campaign_ids, foirequest__isnull=True
+            campaign_id__in=campaign_ids, foirequests__isnull=True
         ).select_related('campaign', 'publicbody').order_by('?')
         qs = qs[:self.RANDOM_COUNT]
         serializer = self.get_serializer(qs, many=True)
@@ -140,7 +147,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
         filters = {}
         if not request.GET.get('has_request'):
             filters = {
-                'foirequest__isnull': True
+                'foirequests__isnull': True
             }
 
         qs = InformationObject.objects.filter(
