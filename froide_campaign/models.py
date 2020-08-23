@@ -225,6 +225,8 @@ class InformationObject(models.Model):
                                    on_delete=models.SET_NULL)
     foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
                                    on_delete=models.SET_NULL)
+    foirequests = models.ManyToManyField(FoiRequest, blank=True,
+                                         related_name='information_objects')
 
     resolved = models.BooleanField(default=False)
     resolution_text = models.TextField(blank=True)
