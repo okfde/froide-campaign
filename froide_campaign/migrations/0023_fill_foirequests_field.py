@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 def fill_foirequests_field(apps, schema_editor):
     InformationObject = apps.get_model('froide_campaign', 'InformationObject')
     for information_object in InformationObject.objects.all():
