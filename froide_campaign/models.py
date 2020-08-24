@@ -151,6 +151,13 @@ class Campaign(models.Model):
 
     search_url = models.CharField(max_length=1024, blank=True)
 
+    provider = models.CharField(
+        max_length=40,
+        choices=settings.CAMPAIGN_PROVIDERS,
+        blank=True
+    )
+    provider_kwargs = JSONField(default=dict, blank=True)
+
     class Meta:
         verbose_name = _('Campaign')
         verbose_name_plural = _('Campaigns')
