@@ -34,7 +34,9 @@ class InformationObjectAdmin(admin.ModelAdmin):
         make_nullfilter('documents', _('Has documents')),
         make_nullfilter('publicbody', _('Has public body'))
     )
-    raw_id_fields = ('publicbody', 'foirequest', 'documents')
+    raw_id_fields = (
+        'publicbody', 'foirequest', 'foirequests', 'documents'
+    )
     search_fields = ('title', 'ident')
 
     actions = ['clean_requests', 'resolve_requests', 'export_csv', 'update_search_index']
