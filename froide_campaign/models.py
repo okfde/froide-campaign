@@ -133,6 +133,11 @@ class CampaignPage(models.Model):
         return self.public
 
 
+class CampaignManager(models.Manager):
+    def get_public(self):
+        return self.filter(public=True)
+
+
 class Campaign(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField()
@@ -158,6 +163,8 @@ class Campaign(models.Model):
     )
     provider_kwargs = JSONField(default=dict, blank=True)
 
+    objects = CampaignManager()
+
     class Meta:
         verbose_name = _('Campaign')
         verbose_name_plural = _('Campaigns')
@@ -177,6 +184,11 @@ class Campaign(models.Model):
 
     def get_template(self):
         return Template(self.template)
+
+    def get_provider(self):
+        from .providers import get_provider
+
+        return get_provider(self, self.provider, self.provider_kwargs)
 
 
 class InformationObjectManager(models.Manager):
@@ -291,8 +303,6 @@ class InformationObject(models.Model):
             ] + list(self.context.values())).strip()
 
     def make_request_url(self):
-        if self.publicbody is None:
-            return None
         pb_slug = self.publicbody.slug
         context = self.get_context()
         url = reverse('foirequest-make_request', kwargs={
