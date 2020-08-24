@@ -1,14 +1,14 @@
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import Distance
 
-from django.shortcuts import Http404
+from django.shortcuts import Http404, get_object_or_404
 
 from rest_framework import serializers
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
-from .models import InformationObject
+from .models import Campaign, InformationObject
 
 
 class InformationObjectSerializer(serializers.HyperlinkedModelSerializer):
@@ -134,29 +134,26 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=False, methods=['get'])
     def search(self, request):
-        campaign_ids = request.GET.getlist('campaign')
-        try:
-            campaign_ids = [int(x) for x in campaign_ids]
-        except ValueError:
-            raise Http404
-
-        query = request.GET.get('q')
-        if not query:
-            return Response([])
-
-        filters = {}
-        if not request.GET.get('has_request'):
-            filters = {
-                'foirequests__isnull': True
-            }
-
-        qs = InformationObject.objects.filter(
-            publicbody__isnull=False,
-            campaign_id__in=campaign_ids, **filters
+        campaign_id = request.GET.get('campaign')
+        campaign = get_object_or_404(
+            Campaign.objects.get_public(),
+            id=campaign_id
         )
 
-        qs = InformationObject.objects.search(qs, query)
-        qs = qs.select_related('campaign', 'publicbody')
-        qs = qs[:self.SEARCH_COUNT]
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
+        provider = campaign.get_provider()
+        filters = {
+            'q': request.GET.get('q', ''),
+            'requested': bool(request.GET.get('requested'))
+        }
+
+        # TODO: geocode
+        # location / coordinates
+        # if location is not None:
+        #     location_search = True
+        #     point, formatted_address = geocode(location, address=False)
+        # elif coordinates is not None:
+        #     point = Point(coordinates[1], coordinates[0])
+
+
+        data = provider.search(**filters)
+        return Response(data)
