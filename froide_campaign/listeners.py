@@ -35,14 +35,14 @@ def connect_info_object(sender, **kwargs):
     except InformationObject.DoesNotExist:
         return
 
-    if iobj.foirequest is not None:
-        return
-
     if iobj.publicbody != sender.public_body:
         return
 
     if not sender.public:
         return
 
-    iobj.foirequest = sender
+    if iobj.foirequest is None:
+        iobj.foirequest = sender
+
+    iobj.foirequests.add(sender)
     iobj.save()
