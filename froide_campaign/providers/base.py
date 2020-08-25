@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from django.urls import reverse
 
 from ..models import InformationObject
-from ..api_views import InformationObjectSerializer
+from .serializers import CampaignProviderItemSerializer
 
 
 LIMIT = 50
@@ -16,7 +16,7 @@ class BaseProvider:
         self.kwargs = kwargs
 
     def limit(self, qs):
-        return qs[:self.kwargs('limit', LIMIT)]
+        return qs[:self.kwargs.get('limit', LIMIT)]
 
     def search(self, *args, **kwargs):
         iobjs = InformationObject.objects.filter(
@@ -32,14 +32,26 @@ class BaseProvider:
         # FIXME apply paginator instead of limit
         iobjs = self.limit(iobjs)
 
-        serializer = InformationObjectSerializer(
-            iobjs, many=True
+        # TODO: remove foirequest
+        data = [{
+            'title': iobj.title,
+            'request_url': iobj.make_domain_request_url(),
+            'publicbody_name': self.get_publicbody_name(iobj),
+            'description': iobj.get_description(),
+            'lat': iobj.get_latitude,
+            'lng': iobj.get_longitude,
+            'foirequest': iobj.foirequest.id if iobj.foirequest else None,
+            'foirequests': iobj.foirequests.all().values_list('id', flat=True)
+        } for iobj in iobjs]
+
+        serializer = CampaignProviderItemSerializer(
+            data, many=True
         )
         return serializer.data
 
     def detail(self, ident):
         iobj = self._get_iobj()
-        serializer = InformationObjectSerializer(iobj)
+        serializer = CampaignProviderItemSerializer(iobj)
         return serializer.data
 
     def _get_iobj(self, ident):
@@ -47,6 +59,23 @@ class BaseProvider:
             campaign=self.campaign,
             ident=ident
         )
+
+    def get_publicbody_name(self, obj):
+        if obj.publicbody is None:
+            return ''
+        return obj.publicbody.name
+
+
+    def get_lat_lng(self, request):
+        try:
+            lat = float(request.GET.get('lat'))
+        except (ValueError, TypeError):
+            raise ValueError
+        try:
+            lng = float(request.GET.get('lng'))
+        except (ValueError, TypeError):
+            raise ValueError
+        return lat, lng
 
     def get_publicbody(self, ident):
         try:
