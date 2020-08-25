@@ -1,14 +1,13 @@
 import {renderDate, getRequestStatus} from '../lib/utils'
 
-const DAYS_BETWEEN_REQUEST = 90
 
 var CampaignItemMixin = {
   computed: {
     itemId () {
       return this.data.id
     },
-    hasRequest () {
-      return this.data.foirequest !== null
+    hasRequests () {
+      return this.data.foirequests.length > 0
     }
   },
   methods: {

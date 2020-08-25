@@ -7,13 +7,16 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <div v-if="hasRequest" class="request-status">
+        <div v-if="hasRequests" class="request-status">
           <p :style="{ color: color }">
             {{ status }}
           </p>
           <p>
-            <a :href="data.foirequest" target="_blank">
-                zur Anfrage&nbsp;&rarr;
+            <a v-for="fr in data.foirequests" :key="fr"
+              :href="'/a/' + fr"
+              target="_blank"
+            >
+              zur Anfrage&nbsp;&rarr;
             </a>
           </p>
         </div>
