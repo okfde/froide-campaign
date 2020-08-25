@@ -4,6 +4,8 @@ from django.conf import settings
 
 from .base import BaseProvider
 
+PROVIDER_CLASS_CACHE = {}
+
 
 def get_provider_class(dotted):
     module, klass = dotted.rsplit('.', 1)
@@ -12,9 +14,13 @@ def get_provider_class(dotted):
 
 
 def get_provider(campaign, provider_name, provider_kwargs):
-    provider_class_path = settings.CAMPAIGN_PROVIDERS.get(provider_name)
-    if provider_class_path is None:
-        provider_klass = BaseProvider
+    if provider_name in PROVIDER_CLASS_CACHE:
+        provider_klass = PROVIDER_CLASS_CACHE[provider_name]
     else:
-        provider_klass = get_provider_class(provider_class_path)
+        provider_dict = dict(settings.CAMPAIGN_PROVIDERS)
+        provider_class_path = provider_dict.get(provider_name)
+        if provider_class_path is None:
+            provider_klass = BaseProvider
+        else:
+            provider_klass = get_provider_class(provider_class_path)
     return provider_klass(campaign, **provider_kwargs)
