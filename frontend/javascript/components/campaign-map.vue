@@ -276,7 +276,7 @@ export default {
   	}
   },
   created () {
-  	let url = `/api/v1/campaigninformationobject/map/?campaign=${this.config.campaignId}`
+  	let url = `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}`
   	window.fetch(url)
     .then((response) => {
       return response.json()
@@ -441,7 +441,7 @@ export default {
       if (this.onlyRequested) {
         onlyRequested = '&requested=1'
       }
-      window.fetch(`/api/v1/campaigninformationobject/map/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}&${locationParam}`)
+      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}&${locationParam}`)
         .then((response) => {
           return response.json()
         }).then(this.searchDone(options))
