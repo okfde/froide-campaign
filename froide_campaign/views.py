@@ -17,7 +17,7 @@ from froide.helper.cache import cache_anonymous_page
 from froide.helper.auth import (can_read_object, can_manage_object,
                                 can_access_object, get_read_queryset)
 
-from .models import CampaignPage, InformationObject
+from .models import CampaignPage, Campaign, InformationObject
 from .utils import make_embed
 
 
@@ -164,6 +164,13 @@ def campaign_page(request, slug):
     context.update(stats)
 
     return render(request, 'froide_campaign/campaign.html', context)
+
+
+def redirect_to_make_request(self, campaign_id, ident):
+    campaign = get_object_or_404(Campaign, id=campaign_id)
+    provider = campaign.get_provider()
+    url = provider.get_request_url(ident)
+    return redirect(url)
 
 
 class AuthRequiredMixin(object):

@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.template import Template, Context
+from django.template import Template
 from django.utils.http import urlquote
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -244,8 +244,9 @@ class InformationObject(models.Model):
                                    on_delete=models.SET_NULL)
     foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
                                    on_delete=models.SET_NULL)
-    foirequests = models.ManyToManyField(FoiRequest, blank=True,
-                                         related_name='information_objects')
+    foirequests = models.ManyToManyField(
+        FoiRequest, blank=True, related_name='information_objects'
+    )
 
     resolved = models.BooleanField(default=False)
     resolution_text = models.TextField(blank=True)
@@ -269,12 +270,12 @@ class InformationObject(models.Model):
         return self.title
 
     def get_context(self):
-        return Context({
+        return {
             'title': self.title,
             'ident': self.ident,
             'context': self.context,
             'publicbody': self.publicbody
-        })
+        }
 
     @property
     def context_as_json(self):
@@ -330,7 +331,6 @@ class InformationObject(models.Model):
 
     def make_domain_request_url(self):
         return settings.SITE_URL + self.make_request_url()
-
 
     def get_froirequest_url(self):
         if self.foirequest:

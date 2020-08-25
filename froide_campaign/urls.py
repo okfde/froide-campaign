@@ -5,13 +5,16 @@ from froide.helper import api_router
 from .views import (
     index, campaign_page,
     CampaignPageListView, CampaignPageEditView, AssignCampaignPageTeamView,
-    CampaignPageEmbedView, CampaignPageUpdateEmbedView
+    CampaignPageEmbedView, CampaignPageUpdateEmbedView,
+    redirect_to_make_request
 )
 from .api_views import InformationObjectViewSet
 
 urlpatterns = [
     url(r'^$', index, name='campaign-index'),
     url(r'^list/$', CampaignPageListView.as_view(), name='campaign-list'),
+    url(r'^request/(?P<campaign_id>\d+)/(?P<ident>[-\w\d]+)/$',
+        redirect_to_make_request, name='campaign-redirect_to_make_request'),
     url(r'^(?P<slug>[-\w]+)/$', campaign_page, name='campaign-page'),
     url(r'^(?P<slug>[-\w]+)/edit/$', CampaignPageEditView.as_view(),
         name='campaign-edit'),

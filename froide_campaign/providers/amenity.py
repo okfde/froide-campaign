@@ -3,7 +3,7 @@ from django_amenities.models import Amenity
 from froide.publicbody.models import PublicBody
 from froide.georegion.models import GeoRegion
 
-from .base import BaseProvider
+from .base import BaseProvider, first
 
 
 class AmenityProvider(BaseProvider):
@@ -12,36 +12,44 @@ class AmenityProvider(BaseProvider):
             topics__contains=[self.kwargs.get('amenity_topic', '')],
         ).exclude(name='')
 
-    def search(self, *args, **kwargs):        
-        qs = self.get_queryset()
+    def get_ident_list(self, qs):
+        return [
+            obj.ident for obj in qs
+        ]
 
-        # TODO: point radius    
-        # .filter(geo__dwithin=(point, radius))
-        # .filter(geo__distance_lte=(point, D(m=radius)))
+    def filter(self, qs, **filter_kwargs):
+        if filter_kwargs.get('q'):
+            qs = qs.filter(name__contains=filter_kwargs['q'])
+        return qs
 
-        qs = self.limit(qs)
+    def get_by_ident(self, ident):
+        pk = ident.split('_')[0]
+        return self.get_queryset().get(id=pk)
 
-        data = [{
-            'title': a.name,
+    def get_provider_item_data(self, obj, foirequests=None, detail=False):
+        d = {
+            'ident': obj.ident,
+            'request_url': self.get_request_url_redirect(obj.ident),
+            'title': obj.name,
             'description': '',
-            'lat': a.geo.y,
-            'lng': a.geo.x
-            'publicbody': self.get_publicbody(a.osm_id)
-        } for a in qs]
+            'lat': obj.geo.y,
+            'lng': obj.geo.x,
+            'foirequests': foirequests,
+        }
 
-        serializer = InformationObjectSerializer(
-            data, many=True
-        )
-        return serializer.data
+        if foirequests:
+            d.update({
+                'foirequest': first(foirequests[obj.id]),
+                'foirequests': foirequests[obj.id]
+            })
+        return d
 
-    def _get_amenity(self, ident):
-        return Amenity.objects.get(osm_id=ident)
-
-    def get_publicbody(self, ident):
-        amenity = self._get_amenity(ident)
-        pbs = PublicBody.objects.filter(
-            categories__name=self.kwargs['category'],
-        )
+    def _get_publicbody(self, amenity):
+        pbs = PublicBody.objects.all()
+        if self.kwargs.get('category'):
+            pbs = pbs.filter(
+                categories__name=self.kwargs['category'],
+            )
 
         regions = GeoRegion.objects.filter(
             geom__covers=amenity.geo,
@@ -53,7 +61,13 @@ class AmenityProvider(BaseProvider):
             regions__in=regions
         )
         if len(pbs) == 0:
-            raise ValueError('Keine Behörde gefunden!')
+            return None
         elif len(pbs) > 1:
-            raise ValueError('Mehr als eine Behörde gefunden')
+            return pbs[0]
         return pbs[0]
+
+    def get_request_url_context(self, obj):
+        return {
+            'title': obj.name,
+            'address': obj.address
+        }
