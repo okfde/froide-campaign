@@ -286,10 +286,12 @@ class InformationObject(models.Model):
         return mark_safe(template.render(context))
 
     def get_latitude(self):
-        return self.geo.x
+        if self.geo:
+            return self.geo.x
 
     def get_longitude(self):
-        return self.geo.y
+        if self.geo:
+            return self.geo.y
 
     def get_search_url(self):
         return self.campaign.search_url.format(
