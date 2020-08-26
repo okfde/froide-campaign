@@ -130,11 +130,13 @@ class BaseProvider:
             ident__in=ident_list
         )
         mapping = defaultdict(list)
-        mapping.update(
-            InformationObject.foirequests.through.objects.filter(
+
+        iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
             ).values_list('informationobject_id', 'foirequest_id')
-        )
+        for iobj_id, fr_id in iterable:
+            mapping[iobj_id].append(fr_id)
+
         return mapping
 
     def get_publicbody_name(self, obj):
