@@ -306,31 +306,8 @@ class InformationObject(models.Model):
             ] + list(self.context.values())).strip()
 
     def make_request_url(self):
-        pb_slug = self.publicbody.slug
-        context = self.get_context()
-        url = reverse('foirequest-make_request', kwargs={
-            'publicbody_slug': pb_slug
-        })
-        subject = self.campaign.get_subject_template().render(context)
-        if len(subject) > 250:
-            subject = subject[:250] + '...'
-        body = self.campaign.get_template().render(context).encode('utf-8')
-        ref = ('campaign:%s@%s' % (self.campaign.pk, self.pk)).encode('utf-8')
-        query = {
-            'subject': subject.encode('utf-8'),
-            'body': body,
-            'ref': ref
-        }
-        hide_features = (
-            'hide_public', 'hide_full_text', 'hide_similar', 'hide_publicbody',
-            'hide_draft', 'hide_editing'
-        )
-        query.update({f: b'1' for f in hide_features})
-        query = urlencode(query)
-        return '%s?%s' % (url, query)
-
-    def make_domain_request_url(self):
-        return settings.SITE_URL + self.make_request_url()
+        provider = self.campaign.get_provider()
+        return provider.get_request_url_with_object(self.ident, self)
 
     def get_froirequest_url(self):
         if self.foirequest:

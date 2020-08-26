@@ -148,6 +148,9 @@ class BaseProvider:
         obj = self.get_by_ident(ident)
         return self._get_publicbody(obj)
 
+    def _get_publicbody(self, obj):
+        return obj.publicbody
+
     def get_request_url_redirect(self, ident):
         return reverse('campaign-redirect_to_make_request', kwargs={
             'campaign_id': self.campaign.id,
