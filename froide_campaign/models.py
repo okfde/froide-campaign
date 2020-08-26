@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.template import Template
+from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
@@ -283,7 +283,7 @@ class InformationObject(models.Model):
 
     def get_description(self):
         template = self.campaign.get_description_template()
-        context = self.get_context()
+        context = Context(self.get_context())
         return mark_safe(template.render(context))
 
     def get_latitude(self):
