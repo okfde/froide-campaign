@@ -43,6 +43,8 @@ class AmenityProvider(BaseProvider):
             'description': '',
             'lat': obj.geo.y,
             'lng': obj.geo.x,
+            'foirequest': None,
+            'foirequests': [],
         }
 
         if foirequests:

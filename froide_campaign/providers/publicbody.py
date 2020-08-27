@@ -60,7 +60,8 @@ class PublicBodyProvider(BaseProvider):
             'description': '',
             'lat': obj.geo.y if obj.geo else None,
             'lng': obj.geo.x if obj.geo else None,
-            'foirequests': foirequests,
+            'foirequest': None,
+            'foirequests': [],
         }
 
         if foirequests:

@@ -117,6 +117,8 @@ class BaseProvider:
             'description': obj.get_description(),
             'lat': obj.get_latitude,
             'lng': obj.get_longitude,
+            'foirequest': None,
+            'foirequests': [],
         }
         if foirequests:
             d.update({
