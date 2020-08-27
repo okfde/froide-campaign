@@ -170,11 +170,14 @@ class BaseProvider:
         publicbody = self._get_publicbody(obj)
         return self.make_request_url(ident, context, publicbody)
 
-    def make_request_url(self, ident, context, publicbody):
-        pb_slug = publicbody.slug
-        url = reverse('foirequest-make_request', kwargs={
-            'publicbody_slug': pb_slug
-        })
+    def make_request_url(self, ident, context, publicbody=None):
+        if publicbody is not None:
+            pb_slug = publicbody.slug
+            url = reverse('foirequest-make_request', kwargs={
+                'publicbody_slug': pb_slug
+            })
+        else:
+            url = reverse('foirequest-make_request')
         context = Context(context)
         subject = self.campaign.get_subject_template().render(context)
         if len(subject) > 250:
@@ -189,10 +192,13 @@ class BaseProvider:
         if self.kwargs.get('law_type'):
             query['law_type'] = self.kwargs['law_type'].encode()
 
-        hide_features = (
-            'hide_public', 'hide_full_text', 'hide_similar', 'hide_publicbody',
+        hide_features = [
+            'hide_public', 'hide_full_text', 'hide_similar',
             'hide_draft', 'hide_editing'
-        )
+        ]
+        if publicbody is not None:
+            hide_features.append('hide_publicbody')
+
         query.update({f: b'1' for f in hide_features})
         query = urlencode(query)
         return '%s%s?%s' % (settings.SITE_URL, url, query)
