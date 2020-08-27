@@ -5,7 +5,7 @@
         <div class="searchbar-inner">
           <div class="input-group">
             <div class="clearable-input">
-              <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" placeholder="Restaurant, Supermarkt, Kiosk etc." @keydown.enter.prevent="userSearch">
+              <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" placeholder="{ this.placeholderText }" @keydown.enter.prevent="userSearch">
               <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
             </div>
             <div class="input-group-append">
@@ -44,7 +44,7 @@
             <div class="map-search d-none d-md-block" :class="{'map-search-full': !(showRefresh || searching)}">
               <div class="input-group">
                 <div class="clearable-input">
-                  <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" placeholder="Suche nach Restaurant, Kiosk etc."  @keydown.enter.prevent="userSearch">
+                  <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" :placeholder="placeholderText"  @keydown.enter.prevent="userSearch">
                   <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
                 </div>
 
@@ -77,14 +77,6 @@
                   :prefix="tileProvider.attribution"
                 />
                 <l-control-zoom position="bottomright"/>
-                <l-control position="bottomleft" >
-                  <ul class="color-legend">
-                    <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
-                    <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
-                    <li :style="colorLegend.success"><span>Anfrage erfolgreich</span></li>
-                    <li :style="colorLegend.failure"><span>Anfrage abgelehnt</span></li>
-                  </ul>
-                </l-control>
                 <l-marker v-for="(location, index) in locations" :key="index"
                   :lat-lng="[location.lat, location.lng]" :title="location.title"
                   :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
@@ -106,8 +98,7 @@
                 ref="campaignList" id="campaign-list" v-scroll.window="handleSidebarScroll">
               <div class="new-venue-area" v-if="hasSearched || error">
                 <template v-if="searchEmpty">
-                  <p v-if="lastQuery">Keine Orte mit dem Suchwort „{{ lastQuery }}“ gefunden.</p>
-                  <p v-else>Keine Orte an hier gefunden.</p>
+                  <p>{{ nothingFoundText }}</p>
                 </template>
               </div>
               <campaign-sidebar-item v-for="(location, index) in locations"
@@ -276,7 +267,11 @@ export default {
   	}
   },
   created () {
-  	let url = `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}`
+    let locationParam = ''
+    if (!this.ignoreMapFilter) {
+      locationParam = `lat=${this.center[0]}&lng=${this.center[1]}&zoom=${this.zoom}`
+    }
+  	let url = `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&${locationParam}`
   	window.fetch(url)
     .then((response) => {
       return response.json()
@@ -319,6 +314,15 @@ export default {
     })
   },
   computed: {
+    ignoreMapFilter () {
+      return (this.config.ignore_mapfilter) ? this.config.ignore_mapfilter : false
+    },
+    placeholderText () {
+      return (this.config.placeholder_text) ? this.config.placeholder_text : 'Nach Ort suchen'
+    },
+    nothingFoundText () {
+      return (this.config.nothing_found) ? this.config.nothing_found : 'Keine Orte gefunden.'
+    },
     modalActive () {
       return this.showLocator || this.showDetail
     },
@@ -383,7 +387,7 @@ export default {
       window.localStorage.setItem('froide-campaign:center', JSON.stringify(latlng))
     },
     mapHasMoved() {
-      if (this.autoMoved) {
+      if (this.autoMoved || this.ignoreMapFilter ) {
         return
       }
       this.mapMoved = true
@@ -435,8 +439,10 @@ export default {
         )
       radius = Math.max(Math.round(Math.min(radius, 40000) / 100) * 100, 500)
       let reqCoords = latlngToGrid(this.searchCenter, radius)
-      let locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
-
+      let locationParam = ''
+      if (!this.ignoreMapFilter) {
+        locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
+      }
       let onlyRequested = ''
       if (this.onlyRequested) {
         onlyRequested = '&requested=1'
