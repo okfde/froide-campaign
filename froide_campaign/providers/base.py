@@ -185,6 +185,9 @@ class BaseProvider:
             'body': body,
             'ref': ref
         }
+        if self.kwargs.get('law_type'):
+            query['law_type'] = self.kwargs['law_type'].encode()
+
         hide_features = (
             'hide_public', 'hide_full_text', 'hide_similar', 'hide_publicbody',
             'hide_draft', 'hide_editing'
