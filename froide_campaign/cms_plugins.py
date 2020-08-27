@@ -73,22 +73,22 @@ class CampaignPlugin(CMSPluginBase):
 
     def get_map_config(self, request, instance):
         city = self.get_city_from_request(request)
+        campaign_id = instance.campaign.id
+        plugin_settings = instance.settings
 
-        return {
+        plugin_settings.update({
             'city': city or {},
-            'campaignId': instance.campaign.id
-        }
+            'campaignId': campaign_id
+        })
+
+        return plugin_settings
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
-        iobjs = InformationObject.objects.filter(
-            campaign=instance.campaign
-        ).select_related('foirequest')
 
         request = context.get('request')
 
         context.update({
-            'iobjs': iobjs,
             'config': json.dumps(self.get_map_config(request, instance))
         })
         return context
