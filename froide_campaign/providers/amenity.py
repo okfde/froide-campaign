@@ -1,5 +1,6 @@
-from django_amenities.models import Amenity
 from django.template.defaultfilters import slugify
+
+from django_amenities.models import Amenity
 
 from froide.publicbody.models import PublicBody
 from froide.georegion.models import GeoRegion

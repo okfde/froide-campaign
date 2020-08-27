@@ -78,7 +78,8 @@ class BaseProvider:
             )
         return iobjs
 
-    def filter_geo(self, qs, q=None, coordinates=None, radius=None, zoom=None, **kwargs):
+    def filter_geo(self, qs, q=None, coordinates=None, radius=None, zoom=None,
+                   **kwargs):
         if coordinates is None:
             return qs
 
