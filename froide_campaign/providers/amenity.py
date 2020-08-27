@@ -11,6 +11,11 @@ from .base import BaseProvider, first
 
 
 class AmenityProvider(BaseProvider):
+    ADMIN_LEVELS = [
+        'borough', 'municipality', 'admin_cooperation',
+        'district', 'state'
+    ]
+
     def get_queryset(self):
         return Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')],
@@ -56,8 +61,8 @@ class AmenityProvider(BaseProvider):
 
         regions = GeoRegion.objects.filter(
             geom__covers=amenity.geo,
-        ).exclude(
-            kind__in=['country', 'zipcode']
+        ).filter(
+            kind__in=self.ADMIN_LEVELS
         ).order_by('kind')
 
         pbs = pbs.filter(
