@@ -33,4 +33,4 @@ class AmenityLocalProvider(AmenityProvider):
         if nearby_pbs:
             return nearby_pbs[0]
 
-        return super().get_publicbody(amenity)
+        return super()._get_publicbody(amenity)
