@@ -1,7 +1,10 @@
 from django_amenities.models import Amenity
+from django.template.defaultfilters import slugify
 
 from froide.publicbody.models import PublicBody
 from froide.georegion.models import GeoRegion
+
+from ..models import InformationObject
 
 from .base import BaseProvider, first
 
@@ -34,7 +37,6 @@ class AmenityProvider(BaseProvider):
             'description': '',
             'lat': obj.geo.y,
             'lng': obj.geo.x,
-            'foirequests': foirequests,
         }
 
         if foirequests:
@@ -71,3 +73,28 @@ class AmenityProvider(BaseProvider):
             'title': obj.name,
             'address': obj.address
         }
+
+    def connect_request(self, ident, sender):
+        if not sender.public:
+            return
+
+        try:
+            amenity = self.get_by_ident(ident)
+        except Amenity.DoesNotExist:
+            return
+
+        context = self.get_request_url_context(amenity)
+
+        iobj, created = InformationObject.objects.get_or_create(
+            campaign=self.campaign,
+            ident=ident,
+            defaults=dict(
+                title=context['title'],
+                slug=slugify(context['title']),
+                publicbody=sender.public_body,
+                geo=amenity.geo,
+                foirequest=sender
+            )
+        )
+
+        iobj.foirequests.add(sender)

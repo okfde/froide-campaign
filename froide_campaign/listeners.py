@@ -1,4 +1,4 @@
-from .models import Campaign, InformationObject
+from .models import Campaign
 
 
 def connect_info_object(sender, **kwargs):
@@ -9,7 +9,7 @@ def connect_info_object(sender, **kwargs):
         return
     namespace, campaign_value = reference.split(':', 1)
     try:
-        campaign, slug = campaign_value.split('@', 1)
+        campaign, ident = campaign_value.split('@', 1)
     except (ValueError, IndexError):
         return
 
@@ -23,26 +23,5 @@ def connect_info_object(sender, **kwargs):
     except Campaign.DoesNotExist:
         return
 
-    try:
-        kwargs = {
-            'pk': int(slug)
-        }
-    except ValueError:
-        kwargs = {'slug': slug}
-
-    try:
-        iobj = InformationObject.objects.get(campaign=campaign, **kwargs)
-    except InformationObject.DoesNotExist:
-        return
-
-    if iobj.publicbody != sender.public_body:
-        return
-
-    if not sender.public:
-        return
-
-    if iobj.foirequest is None:
-        iobj.foirequest = sender
-
-    iobj.foirequests.add(sender)
-    iobj.save()
+    provider = campaign.get_provider()
+    provider.connect_request(ident, sender)

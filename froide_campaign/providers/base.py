@@ -195,3 +195,21 @@ class BaseProvider:
         query.update({f: b'1' for f in hide_features})
         query = urlencode(query)
         return '%s%s?%s' % (settings.SITE_URL, url, query)
+
+    def connect_request(self, ident, sender):
+        try:
+            iobj = self.get_by_ident(ident)
+        except InformationObject.DoesNotExist:
+            return
+
+        if iobj.publicbody != sender.public_body:
+            return
+
+        if not sender.public:
+            return
+
+        if iobj.foirequest is None:
+            iobj.foirequest = sender
+
+        iobj.foirequests.add(sender)
+        iobj.save()
