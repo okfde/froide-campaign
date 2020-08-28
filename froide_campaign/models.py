@@ -238,7 +238,7 @@ class InformationObject(models.Model):
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
 
-    context = JSONField(blank=True)
+    context = JSONField(blank=True, default=dict)
 
     publicbody = models.ForeignKey(PublicBody, null=True, blank=True,
                                    on_delete=models.SET_NULL)
