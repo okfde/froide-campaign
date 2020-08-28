@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf.urls import url
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
+from django.db.models import Count
 
 import unicodecsv
 
@@ -26,7 +27,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 class InformationObjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'ident', 'campaign', 'publicbody', 'foirequest',)
+    list_display = ('title', 'ident', 'campaign', 'publicbody', 'request_count',)
     list_filter = (
         'campaign', 'foirequest__status', 'foirequest__resolution',
         'resolved',
@@ -39,7 +40,23 @@ class InformationObjectAdmin(admin.ModelAdmin):
     )
     search_fields = ('title', 'ident')
 
-    actions = ['clean_requests', 'resolve_requests', 'export_csv', 'update_search_index']
+    actions = [
+        'clean_requests', 'resolve_requests', 'export_csv',
+        'update_search_index'
+    ]
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(
+            request_count=Count('foirequests')
+        )
+        qs = qs.select_related('publicbody')
+        return qs
+
+    def request_count(self, obj):
+        return obj.request_count
+    request_count.admin_order_field = 'request_count'
+    request_count.short_description = _('requests')
 
     def get_urls(self):
         urls = super(InformationObjectAdmin, self).get_urls()
