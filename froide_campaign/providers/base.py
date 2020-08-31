@@ -122,8 +122,8 @@ class BaseProvider:
         }
         if foirequests:
             d.update({
-                'foirequest': first(foirequests[obj.id]),
-                'foirequests': foirequests[obj.id]
+                'foirequest': first(foirequests[obj.ident]),
+                'foirequests': foirequests[obj.ident]
             })
         return d
 
