@@ -288,11 +288,11 @@ class InformationObject(models.Model):
 
     def get_latitude(self):
         if self.geo:
-            return self.geo.x
+            return self.geo.y
 
     def get_longitude(self):
         if self.geo:
-            return self.geo.y
+            return self.geo.x
 
     def get_search_url(self):
         return self.campaign.search_url.format(
