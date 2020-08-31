@@ -83,7 +83,7 @@
                     <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
                   </ul>
                 </l-control>
-                <l-marker v-for="(location, index) in locations" :key="index"
+                <l-marker v-for="(location, index) in locationWithGeo" :key="index"
                   :lat-lng="[location.lat, location.lng]" :title="location.title"
                   :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
                   <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
@@ -320,6 +320,12 @@ export default {
     })
   },
   computed: {
+    locationWithGeo () {
+      if (this.locations.length > 0) {
+        return this.locations.filter(location => location.lat)
+      }
+      return this.locations
+    },
     ignoreMapFilter () {
       return (this.config.ignore_mapfilter) ? this.config.ignore_mapfilter : false
     },
