@@ -25,7 +25,7 @@ class CampaignPageAdmin(admin.ModelAdmin):
 class CampaignAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_filter = (
-        'provider'
+        'provider',
         'public',
         'requires_foi',
         'paused',
