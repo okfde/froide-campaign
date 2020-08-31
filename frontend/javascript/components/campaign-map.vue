@@ -77,6 +77,12 @@
                   :prefix="tileProvider.attribution"
                 />
                 <l-control-zoom position="bottomright"/>
+                <l-control position="bottomleft" >
+                  <ul class="color-legend">
+                    <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
+                    <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
+                  </ul>
+                </l-control>
                 <l-marker v-for="(location, index) in locations" :key="index"
                   :lat-lng="[location.lat, location.lng]" :title="location.title"
                   :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
@@ -475,7 +481,7 @@ export default {
       }
     },
     getStatus (location) {
-      if (location.foirequest) {
+      if (location.foirequests.length > 0) {
         return 'pending'
       }
       return 'normal'
