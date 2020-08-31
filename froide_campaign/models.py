@@ -303,7 +303,7 @@ class InformationObject(models.Model):
     def get_search_text(self):
         return ' '.join([
             self.publicbody.name if self.publicbody else ''
-            ] + list(self.context.values())).strip()
+            ] + [str(v) for v in self.context.values()]).strip()
 
     def make_request_url(self):
         provider = self.campaign.get_provider()
