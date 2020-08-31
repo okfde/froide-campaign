@@ -15,7 +15,7 @@ class AmenityLocalProvider(AmenityProvider):
     NEARBY_RADIUS = 200
 
     def _get_publicbody(self, amenity):
-        nearby_pbs = PublicBody.objects.filter(
+        nearby_popular_pbs = PublicBody.objects.filter(
             geo__isnull=False
         ).filter(
             geo__dwithin=(amenity.geo, self.NEARBY_RADIUS)
@@ -23,9 +23,9 @@ class AmenityLocalProvider(AmenityProvider):
             geo__distance_lte=(amenity.geo, D(m=self.NEARBY_RADIUS))
         ).annotate(
             distance=Distance("geo", amenity.geo)
-        ).order_by("distance")[:1]
+        ).order_by("-number_of_requests", "distance")[:1]
 
-        if nearby_pbs:
-            return nearby_pbs[0]
+        if nearby_popular_pbs:
+            return nearby_popular_pbs[0]
 
         return super()._get_publicbody(amenity)
