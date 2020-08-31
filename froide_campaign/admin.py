@@ -24,6 +24,12 @@ class CampaignPageAdmin(admin.ModelAdmin):
 
 class CampaignAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
+    list_filter = (
+        'provider'
+        'public',
+        'requires_foi',
+        'paused',
+    )
 
 
 class InformationObjectAdmin(admin.ModelAdmin):
@@ -36,7 +42,8 @@ class InformationObjectAdmin(admin.ModelAdmin):
         'resolved',
         make_nullfilter('foirequest', _('Has request')),
         make_nullfilter('documents', _('Has documents')),
-        make_nullfilter('publicbody', _('Has public body'))
+        make_nullfilter('publicbody', _('Has public body')),
+        make_nullfilter('geo', _('Has geo'))
     )
     raw_id_fields = (
         'publicbody', 'foirequest', 'foirequests', 'documents'
