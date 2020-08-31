@@ -8,28 +8,22 @@
               {{ data.title }}
             </h5>
             <div v-else class="venue-name-dummy dummy dummy-blinker"></div>
-            </div>
+            <p v-if="data.address" class="venue-address">{{ data.address }}</p>
           </div>
-          <div class="row">
-            <div class="col-12">
-              <div v-if="hasRequests" class="request-status">
-                <p :style="{ color: color }">
-                  {{ status }}
-                </p>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div v-if="hasRequests" class="request-status">
+              <p>
                 <p>
-                  <a v-for="fr in data.foirequests" :key="fr"
-                    :href="'/a/' + fr"
-                    target="_blank"
-                  >
-                    zur Anfrage&nbsp;&rarr;
-                  </a>
+                  <a :href="'/a/' + data.foirequests[0]" target="_blank">zur Anfrage&nbsp;&rarr;</a>
                 </p>
-              </div>
-              <a class="btn btn-primary btn-sm make-request-btn" :href="data.request_url"  target="_blank">
-                Anfrage<br class="d-block d-sm-none"/>
-                erstellen&nbsp;&rarr;
-              </a>
+              </p>
             </div>
+            <a v-if="!hasRequests" class="btn btn-primary btn-sm make-request-btn" :href="data.request_url"  target="_blank">
+              Anfrage<br class="d-block d-sm-none"/>
+              erstellen&nbsp;&rarr;
+            </a>
           </div>
         </div>
       </div>
