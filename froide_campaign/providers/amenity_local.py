@@ -1,13 +1,8 @@
-from django.template.defaultfilters import slugify
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 
-from django_amenities.models import Amenity
-
 from froide.publicbody.models import PublicBody
-from froide.georegion.models import GeoRegion
 
-from ..models import InformationObject
 
 from .amenity import AmenityProvider
 

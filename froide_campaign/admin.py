@@ -27,7 +27,10 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 class InformationObjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'ident', 'campaign', 'publicbody', 'request_count',)
+    list_display = (
+        'title', 'ident', 'campaign', 'publicbody',
+        'request_count'
+    )
     list_filter = (
         'campaign', 'foirequest__status', 'foirequest__resolution',
         'resolved',
