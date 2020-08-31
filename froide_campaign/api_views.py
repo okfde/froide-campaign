@@ -61,8 +61,13 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
         provider = campaign.get_provider()
         filters = {
             'q': request.GET.get('q', ''),
-            'requested': bool(request.GET.get('requested'))
         }
+
+        try:
+            if'requested' in request.GET:
+                filters['requested'] = int(request.GET['requested'])
+        except ValueError:
+            pass
 
         # TODO: geocode
         # location / coordinates

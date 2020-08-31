@@ -72,9 +72,9 @@ class BaseProvider:
             iobjs = InformationObject.objects.search(
                 iobjs, filter_kwargs['q']
             )
-        if filter_kwargs.get('requested'):
+        if filter_kwargs.get('requested') is not None:
             iobjs = iobjs.filter(
-                foirequests__isnull=False
+                foirequests__isnull=not bool(filter_kwargs['requested'])
             )
         return iobjs
 
