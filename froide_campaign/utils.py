@@ -67,9 +67,12 @@ class CSVImporter(object):
 
         point = None
         if 'lat' in line and 'lng' in line:
-            lat = float(line.pop('lat'))
-            lng = float(line.pop('lng'))
-            point = Point(lat, lng)
+            try:
+                lat = float(line.pop('lat'))
+                lng = float(line.pop('lng'))
+                point = Point(lng, lat)
+            except ValueError:
+                pass
 
         return InformationObject.objects.create(
             campaign=campaign,
