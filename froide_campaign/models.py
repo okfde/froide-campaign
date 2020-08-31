@@ -224,7 +224,9 @@ class InformationObjectManager(models.Manager):
             "id", "campaign_id", "ident", "title",
             "slug", "publicbody_id", "foirequest_id",
             "foirequest__status", "foirequest__resolution",
-            "foirequest__first_message", "resolved", "context_as_json"
+            "foirequest__first_message", "resolved", "context_as_json",
+            ('lat', lambda o: o.get_latitude()),
+            ('lng', lambda o: o.get_longitude()),
         ]
 
         return export_csv(queryset, fields)
