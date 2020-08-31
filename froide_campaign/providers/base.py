@@ -72,9 +72,9 @@ class BaseProvider:
             iobjs = InformationObject.objects.search(
                 iobjs, filter_kwargs['q']
             )
-        if filter_kwargs.get('requested'):
+        if filter_kwargs.get('requested') is not None:
             iobjs = iobjs.filter(
-                foirequests__isnull=False
+                foirequests__isnull=not bool(filter_kwargs['requested'])
             )
         return iobjs
 
@@ -122,8 +122,8 @@ class BaseProvider:
         }
         if foirequests:
             d.update({
-                'foirequest': first(foirequests[obj.id]),
-                'foirequests': foirequests[obj.id]
+                'foirequest': first(foirequests[obj.ident]),
+                'foirequests': foirequests[obj.ident]
             })
         return d
 
@@ -136,9 +136,9 @@ class BaseProvider:
 
         iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
-            ).values_list('informationobject_id', 'foirequest_id')
-        for iobj_id, fr_id in iterable:
-            mapping[iobj_id].append(fr_id)
+            ).values_list('informationobject__ident', 'foirequest_id')
+        for iobj_ident, fr_id in iterable:
+            mapping[iobj_ident].append(fr_id)
 
         return mapping
 

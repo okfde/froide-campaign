@@ -224,7 +224,9 @@ class InformationObjectManager(models.Manager):
             "id", "campaign_id", "ident", "title",
             "slug", "publicbody_id", "foirequest_id",
             "foirequest__status", "foirequest__resolution",
-            "foirequest__first_message", "resolved", "context_as_json"
+            "foirequest__first_message", "resolved", "context_as_json",
+            ('lat', lambda o: o.get_latitude()),
+            ('lng', lambda o: o.get_longitude()),
         ]
 
         return export_csv(queryset, fields)
@@ -288,11 +290,11 @@ class InformationObject(models.Model):
 
     def get_latitude(self):
         if self.geo:
-            return self.geo.x
+            return self.geo.y
 
     def get_longitude(self):
         if self.geo:
-            return self.geo.y
+            return self.geo.x
 
     def get_search_url(self):
         return self.campaign.search_url.format(
@@ -303,7 +305,7 @@ class InformationObject(models.Model):
     def get_search_text(self):
         return ' '.join([
             self.publicbody.name if self.publicbody else ''
-            ] + list(self.context.values())).strip()
+            ] + [str(v) for v in self.context.values()]).strip()
 
     def make_request_url(self):
         provider = self.campaign.get_provider()
