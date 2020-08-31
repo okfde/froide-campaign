@@ -66,8 +66,8 @@ class PublicBodyProvider(BaseProvider):
 
         if foirequests:
             d.update({
-                'foirequest': first(foirequests[obj.id]),
-                'foirequests': foirequests[obj.id]
+                'foirequest': first(foirequests[str(obj.id)]),
+                'foirequests': foirequests[str(obj.id)]
             })
         return d
 

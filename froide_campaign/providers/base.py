@@ -136,9 +136,9 @@ class BaseProvider:
 
         iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
-            ).values_list('informationobject_id', 'foirequest_id')
-        for iobj_id, fr_id in iterable:
-            mapping[iobj_id].append(fr_id)
+            ).values_list('informationobject__ident', 'foirequest_id')
+        for iobj_ident, fr_id in iterable:
+            mapping[iobj_ident].append(fr_id)
 
         return mapping
 
