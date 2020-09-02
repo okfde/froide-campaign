@@ -45,16 +45,15 @@ class CSVImporter(object):
             logger.debug('Found %s' % slug)
         except InformationObject.DoesNotExist:
             pass
-        lookup = None
-        lookup_val = None
+        pb = None
         if 'publicbody_id' in line:
-            lookup_val = line.pop('publicbody_id')
-            lookup = {'id': lookup_val}
-        if lookup_val is None:
-            raise ValueError('Lookup not found')
-        if lookup_val not in self.pb_cache:
-            self.pb_cache[lookup_val] = PublicBody.objects.get(**lookup)
-        pb = self.pb_cache[lookup_val]
+            pb_id = line.pop('publicbody_id')
+            if pb_id:
+                if pb_id not in self.pb_cache:
+                    self.pb_cache[pb_id] = PublicBody.objects.get(
+                        id=pb_id
+                    )
+                pb = self.pb_cache[pb_id]
         ordering = line.pop('ordering', '')
         if iobj is not None:
             iobj.slug = slug
