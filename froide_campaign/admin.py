@@ -1,3 +1,4 @@
+import csv
 from datetime import timedelta
 
 from django.contrib import admin
@@ -7,8 +8,6 @@ from django.conf.urls import url
 from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
-
-import unicodecsv
 
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
@@ -91,7 +90,7 @@ class InformationObjectAdmin(admin.ModelAdmin):
             raise PermissionDenied
         if not self.has_change_permission(request):
             raise PermissionDenied
-        reader = unicodecsv.DictReader(request.FILES['file'])
+        reader = csv.DictReader(request.FILES['file'])
         importer = CSVImporter()
         importer.run(reader)
         return redirect('admin:froide_campaign_informationobject_changelist')
