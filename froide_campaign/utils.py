@@ -39,9 +39,20 @@ class CSVImporter(object):
         title = line.pop('title')
         slug = line.pop('slug', slugify(title))
         slug = slug[:255]
+
+        lookup = {}
+        if line.get('ident'):
+            ident = line.pop('ident')
+            lookup = {'ident': ident}
+        else:
+            ident = slug[:255]
+            lookup = {'slug': slug}
+
         iobj = None
         try:
-            iobj = InformationObject.objects.get(campaign=campaign, slug=slug)
+            iobj = InformationObject.objects.get(
+                campaign=campaign, **lookup
+            )
             logger.debug('Found %s' % slug)
         except InformationObject.DoesNotExist:
             pass
@@ -55,27 +66,31 @@ class CSVImporter(object):
                     )
                 pb = self.pb_cache[pb_id]
         ordering = line.pop('ordering', '')
+        point = None
+        if 'lat' in line and 'lng' in line:
+            try:
+                lat = float(line.pop('lat'))
+                lng = float(line.pop('lng'))
+                point = Point(lng, lat)
+            except ValueError:
+                pass
+
         if iobj is not None:
             iobj.slug = slug
-            iobj.ident = slug[:255]
+            iobj.ident = ident
             iobj.ordering = ordering
+            iobj.publicbody = pb
+            iobj.geo = point
             iobj.title = title
             iobj.context = line
             iobj.save()
             return iobj
-
-        point = None
-        if 'lat' in line and 'lng' in line:
-            lat = float(line.pop('lat'))
-            lng = float(line.pop('lng'))
-            point = Point(lat, lng)
-
         return InformationObject.objects.create(
             campaign=campaign,
             title=title,
-            slug=slug[:50],
+            slug=slug,
             publicbody=pb,
-            ident=slug[:255],
+            ident=ident,
             ordering=ordering,
             context=line,
             geo=point
