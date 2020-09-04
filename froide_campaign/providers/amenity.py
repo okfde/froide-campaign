@@ -11,6 +11,7 @@ from .base import BaseProvider, first
 
 
 class AmenityProvider(BaseProvider):
+    CREATE_ALLOWED = True
     ADMIN_LEVELS = [
         'borough', 'municipality', 'admin_cooperation',
         'district', 'state'
@@ -32,8 +33,11 @@ class AmenityProvider(BaseProvider):
         return qs
 
     def get_by_ident(self, ident):
-        pk = ident.split('_')[0]
-        return self.get_queryset().get(id=pk)
+        try:
+            pk = ident.split('_')[0]
+            return self.get_queryset().get(id=pk)
+        except ValueError:
+            return super().get_by_ident(ident)
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         d = {

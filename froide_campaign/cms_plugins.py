@@ -74,20 +74,19 @@ class CampaignPlugin(CMSPluginBase):
     def get_map_config(self, request, instance):
         city = self.get_city_from_request(request)
         campaign_id = instance.campaign.id
+        add_location_allowed = instance.campaign.get_provider().CREATE_ALLOWED
         plugin_settings = instance.settings
 
         plugin_settings.update({
             'city': city or {},
-            'campaignId': campaign_id
+            'campaignId': campaign_id,
+            'addLocationAllowed': add_location_allowed
         })
-
         return plugin_settings
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
-
         request = context.get('request')
-
         context.update({
             'config': json.dumps(self.get_map_config(request, instance))
         })

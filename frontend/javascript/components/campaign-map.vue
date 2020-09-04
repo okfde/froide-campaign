@@ -106,6 +106,9 @@
                 <template v-if="searchEmpty">
                   <p>{{ nothingFoundText }}</p>
                 </template>
+                <button v-if="config.addLocationAllowed" class="btn btn-sm btn-light" @click="setNewPlace(true)">
+                  Ort nicht gefunden?
+                </button>
               </div>
               <campaign-sidebar-item v-for="(location, index) in locations"
                 :key="index"
@@ -115,6 +118,11 @@
               ></campaign-sidebar-item>
             </div>
         </div>
+        <campaign-new-location v-if="showNewPlace"
+          @close="showNewPlace = false"
+          @locationcreated="locationCreated"
+          :campaignId="config.campaignId"
+        ></campaign-new-location>
       </div>
     </div>
 	</div>
@@ -131,6 +139,7 @@ import smoothScroll from '../lib/smoothscroll'
 import CampaignSidebarItem from './campaign-sidebar-item'
 import CampaignPopup from './campaign-popup'
 import SwitchButton from './switch-button'
+import CampaignNewLocation from './campaign-new-location'
 
 import {
   getQueryVariable, canUseLocalStorage, getPinURL, COLORS, latlngToGrid
@@ -169,7 +178,7 @@ export default {
   },
   components: {
     LMap, LTileLayer, LControlLayers, LControlZoom, LControl, LControlAttribution, LMarker, LPopup, LTooltip,
-    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem
+    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation
   },
   data () {
   	let locationKnown = false
@@ -230,6 +239,8 @@ export default {
       zoom = DEFAULT_ZOOM
     }
 
+    this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
   	return {
   		locations: [],
   		zoom: zoom,
@@ -246,6 +257,7 @@ export default {
       searchCenter: null,
       searchEmpty: false,
       error: false,
+      showNewPlace: false,
       showDetail: null,
       showFilter: false,
   		markerOptions: {
@@ -388,6 +400,23 @@ export default {
     },
   },
   methods: {
+    locationCreated (data) {
+      window.location.href = data.request_url
+    },
+    goToMap () {
+      let fmc = this.$refs.campaignMapContainer
+      if (fmc.getBoundingClientRect().top > 0) {
+        return
+      }
+      let y = fmc.offsetTop
+      smoothScroll({x: 0, y: y, el: this.scrollContainer}, 300)
+    },
+    setNewPlace(show) {
+      this.showNewPlace = show
+      if (show) {
+        this.goToMap()
+      }
+    },
     recordMapPosition () {
       let latlng = this.map.getCenter()
       this.center = [latlng.lat, latlng.lng]

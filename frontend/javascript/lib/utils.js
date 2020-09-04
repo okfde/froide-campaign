@@ -76,7 +76,38 @@ function latlngToGrid (latlng) {
   }
 }
 
+function handleErrors(response) {
+    if (!response.ok) {
+        throw response
+    }
+    return response
+}
+
+function postData (url = '', data = {}, csrfToken) {
+  return window.fetch(url, {
+    method: 'POST',
+    cache: 'no-cache',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': csrfToken
+    },
+    body: JSON.stringify(data)
+  }).then(handleErrors)
+    .then(response => response.json())
+    .catch(error =>
+      error.text().then(errormessage => {
+        return {
+            'error': true,
+            'message': errormessage
+          }
+        }
+      )
+    )
+  }
+
 export {
+  postData,
   getQueryVariable,
   canUseLocalStorage,
   renderDate,

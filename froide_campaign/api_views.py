@@ -1,15 +1,19 @@
 import random
 
-from django.shortcuts import get_object_or_404
 from django.contrib.gis.geos import Point
+from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from .models import Campaign, InformationObject
 
-from .providers.serializers import CampaignProviderItemSerializer
+from .serializers import InformationObjectSerializer
+from .geocode import run_geocode
+
+from .providers.base_custom import BaseCustomOnlyProvider
 
 
 def get_lat_lng(request):
@@ -23,14 +27,42 @@ def get_lat_lng(request):
         raise ValueError
     return lat, lng
 
+class AddLocationPermission(permissions.BasePermission):
 
-class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
+    def has_permission(self, request, view):
+        campaign_id = request.data.get('campaign')
+        campaign = Campaign.objects.get(id=campaign_id)
+        return campaign.get_provider().CREATE_ALLOWED
+
+
+class InformationObjectViewSet(viewsets.ModelViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
-    serializer_class = CampaignProviderItemSerializer
+    serializer_class = InformationObjectSerializer
+
+    def get_permissions(self):
+        if self.action == 'create':
+            permission_classes = [AddLocationPermission]
+        else:
+            permission_classes = [permissions.AllowAny]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        obj.ident = 'custom_{}'.format(str(obj.id))
+        point = self.get_geo(obj)
+        obj.geo = point
+        obj.save()
 
     def get_queryset(self):
         return InformationObject.objects.none()
+
+    def get_geo(self, obj):
+        if obj.address and not obj.geo:
+            geo = run_geocode(obj.address)
+            if geo:
+                lat_lng = geo[0]
+                return Point(lat_lng[1], lat_lng[0])
 
     @action(detail=False, methods=['get'])
     def random(self, request):
@@ -93,4 +125,7 @@ class InformationObjectViewSet(viewsets.ReadOnlyModelViewSet):
             pass
 
         data = provider.search(**filters)
+        if provider.CREATE_ALLOWED:
+            iobjs = BaseCustomOnlyProvider(campaign).search(**filters)
+            data = data + iobjs
         return Response(data)

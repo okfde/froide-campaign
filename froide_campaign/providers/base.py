@@ -8,7 +8,7 @@ from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 
 from ..models import InformationObject
-from .serializers import CampaignProviderItemSerializer
+from ..serializers import CampaignProviderItemSerializer
 
 
 LIMIT = 50
@@ -22,6 +22,7 @@ def first(x):
 
 class BaseProvider:
     ORDER_ZOOM_LEVEL = 15
+    CREATE_ALLOWED = False
 
     def __init__(self, campaign, **kwargs):
         self.campaign = campaign
