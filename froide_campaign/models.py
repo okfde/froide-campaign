@@ -259,6 +259,7 @@ class InformationObject(models.Model):
     search_text = models.TextField(blank=True)
     search_vector = SearchVectorField(default='')
 
+    address = models.TextField(_("Address"), blank=True)
     geo = gis_models.PointField(null=True, blank=True, geography=True)
 
     objects = InformationObjectManager()
@@ -278,6 +279,10 @@ class InformationObject(models.Model):
             'context': self.context,
             'publicbody': self.publicbody
         }
+
+    @property
+    def name(self):
+        return self.title
 
     @property
     def context_as_json(self):
