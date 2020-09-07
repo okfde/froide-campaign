@@ -109,4 +109,8 @@ class AmenityProvider(BaseProvider):
             )
         )
 
+        if not created:
+            iobj.publicbody = sender.public_body
+            iobj.save()
+
         iobj.foirequests.add(sender)
