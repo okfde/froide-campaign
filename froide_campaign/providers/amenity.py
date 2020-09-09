@@ -11,15 +11,20 @@ from .base import BaseProvider, first
 
 
 class AmenityProvider(BaseProvider):
+    CREATE_ALLOWED = True
     ADMIN_LEVELS = [
         'borough', 'municipality', 'admin_cooperation',
         'district', 'state'
     ]
 
     def get_queryset(self):
+        iobs = super().get_queryset()
+        ident_list = iobs.values_list('ident', flat=True)
+        osm_ids = [int(ident.split('_')[1])
+                   for ident in ident_list if 'custom' not in ident]
         return Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')],
-        ).exclude(name='')
+        ).exclude(name='').exclude(osm_id__in=osm_ids)
 
     def get_ident_list(self, qs):
         return [
@@ -29,11 +34,16 @@ class AmenityProvider(BaseProvider):
     def filter(self, qs, **filter_kwargs):
         if filter_kwargs.get('q'):
             qs = qs.filter(name__contains=filter_kwargs['q'])
+        if filter_kwargs.get('requested') is not None:
+            qs = qs.none()
         return qs
 
     def get_by_ident(self, ident):
-        pk = ident.split('_')[0]
-        return self.get_queryset().get(id=pk)
+        try:
+            pk = ident.split('_')[0]
+            return self.get_queryset().get(id=pk)
+        except ValueError:
+            return super().get_by_ident(ident)
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         d = {
@@ -104,5 +114,9 @@ class AmenityProvider(BaseProvider):
                 foirequest=sender
             )
         )
+
+        if not created:
+            iobj.publicbody = sender.public_body
+            iobj.save()
 
         iobj.foirequests.add(sender)

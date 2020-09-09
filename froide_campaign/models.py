@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -215,8 +216,9 @@ class InformationObjectManager(models.Manager):
 
     def search(self, qs, query):
         if query:
-            query = SearchQuery(query, config=self.SEARCH_LANG)
-            qs = qs.filter(search_vector=query)
+            query_search = SearchQuery(query, config=self.SEARCH_LANG)
+            qs = qs.filter(
+                Q(search_vector=query_search) | Q(title__contains=query))
         return qs
 
     def export_csv(self, queryset):
@@ -259,6 +261,7 @@ class InformationObject(models.Model):
     search_text = models.TextField(blank=True)
     search_vector = SearchVectorField(default='')
 
+    address = models.TextField(_("Address"), blank=True)
     geo = gis_models.PointField(null=True, blank=True, geography=True)
 
     objects = InformationObjectManager()
@@ -278,6 +281,10 @@ class InformationObject(models.Model):
             'context': self.context,
             'publicbody': self.publicbody
         }
+
+    @property
+    def name(self):
+        return self.title
 
     @property
     def context_as_json(self):
