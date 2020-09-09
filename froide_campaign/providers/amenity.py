@@ -18,9 +18,13 @@ class AmenityProvider(BaseProvider):
     ]
 
     def get_queryset(self):
+        iobs = super().get_queryset()
+        ident_list = iobs.values_list('ident', flat=True)
+        osm_ids = [int(ident.split('_')[1])
+                   for ident in ident_list if 'custom' not in ident]
         return Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')],
-        ).exclude(name='')
+        ).exclude(name='').exclude(osm_id__in=osm_ids)
 
     def get_ident_list(self, qs):
         return [
@@ -30,6 +34,8 @@ class AmenityProvider(BaseProvider):
     def filter(self, qs, **filter_kwargs):
         if filter_kwargs.get('q'):
             qs = qs.filter(name__contains=filter_kwargs['q'])
+        if filter_kwargs.get('requested') is not None:
+            qs = qs.none()
         return qs
 
     def get_by_ident(self, ident):

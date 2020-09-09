@@ -13,7 +13,7 @@ from .models import Campaign, InformationObject
 from .serializers import InformationObjectSerializer
 from .geocode import run_geocode
 
-from .providers.base_custom import BaseCustomOnlyProvider
+from .providers.base import BaseProvider
 
 
 def get_lat_lng(request):
@@ -125,7 +125,6 @@ class InformationObjectViewSet(viewsets.ModelViewSet):
             pass
 
         data = provider.search(**filters)
-        if provider.CREATE_ALLOWED:
-            iobjs = BaseCustomOnlyProvider(campaign).search(**filters)
-            data = data + iobjs
+        iobjs = BaseProvider(campaign).search(**filters)
+        data = data + iobjs
         return Response(data)
