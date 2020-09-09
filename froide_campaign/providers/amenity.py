@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 from django_amenities.models import Amenity
@@ -23,8 +24,8 @@ class AmenityProvider(BaseProvider):
         osm_ids = [int(ident.split('_')[1])
                    for ident in ident_list if 'custom' not in ident]
         return Amenity.objects.filter(
-            topics__contains=[self.kwargs.get('amenity_topic', '')],
-        ).exclude(name='').exclude(osm_id__in=osm_ids)
+            topics__contains=[self.kwargs.get('amenity_topic', '')]
+        ).exclude(Q(name='') | Q(osm_id__in=osm_ids))
 
     def get_ident_list(self, qs):
         return [
