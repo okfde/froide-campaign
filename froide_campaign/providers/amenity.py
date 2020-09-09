@@ -25,7 +25,7 @@ class AmenityProvider(BaseProvider):
                    for ident in ident_list if 'custom' not in ident]
         return Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')]
-        ).exclude(Q(name='') | Q(osm_id__in=osm_ids))
+        ).exclude(Q(name='') | Q(osm_id__in=osm_ids) | Q(street=''))
 
     def get_ident_list(self, qs):
         return [
