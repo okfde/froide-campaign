@@ -50,6 +50,7 @@ class AmenityProvider(BaseProvider):
             'ident': obj.ident,
             'request_url': self.get_request_url_redirect(obj.ident),
             'title': obj.name,
+            'address': obj.address,
             'description': '',
             'lat': obj.geo.y,
             'lng': obj.geo.x,

@@ -8,6 +8,7 @@ from .models import InformationObject
 class CampaignProviderItemSerializer(serializers.Serializer):
     ident = serializers.CharField()
     title = serializers.CharField()
+    address = serializers.CharField(required=False)
     request_url = serializers.CharField(required=False)
     publicbody_name = serializers.CharField(required=False)
     description = serializers.CharField()
