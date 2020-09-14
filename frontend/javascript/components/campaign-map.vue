@@ -14,6 +14,12 @@
                 <span class="d-none d-sm-none d-md-inline">Suchen</span>
               </button>
             </div>
+            <div class="input-group-append mr-auto">
+                <button class="btn btn-outline-secondary" @click="setLocator(true)">
+                  <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                  <span class="d-none d-sm-none d-md-inline">Ort</span>
+                </button>
+              </div>
 
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
@@ -47,14 +53,18 @@
                   <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" :placeholder="placeholderText"  @keydown.enter.prevent="userSearch">
                   <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
                 </div>
-
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" @click="userSearch">
                     <i class="fa fa-search" aria-hidden="true"></i>
                     <span class="d-none d-sm-none d-lg-inline">Suchen</span>
                   </button>
                 </div>
-
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" @click="setLocator(true)">
+                    <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">Ort</span>
+                  </button>
+                </div>
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                     <i class="fa fa-gears" aria-hidden="true"></i>
@@ -118,6 +128,19 @@
               ></campaign-sidebar-item>
             </div>
         </div>
+        <campaign-locator v-if="showLocator"
+          :defaultPostcode="postcode"
+          :defaultLocation="locationName"
+          :exampleCity="city"
+          :locationKnown="locationKnown"
+          :error="error"
+          :error-message="locatorErrorMessage"
+          :geolocation-disabled="geolocationDisabled"
+          :isMobile="isMobile"
+          @close="setLocator(false)"
+          @coordinatesChosen="coordinatesChosen"
+          @locationChosen="locationChosen"
+          ></campaign-locator>
         <campaign-new-location v-if="showNewPlace"
           @close="showNewPlace = false"
           @locationcreated="locationCreated"
@@ -125,7 +148,6 @@
         ></campaign-new-location>
       </div>
     </div>
-	</div>
 </template>
 
 <script>
@@ -136,6 +158,7 @@ import 'leaflet.icon.glyph'
 import bbox from '@turf/bbox'
 import SlideUpDown from 'vue-slide-up-down'
 import smoothScroll from '../lib/smoothscroll'
+import CampaignLocator from './campaign-locator'
 import CampaignSidebarItem from './campaign-sidebar-item'
 import CampaignPopup from './campaign-popup'
 import SwitchButton from './switch-button'
@@ -178,7 +201,7 @@ export default {
   },
   components: {
     LMap, LTileLayer, LControlLayers, LControlZoom, LControl, LControlAttribution, LMarker, LPopup, LTooltip,
-    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation
+    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation, CampaignLocator
   },
   data () {
   	let locationKnown = false
@@ -216,7 +239,6 @@ export default {
           center = [center.lat, center.lng]
         }
       }
-      postcode = JSON.parse(window.localStorage.getItem('froide-campaign:postcode'))
     }
     if (center === null) {
       center = [null, null]
@@ -243,8 +265,14 @@ export default {
 
   	return {
   		locations: [],
-  		zoom: zoom,
-  		center: center,
+      zoom: zoom,
+      locationKnown: locationKnown,
+      locationName: '',
+      locatorErrorMessage: '',
+      geolocationDisabled: false,
+      center: center,
+      city: city.city,
+      postcode: '' + (postcode || city.postal_code || ''),
   		maxBounds: maxBounds,
       searching: false,
   		marker: marker,
@@ -285,18 +313,6 @@ export default {
   	}
   },
   created () {
-    let locationParam = ''
-    if (!this.ignoreMapFilter) {
-      locationParam = `lat=${this.center[0]}&lng=${this.center[1]}&zoom=${this.zoom}`
-    }
-  	let url = `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&${locationParam}`
-  	window.fetch(url)
-    .then((response) => {
-      return response.json()
-    }).then((data) => {
-      this.locations = data
-    })
-
     Vue.directive('focusmarker', {
       // When the bound element is inserted into the DOM...
       componentUpdated: (el, binding, vnode) => {
@@ -329,7 +345,12 @@ export default {
       window.addEventListener('resize', () => {
         this.isStacked()
       })
+      this.search()
     })
+    this.map.on('popupopen', (e) => {
+        this.preventMapMoved()
+      }
+    )
   },
   computed: {
     locationWithGeo () {
@@ -400,6 +421,49 @@ export default {
     },
   },
   methods: {
+    setLocator (data) {
+      this.showLocator = data
+      if (data) {
+        this.goToMap()
+      }
+    },
+    coordinatesChosen (latlng) {
+      let center = L.latLng(latlng)
+      if (!this.maxBounds.contains(center)) {
+        this.geolocationDisabled = true
+        this.locatorErrorMessage = 'Dein Ort scheint nicht in Deutschland zu sein!'
+        this.setLocator(true)
+        return
+      }
+      this.geolocationDisabled = false
+      this.locatorErrorMessage = ''
+      this.locationKnown = true
+      this.map.setView(center, DETAIL_ZOOM_LEVEL)
+      this.search({coordinates: center})
+      this.preventMapMoved()
+    },
+    locationChosen (location) {
+      let url = `/api/v1/georegion/?name=${location}&limit=1`
+      if (location.match(/^\d{5}$/)) {
+        window.localStorage.setItem('froide-campaign:postcode', location)
+        url = `/api/v1/georegion/?kind=zipcode&name=${location}&limit=1`
+      }
+      window.fetch(url)
+        .then((response) => {
+          return response.json()
+        }).then((data) => {
+          if (data['meta']['total_count'] === 0) {
+            return
+          }
+          this.locationKnown = true
+          let geoRegion = data.objects[0]
+        let coords = geoRegion.centroid.coordinates
+        let center = L.latLng([coords[1], coords[0]])
+        this.map.panTo(center)
+        this.search({coordinates: center })
+        this.preventMapMoved()
+      })
+    },
     locationCreated (data) {
       window.location.href = data.request_url
     },
@@ -455,9 +519,16 @@ export default {
       }
     },
     userSearch () {
+      if (this.query.match(/^\d{5}$/)) {
+        let p = this.query
+        this.query = ''
+        return this.postcodeChosen(p)
+      }
       this.search()
     },
     search (options = {}) {
+      this.map.closePopup()
+      this.map.closeTooltip()
       this.mapMoved = false
       this.error = false
       this.searching = true
@@ -503,6 +574,14 @@ export default {
         } else {
           this.searchEmpty = data.length === 0
           this.locations = data
+
+          let bounds = L.latLngBounds(this.locations)
+          if (!this.maxBounds.contains(bounds)) {
+            this.locatorErrorMessage = 'Dein Ort scheint nicht in Deutschland zu sein!'
+            this.setLocator(true)
+            return
+          }
+          this.preventMapMoved()
         }
       }
     },
