@@ -6,7 +6,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.decorators import action
+
+from froide.foirequest.api_views import throttle_action
 
 from .models import Campaign, InformationObject
 
@@ -34,6 +37,11 @@ class AddLocationPermission(permissions.BasePermission):
         campaign = Campaign.objects.get(id=campaign_id)
         return campaign.get_provider().CREATE_ALLOWED
 
+class AddLocationThrottle(UserRateThrottle):
+    scope = 'campaign-createlocation'
+    THROTTLE_RATES = {
+        scope: '3/day',
+    }
 
 class InformationObjectViewSet(viewsets.ModelViewSet):
     RANDOM_COUNT = 3
@@ -46,6 +54,10 @@ class InformationObjectViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
+
+    @throttle_action((AddLocationThrottle,))
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         obj = serializer.save()
