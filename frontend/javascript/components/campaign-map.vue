@@ -574,13 +574,12 @@ export default {
         } else {
           this.searchEmpty = data.length === 0
           this.locations = data
-
-          /*let bounds = L.latLngBounds(this.locations)
+          let bounds = L.latLngBounds(this.locations)
           if (!this.maxBounds.contains(bounds)) {
             this.locatorErrorMessage = 'Dein Ort scheint nicht in Deutschland zu sein!'
             this.setLocator(true)
             return
-          }*/
+          }
           this.preventMapMoved()
         }
       }
