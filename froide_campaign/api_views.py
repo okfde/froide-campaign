@@ -30,18 +30,22 @@ def get_lat_lng(request):
         raise ValueError
     return lat, lng
 
-class AddLocationPermission(permissions.BasePermission):
 
+class AddLocationPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         campaign_id = request.data.get('campaign')
+        if campaign_id is None:
+            return False
         campaign = Campaign.objects.get(id=campaign_id)
         return campaign.get_provider().CREATE_ALLOWED
+
 
 class AddLocationThrottle(UserRateThrottle):
     scope = 'campaign-createlocation'
     THROTTLE_RATES = {
         scope: '3/day',
     }
+
 
 class InformationObjectViewSet(viewsets.ModelViewSet):
     RANDOM_COUNT = 3
