@@ -1,8 +1,7 @@
-
+from froide.publicbody.api_views import PublicBodySerializer
 from rest_framework import serializers
 
 from .models import InformationObject
-
 
 
 class CampaignProviderItemSerializer(serializers.Serializer):
@@ -20,6 +19,15 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
 
+
+class CampaignProviderRequestSerializer(serializers.Serializer):
+    ident = serializers.CharField()
+    lat = serializers.FloatField(required=False)
+    lng = serializers.FloatField(required=False)
+    name = serializers.CharField(required=False)
+    address = serializers.CharField(required=False)
+    publicbody = PublicBodySerializer(required=False)
+    makeRequestURL = serializers.CharField(required=False)
 
 class InformationObjectSerializer(serializers.ModelSerializer):
     lat = serializers.FloatField(source='get_latitude', required=False)

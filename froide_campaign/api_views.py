@@ -2,7 +2,9 @@ import random
 
 from django.contrib.gis.geos import Point
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 
+from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -14,6 +16,7 @@ from froide.foirequest.api_views import throttle_action
 from .models import Campaign, InformationObject
 
 from .serializers import InformationObjectSerializer
+from .serializers import CampaignProviderRequestSerializer
 from .geocode import run_geocode
 
 from .providers.base import BaseProvider
@@ -47,7 +50,9 @@ class AddLocationThrottle(UserRateThrottle):
     }
 
 
-class InformationObjectViewSet(viewsets.ModelViewSet):
+class InformationObjectViewSet(mixins.CreateModelMixin,
+                               mixins.RetrieveModelMixin,
+                               viewsets.GenericViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
@@ -69,6 +74,24 @@ class InformationObjectViewSet(viewsets.ModelViewSet):
         point = self.get_geo(obj)
         obj.geo = point
         obj.save()
+
+    def retrieve(self, request, *args, **kwargs):
+        campaign_id = request.GET.get('campaign')
+        campaign = get_object_or_404(
+            Campaign.objects.get_public(),
+            id=campaign_id
+        )
+        provider = campaign.get_provider()
+        ident = kwargs.pop('pk')
+        obj = provider.get_by_ident(ident)
+        data = provider.get_provider_item_data(obj)
+        data['publicbody'] = provider.get_publicbody(ident)
+        data['makeRequestURL'] = provider.get_request_url(ident)
+
+        serializer = CampaignProviderRequestSerializer(
+            data, context={'request': request}
+        )
+        return Response(serializer.data)
 
     def get_queryset(self):
         return InformationObject.objects.none()
