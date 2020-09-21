@@ -84,12 +84,14 @@ class CampaignPlugin(CMSPluginBase):
             pass
         add_location_allowed = instance.campaign.get_provider().CREATE_ALLOWED
         plugin_settings = instance.settings
+        request_extra_text = instance.request_extra_text
 
         plugin_settings.update({
             'city': city or {},
             'campaignId': campaign_id,
             'lawType': law_type,
-            'addLocationAllowed': add_location_allowed
+            'addLocationAllowed': add_location_allowed,
+            'requestExtraText': request_extra_text
         })
         return plugin_settings
 

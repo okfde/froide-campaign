@@ -342,6 +342,7 @@ if CMSPlugin is not None:
         )
 
         settings = JSONField(default=dict, blank=True)
+        request_extra_text = models.TextField(blank=True)
 
         def __str__(self):
             return str(self.campaign)

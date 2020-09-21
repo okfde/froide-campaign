@@ -52,10 +52,7 @@
             <user-terms v-if="!userInfo"
               :form="userForm"
             ></user-terms>
-            <p v-if="!userInfo" class="small text-right">
-              Sie erhalten im Rahmen der Aktion „Topf Secret“ einmalig eine separate E-Mail von foodwatch.
-              (<a href="https://www.foodwatch.org/de/datenschutz/#topfsecret">Datenschutz</a>)
-            </p>
+            <p v-if="this.extraText" v-html="this.extraText" class="small text-right"></p>
             <div class="text-right">
               <button type="submit" class="btn btn-lg btn-success" :disabled="submitting">
                 <i class="fa fa-angle-double-right" aria-hidden="true"></i>
@@ -112,6 +109,9 @@ export default {
       type: String
     },
     lawType: {
+      type: String
+    },
+    extraText: {
       type: String
     },
     campaignId: {

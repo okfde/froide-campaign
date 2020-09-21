@@ -9,6 +9,7 @@
       :current-url="currentUrl"
       :campaignId="config.campaignId"
       :lawType="config.lawType"
+      :extraText="config.requestExtraText"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"
