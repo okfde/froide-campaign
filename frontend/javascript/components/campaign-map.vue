@@ -541,7 +541,9 @@ export default {
       })
     },
     locationCreated (data) {
-      window.location.href = data.request_url
+      data.full = false
+      this.locations.push(data)
+      this.startRequest(data)
     },
     goToMap () {
       let fmc = this.$refs.campaignMapContainer

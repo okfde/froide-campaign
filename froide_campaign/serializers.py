@@ -29,16 +29,18 @@ class CampaignProviderRequestSerializer(serializers.Serializer):
     publicbody = PublicBodySerializer(required=False)
     makeRequestURL = serializers.CharField(required=False)
 
+
 class InformationObjectSerializer(serializers.ModelSerializer):
     lat = serializers.FloatField(source='get_latitude', required=False)
     lng = serializers.FloatField(source='get_longitude', required=False)
+    ident = serializers.CharField(required=False)
     request_url = serializers.SerializerMethodField()
 
     class Meta:
         model = InformationObject
         fields = (
             'title', 'address', 'campaign', 'lat', 'lng',
-            'request_url', 'foirequests'
+            'request_url', 'foirequests', 'ident'
         )
 
     def get_request_url(self, obj):
