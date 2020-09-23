@@ -13,7 +13,7 @@ from rest_framework.decorators import action
 
 from froide.foirequest.api_views import throttle_action
 
-from .models import Campaign, InformationObject
+from .models import Campaign, InformationObject, CampaignSubscription
 
 from .serializers import InformationObjectSerializer
 from .serializers import CampaignProviderRequestSerializer
@@ -102,6 +102,21 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             if geo:
                 lat_lng = geo[0]
                 return Point(lat_lng[1], lat_lng[0])
+
+    @action(detail=False, methods=['post'])
+    def subscribe(self, request):
+        email = request.data.get('email')
+        campaign_id = request.data.get('campaign')
+        if email and campaign_id:
+            campaign = Campaign.objects.get(id=campaign_id)
+            obj, created = CampaignSubscription.objects.get_or_create(
+                campaign=campaign, email=email)
+            resp_data = {
+                'email': obj.email,
+                'campaign': obj.campaign.id
+            }
+            return Response(resp_data)
+        return Response({})
 
     @action(detail=False, methods=['get'])
     def random(self, request):
