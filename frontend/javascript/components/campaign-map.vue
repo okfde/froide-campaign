@@ -2,6 +2,7 @@
   <div>
   <campaign-request v-if="showRequestForm"
       :config="requestConfig"
+      :buttonText="config.button_text"
       :request-form="requestForm"
       :user-info="user"
       :user-form="userForm"
@@ -10,6 +11,7 @@
       :campaignId="config.campaignId"
       :lawType="config.lawType"
       :extraText="config.requestExtraText"
+      :subscribeText="config.subscribe_text"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"

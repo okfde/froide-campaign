@@ -52,11 +52,34 @@
             <user-terms v-if="!userInfo"
               :form="userForm"
             ></user-terms>
-            <p v-if="this.extraText" v-html="this.extraText" class="small text-right"></p>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div class="form-group row">
+                      <div class="col-lg-9">
+                        <div class="form-check">
+                          <label class="form-check-label">
+                            <input type="checkbox" name="subscribe" id="id_subscribe" class="form-check-input">
+                            <span v-if="this.subscribeText">{{ this.subscribeText }}</span>
+                            <span v-else>Bitte senden Sie mir Informationen zu dieser Kampagne per E-mail</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <p v-if="this.extraText" v-html="this.extraText" class="mb-0"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="text-right">
-              <button type="submit" class="btn btn-lg btn-success" :disabled="submitting">
+              <button v-if="buttonText" type="submit" class="btn btn-lg btn-success" :disabled="submitting">
                 <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                Kontrollbericht anfragen
+                {{ this.buttonText }}
+              </button>
+              <button v-else type="submit" class="btn btn-lg btn-success" :disabled="submitting">
+                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                Anfrage abschicken
               </button>
             </div>
           </form>
@@ -75,6 +98,7 @@ import {selectBestLaw} from 'froide/frontend/javascript/lib/law-select'
 import CampaignLoader from './campaign-loader'
 import CampaignDetailMixin from '../lib/detailmixin'
 import CampaignItemMixin from '../lib/mixin.js'
+import {postData} from '../lib/utils.js'
 
 const MAX_REQUEST_COUNT = 3
 
@@ -88,6 +112,9 @@ export default {
     UserRegistration
   },
   props: {
+    buttonText: {
+      type: String
+    },
     data: {
       type: Object
     },
@@ -112,6 +139,9 @@ export default {
       type: String
     },
     extraText: {
+      type: String
+    },
+    subscribeText: {
       type: String
     },
     campaignId: {
@@ -184,8 +214,21 @@ export default {
     formSubmit () {
       this.submitting = true
       window.setTimeout(() => {
-        this.$emit('requestmade', this.data)
-        this.$emit('close')
+        let subscribe = document.getElementById('id_subscribe').value
+        let email = document.getElementById('email_address').innerHTML.trim()
+        if (subscribe == 'on' && email) {
+          postData('/api/v1/campaigninformationobject/subscribe/', {
+            campaign: this.campaignId,
+            email: email
+          }, this.$root.csrfToken).then((data) => {
+            if (data.error) {
+              console.warn(data.message)
+              this.error = true
+            }
+            this.$emit('requestmade', this.data)
+            this.$emit('close')
+          })
+        }
       }, 300)
     }
   }
