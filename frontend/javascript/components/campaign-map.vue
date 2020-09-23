@@ -117,6 +117,7 @@
                         :color="getStatusColor(getStatus(location))"
                         :status="getStatus(location)"
                         :data="location"
+                        :buttonText="config.button_text"
                         @startRequest="startRequest"
                         @detail="setDetail"/>
                   </l-popup>
@@ -140,6 +141,8 @@
               :color="getStatusColor(getStatus(location))"
               :status="getStatus(location)"
               :data="location"
+              :buttonText="config.button_text"
+              @startRequest="startRequest"
             ></campaign-sidebar-item>
           </div>
       </div>
