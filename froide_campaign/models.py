@@ -323,6 +323,11 @@ class InformationObject(models.Model):
             return self.foirequest.get_absolute_url()
 
 
+class CampaignSubscription(models.Model):
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    email = models.EmailField()
+
+
 if CMSPlugin is not None:
 
     class CampaignRequestsCMSPlugin(CMSPlugin):
@@ -333,7 +338,6 @@ if CMSPlugin is not None:
 
         def __str__(self):
             return str(self.campaign_page)
-
 
     class CampaignCMSPlugin(CMSPlugin):
         campaign = models.ForeignKey(
