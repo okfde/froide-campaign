@@ -1,11 +1,31 @@
 <template>
-	<div class="campaign-map-container container-fluid" ref="campaignMapContainer" id="campaign-map-container">
+  <div>
+  <campaign-request v-if="showRequestForm"
+      :config="requestConfig"
+      :buttonText="config.button_text"
+      :request-form="requestForm"
+      :user-info="user"
+      :user-form="userForm"
+      :data="showRequestForm"
+      :current-url="currentUrl"
+      :campaignId="config.campaignId"
+      :lawType="config.lawType"
+      :extraText="config.requestExtraText"
+      :subscribeText="config.subscribe_text"
+      @detailfetched="detailFetched"
+      @requestmade="requestMade"
+      @userupdated="userUpdated"
+      @tokenupdated="tokenUpdated"
+      @close="requestFormClosed"
+    ></campaign-request>
 
+  <div v-show="!showRequestForm">
+	  <div class="campaign-map-container container-fluid" ref="campaignMapContainer" id="campaign-map-container">
       <div class="searchbar d-block d-md-none" id="searchbar">
         <div class="searchbar-inner">
           <div class="input-group">
             <div class="clearable-input">
-              <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" placeholder="{ this.placeholderText }" @keydown.enter.prevent="userSearch">
+              <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" :placeholder="placeholderText" @keydown.enter.prevent="userSearch">
               <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
             </div>
             <div class="input-group-append">
@@ -15,12 +35,11 @@
               </button>
             </div>
             <div class="input-group-append mr-auto">
-                <button class="btn btn-outline-secondary" @click="setLocator(true)">
-                  <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                  <span class="d-none d-sm-none d-md-inline">Ort</span>
-                </button>
-              </div>
-
+              <button class="btn btn-outline-secondary" @click="setLocator(true)">
+                <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                <span class="d-none d-sm-none d-md-inline">Ort</span>
+              </button>
+            </div>
             <div class="input-group-append">
               <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                 <i class="fa fa-gears" aria-hidden="true"></i>
@@ -34,7 +53,6 @@
       <div class="row">
         <div class="col-md-8 col-lg-9 order-md-2 map-column">
           <div class="map-container" ref="campaignMap" id="campaign-map" :class="mapContainerClass" :style="mapContainerStyle">
-
             <div v-if="showRefresh || searching" class="redo-search">
                 <button v-if="showRefresh" class="btn btn-dark" @click="search">
                   Im aktuellen Bereich suchen
@@ -46,7 +64,6 @@
                   Suche läuft&hellip;
                 </button>
             </div>
-
             <div class="map-search d-none d-md-block" :class="{'map-search-full': !(showRefresh || searching)}">
               <div class="input-group">
                 <div class="clearable-input">
@@ -78,76 +95,81 @@
                   <switch-button v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
                 </div>
               </slide-up-down>
-
-            </div>
-            <l-map ref="map" :zoom.sync="zoom" :center="center" :options="mapOptions" :max-bounds="maxBounds">
-              <l-tile-layer :url="tileProvider.url"/>
-                <l-control-attribution
-                  position="bottomright"
-                  :prefix="tileProvider.attribution"
-                />
-                <l-control-zoom position="bottomright"/>
-                <l-control position="bottomleft" >
-                  <ul class="color-legend">
-                    <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
-                    <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
-                  </ul>
-                </l-control>
-                <l-marker v-for="(location, index) in locationWithGeo" :key="index"
-                  :lat-lng="[location.lat, location.lng]" :title="location.title"
-                  :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
-                  <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
-                    <l-popup :options="popupOptions" v-if="!isMobile">
-                      <campaign-popup
-                          :color="getStatusColor(getStatus(location))"
-                          :status="getStatus(location)"
-                          :data="location"
-                          @detail="setDetail"/>
-                    </l-popup>
-                  </l-popup>
-              </l-marker>
-            </l-map>
           </div>
+
+          <l-map ref="map" :zoom.sync="zoom" :center="center" :options="mapOptions" :max-bounds="maxBounds">
+            <l-tile-layer :url="tileProvider.url"/>
+              <l-control-attribution
+                position="bottomright"
+                :prefix="tileProvider.attribution"
+              />
+              <l-control-zoom position="bottomright"/>
+              <l-control position="bottomleft" >
+                <ul class="color-legend">
+                  <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
+                  <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
+                </ul>
+              </l-control>
+              <l-marker v-for="(location, index) in locationWithGeo" :key="index"
+                :lat-lng="[location.lat, location.lng]" :title="location.title"
+                :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
+                <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
+                  <l-popup :options="popupOptions" v-if="!isMobile">
+                    <campaign-popup
+                        :color="getStatusColor(getStatus(location))"
+                        :status="getStatus(location)"
+                        :data="location"
+                        :buttonText="config.button_text"
+                        @startRequest="startRequest"
+                        @detail="setDetail"/>
+                  </l-popup>
+            </l-marker>
+          </l-map>
         </div>
-        <div class="col-md-4 col-lg-3 order-md-1 sidebar-column">
-            <div class="sidebar" :class="{'modal-active': modalActive}"
-                ref="campaignList" id="campaign-list" v-scroll.window="handleSidebarScroll">
-              <div class="new-venue-area" v-if="hasSearched || error">
-                <template v-if="searchEmpty">
-                  <p>{{ nothingFoundText }}</p>
-                </template>
-                <button v-if="config.addLocationAllowed" class="btn btn-sm btn-light" @click="setNewPlace(true)">
-                  Ort nicht gefunden?
-                </button>
-              </div>
-              <campaign-sidebar-item v-for="(location, index) in locations"
-                :key="index"
-                :color="getStatusColor(getStatus(location))"
-                :status="getStatus(location)"
-                :data="location"
-              ></campaign-sidebar-item>
-            </div>
-        </div>
-        <campaign-locator v-if="showLocator"
-          :defaultPostcode="postcode"
-          :defaultLocation="locationName"
-          :exampleCity="city"
-          :locationKnown="locationKnown"
-          :error="error"
-          :error-message="locatorErrorMessage"
-          :geolocation-disabled="geolocationDisabled"
-          :isMobile="isMobile"
-          @close="setLocator(false)"
-          @coordinatesChosen="coordinatesChosen"
-          @locationChosen="locationChosen"
-          ></campaign-locator>
-        <campaign-new-location v-if="showNewPlace"
-          @close="showNewPlace = false"
-          @locationcreated="locationCreated"
-          :campaignId="config.campaignId"
-        ></campaign-new-location>
       </div>
+      <div class="col-md-4 col-lg-3 order-md-1 sidebar-column">
+          <div class="sidebar" :class="{'modal-active': modalActive}"
+              ref="campaignList" id="campaign-list" v-scroll.window="handleSidebarScroll">
+            <div class="new-venue-area" v-if="hasSearched || error">
+              <template v-if="searchEmpty">
+                <p>{{ nothingFoundText }}</p>
+              </template>
+              <button v-if="config.addLocationAllowed" class="btn btn-sm btn-light" @click="setNewPlace(true)">
+                Ort nicht gefunden?
+              </button>
+            </div>
+            <campaign-sidebar-item v-for="(location, index) in locations"
+              :key="index"
+              :color="getStatusColor(getStatus(location))"
+              :status="getStatus(location)"
+              :data="location"
+              :buttonText="config.button_text"
+              @startRequest="startRequest"
+            ></campaign-sidebar-item>
+          </div>
+      </div>
+      <campaign-locator v-if="showLocator"
+        :defaultPostcode="postcode"
+        :defaultLocation="locationName"
+        :exampleCity="city"
+        :locationKnown="locationKnown"
+        :error="error"
+        :error-message="locatorErrorMessage"
+        :geolocation-disabled="geolocationDisabled"
+        :isMobile="isMobile"
+        @close="setLocator(false)"
+        @coordinatesChosen="coordinatesChosen"
+        @locationChosen="locationChosen"
+        ></campaign-locator>
+      <campaign-new-location v-if="showNewPlace"
+        @close="showNewPlace = false"
+        @locationcreated="locationCreated"
+        :campaignId="config.campaignId"
+      ></campaign-new-location>
     </div>
+    </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -163,6 +185,7 @@ import CampaignSidebarItem from './campaign-sidebar-item'
 import CampaignPopup from './campaign-popup'
 import SwitchButton from './switch-button'
 import CampaignNewLocation from './campaign-new-location'
+import CampaignRequest from './campaign-request'
 
 import {
   getQueryVariable, canUseLocalStorage, getPinURL, COLORS, latlngToGrid
@@ -197,11 +220,25 @@ export default {
   props: {
   	config: {
       type: Object
+    },
+    userInfo: {
+      type: Object,
+      default: null
+    },
+    userForm: {
+      type: Object,
+      default: null
+    },
+    requestForm: {
+      type: Object
+    },
+    requestConfig: {
+      type: Object
     }
   },
   components: {
     LMap, LTileLayer, LControlLayers, LControlZoom, LControl, LControlAttribution, LMarker, LPopup, LTooltip,
-    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation, CampaignLocator
+    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation, CampaignLocator, CampaignRequest
   },
   data () {
   	let locationKnown = false
@@ -264,6 +301,9 @@ export default {
     this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
 
   	return {
+      alreadyRequested: {},
+      user: this.userInfo,
+      showRequestForm: null,
   		locations: [],
       zoom: zoom,
       locationKnown: locationKnown,
@@ -353,6 +393,16 @@ export default {
     )
   },
   computed: {
+    currentUrl () {
+      let url = `${this.config.appUrl}?latlng=${this.center[0]},${this.center[1]}`
+      if (this.selectedVenueId) {
+        url += `&ident=${encodeURIComponent(this.selectedVenue.ident)}`
+        url += `&query=${encodeURIComponent(this.selectedVenue.name)}`
+      } else if (this.query) {
+        url += `&query=${encodeURIComponent(this.query)}`
+      }
+      return url
+    },
     locationWithGeo () {
       if (this.locations.length > 0) {
         return this.locations.filter(location => location.lat)
@@ -421,6 +471,34 @@ export default {
     },
   },
   methods: {
+    tokenUpdated (token) {
+      this.$root.csrfToken = token
+    },
+    userUpdated (user) {
+      this.user = user
+    },
+    requestMade (data) {
+      this.alreadyRequested[data.id] = true
+    },
+    detailFetched (data) {
+      this.locations = this.locations.map((f) => {
+        if (f.ident === data.ident) {
+          f.publicbody = data.publicbody
+          f.makeRequestURL = data.makeRequestURL
+          f.full = true
+          return f
+        }
+        return f
+      })
+    },
+    startRequest (data) {
+      this.showRequestForm = data
+      this.goToMap()
+    },
+    requestFormClosed () {
+      this.showRequestForm = null
+      this.goToMap()
+    },
     setLocator (data) {
       this.showLocator = data
       if (data) {
@@ -465,7 +543,9 @@ export default {
       })
     },
     locationCreated (data) {
-      window.location.href = data.request_url
+      data.full = false
+      this.locations.push(data)
+      this.startRequest(data)
     },
     goToMap () {
       let fmc = this.$refs.campaignMapContainer

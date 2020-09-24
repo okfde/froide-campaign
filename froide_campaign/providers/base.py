@@ -1,5 +1,5 @@
 from collections import defaultdict
-from urllib.parse import urlencode
+from urllib.parse import urlencode, quote
 
 from django.urls import reverse
 from django.conf import settings
@@ -204,7 +204,7 @@ class BaseProvider:
             hide_features.append('hide_publicbody')
 
         query.update({f: b'1' for f in hide_features})
-        query = urlencode(query)
+        query = urlencode(query, quote_via=quote)
         return '%s%s?%s' % (settings.SITE_URL, url, query)
 
     def connect_request(self, ident, sender):

@@ -6,6 +6,10 @@
 <campaign-map
     id="campaign-map-component"
     :config="{{ config }}"
+    :request-config="{{ request_config }}"
+    {% if request.user.is_authenticated %}:user-info="{{ request.user.as_json }}"{% endif %}
+    :user-form="{{ user_form.as_json }}"
+    :request-form="{{ request_form.as_json }}"
     >
 </campaign-map>
 

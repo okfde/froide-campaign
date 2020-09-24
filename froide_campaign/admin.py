@@ -12,7 +12,8 @@ from django.db.models import Count
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
 
-from .models import CampaignPage, Campaign, InformationObject
+from .models import (CampaignPage, Campaign, InformationObject,
+                     CampaignSubscription)
 from .utils import CSVImporter
 
 
@@ -29,6 +30,11 @@ class CampaignAdmin(admin.ModelAdmin):
         'requires_foi',
         'paused',
     )
+
+
+class CampaignSubscriptionsAdmin(admin.ModelAdmin):
+    list_filter = ('campaign',)
+    list_display = ('campaign', 'email')
 
 
 class InformationObjectAdmin(admin.ModelAdmin):
@@ -128,3 +134,4 @@ class InformationObjectAdmin(admin.ModelAdmin):
 admin.site.register(CampaignPage, CampaignPageAdmin)
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(InformationObject, InformationObjectAdmin)
+admin.site.register(CampaignSubscription, CampaignSubscriptionsAdmin)

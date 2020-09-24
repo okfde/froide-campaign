@@ -15,15 +15,19 @@
           <div class="col-12">
             <div v-if="hasRequests" class="request-status">
               <p>
-                <p>
-                  <a :href="'/a/' + data.foirequests[0]" target="_blank">zur Anfrage&nbsp;&rarr;</a>
-                </p>
+                <a :href="'/a/' + data.foirequests[0]" target="_blank">zur Anfrage&nbsp;&rarr;</a>
               </p>
             </div>
-            <a v-if="!hasRequests" class="btn btn-primary btn-sm make-request-btn" :href="data.request_url"  target="_blank">
-              Anfrage<br class="d-block d-sm-none"/>
-              erstellen&nbsp;&rarr;
-            </a>
+            <p>
+              <a v-if="buttonText" @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
+                <br class="d-block d-sm-none"/>
+                {{this.buttonText}}&nbsp;&rarr;
+              </a>
+              <a v-else @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
+                Ort<br class="d-block d-sm-none"/>
+                anfragen&nbsp;&rarr;
+              </a>
+            </p>
           </div>
         </div>
       </div>
@@ -39,6 +43,9 @@ export default {
   mixins: [CampaignItemMixin],
   props: {
     color: {
+      type: String
+    },
+    buttonText: {
       type: String
     },
     status: {
