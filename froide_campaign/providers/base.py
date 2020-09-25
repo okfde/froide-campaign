@@ -7,6 +7,8 @@ from django.template import Context
 from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 
+from froide.campaign.models import Campaign
+
 from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
 
@@ -221,6 +223,13 @@ class BaseProvider:
 
         if iobj.foirequest is None:
             iobj.foirequest = sender
+
+        try:
+            campaign = Campaign.objects.get(ident=self.campaign.slug)
+            sender.campaign = campaign
+            sender.save()
+        except Campaign.DoesNotExist:
+            pass
 
         iobj.foirequests.add(sender)
         iobj.save()
