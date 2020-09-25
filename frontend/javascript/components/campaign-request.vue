@@ -158,7 +158,7 @@ export default {
       fetching: !this.data.full,
       closedWarning: false,
       submitting: false,
-      addressHelpText: 'Ihre Adresse wird nicht öffentlich angezeigt. <strong class="text-danger">Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet.</strong>'
+      addressHelpText: 'Ihre Adresse wird nicht öffentlich angezeigt.'
     }
   },
   computed: {
