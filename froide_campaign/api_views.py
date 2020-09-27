@@ -106,16 +106,32 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     @action(detail=False, methods=['post'])
     def subscribe(self, request):
         email = request.data.get('email')
+        if request.user.is_authenticated:
+            email = request.user.email
+
         campaign_id = request.data.get('campaign')
+        subscribe = request.data.get('subscribe')
+
         if email and campaign_id:
-            campaign = Campaign.objects.get(id=campaign_id)
-            obj, created = CampaignSubscription.objects.get_or_create(
-                campaign=campaign, email=email)
-            resp_data = {
-                'email': obj.email,
-                'campaign': obj.campaign.id
-            }
-            return Response(resp_data)
+            try:
+                campaign = Campaign.objects.get(id=campaign_id)
+                if subscribe:
+                    obj, created = CampaignSubscription.objects.get_or_create(
+                        campaign=campaign, email=email)
+                    return Response({
+                        'email': obj.email,
+                        'campaign': obj.campaign.id
+                    })
+                else:
+                    try:
+                        obj = CampaignSubscription.objects.get(
+                            campaign=campaign, email=email).delete()
+                    except CampaignSubscription.DoesNotExist:
+                        pass
+            except Campaign.DoesNotExist:
+                return Response({
+                    'error': 'Campaign does not exist'
+                })
         return Response({})
 
     @action(detail=False, methods=['get'])
