@@ -12,6 +12,7 @@
       :lawType="config.lawType"
       :extraText="config.requestExtraText"
       :subscribeText="config.subscribe_text"
+      :hasSubscription="config.hasSubscription"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"

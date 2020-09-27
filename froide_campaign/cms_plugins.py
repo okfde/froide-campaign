@@ -2,8 +2,6 @@ import json
 import logging
 
 from django.utils.translation import gettext_lazy as _
-from django.conf import settings
-from django.urls import reverse
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
@@ -12,6 +10,7 @@ from froide.foirequest.views import MakeRequestView
 
 from .models import (CampaignRequestsCMSPlugin,
                      InformationObject,
+                     CampaignSubscription,
                      CampaignCMSPlugin)
 
 try:
@@ -86,12 +85,19 @@ class CampaignPlugin(CMSPluginBase):
         plugin_settings = instance.settings
         request_extra_text = instance.request_extra_text
 
+        has_subscription = False
+        if request.user.is_authenticated:
+            email = request.user.email
+            has_subscription = CampaignSubscription.objects.filter(
+                email=email, campaign=instance.campaign).exists()
+
         plugin_settings.update({
             'city': city or {},
             'campaignId': campaign_id,
             'lawType': law_type,
             'addLocationAllowed': add_location_allowed,
-            'requestExtraText': request_extra_text
+            'requestExtraText': request_extra_text,
+            'hasSubscription': has_subscription
         })
         return plugin_settings
 
