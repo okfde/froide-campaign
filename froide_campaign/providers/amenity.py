@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
@@ -47,7 +48,7 @@ class AmenityProvider(BaseProvider):
         try:
             pk = ident.split('_')[0]
             return self.get_queryset().get(id=pk)
-        except ValueError:
+        except (ValueError, ObjectDoesNotExist):
             return super().get_by_ident(ident)
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
