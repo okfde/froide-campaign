@@ -13,15 +13,15 @@
             <a :href="'/a/' + data.foirequests[0]" target="_blank">zur Anfrage&nbsp;&rarr;</a>
           </p>
         </div>
-        <p>
+        <p v-if="!hasRequests">
           <a v-if="buttonText" @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
-                <br class="d-block d-sm-none"/>
-                {{this.buttonText}}&nbsp;&rarr;
-              </a>
-              <a v-else @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
-                Ort<br class="d-block d-sm-none"/>
-                anfragen&nbsp;&rarr;
-              </a>
+            <br class="d-block d-sm-none"/>
+            {{this.buttonText}}&nbsp;&rarr;
+          </a>
+          <a v-else @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
+            Ort<br class="d-block d-sm-none"/>
+            anfragen&nbsp;&rarr;
+          </a>
         </p>
       </div>
     </div>
