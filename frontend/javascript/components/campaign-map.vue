@@ -549,12 +549,12 @@ export default {
       this.startRequest(data)
     },
     goToMap () {
-      let fmc = this.$refs.campaignMapContainer
-      if (fmc.getBoundingClientRect().top > 0) {
-        return
-      }
-      let y = fmc.offsetTop
-      smoothScroll({x: 0, y: y, el: this.scrollContainer}, 300)
+      // let fmc = this.$refs.campaignMapContainer
+      // if (fmc.getBoundingClientRect().top > 0) {
+      //   return
+      // }
+      // let y = fmc.offsetTop
+      // smoothScroll({x: 0, y: y, el: this.scrollContainer}, 300)
     },
     setNewPlace(show) {
       this.showNewPlace = show
