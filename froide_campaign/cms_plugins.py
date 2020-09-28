@@ -49,6 +49,7 @@ class CampaignPlugin(CMSPluginBase):
     name = _("Campaign Map")
     render_template = "froide_campaign/plugins/campaign_map.html"
     model = CampaignCMSPlugin
+    cache = False
 
     def get_city_from_request(self, request):
         if GeoIP2 is None:
