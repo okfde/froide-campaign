@@ -59,6 +59,9 @@ class CampaignPlugin(CMSPluginBase):
         if not ip:
             logger.warning('No IP found on request: %s', request)
             return
+        if ip == '127.0.0.1':
+            # Access via localhost
+            return
 
         try:
             g = GeoIP2()
