@@ -37,9 +37,7 @@ class AmenityProvider(BaseProvider):
 
     def filter(self, qs, **filter_kwargs):
         if filter_kwargs.get('q'):
-            qs = qs.filter(
-                Q(name__contains=filter_kwargs['q']) |
-                Q(name__contains=filter_kwargs['q'].capitalize()))
+            qs = qs.filter(name__search=filter_kwargs['q'])
         if filter_kwargs.get('requested') is not None:
             qs = qs.none()
         return qs
