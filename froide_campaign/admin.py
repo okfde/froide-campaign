@@ -1,4 +1,5 @@
 import csv
+import io
 from datetime import timedelta
 
 from django.contrib import admin
@@ -96,8 +97,13 @@ class InformationObjectAdmin(admin.ModelAdmin):
             raise PermissionDenied
         if not self.has_change_permission(request):
             raise PermissionDenied
-        reader = csv.DictReader(request.FILES['file'])
+
         importer = CSVImporter()
+        csv_file = request.FILES['file']
+        file = csv_file.read().decode('utf-8')
+        io_string = io.StringIO(file)
+        io_string.seek(0)
+        reader = csv.DictReader(io_string)
         importer.run(reader)
         return redirect('admin:froide_campaign_informationobject_changelist')
 
