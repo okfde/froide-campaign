@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.core.files.base import ContentFile
@@ -75,6 +76,10 @@ class CSVImporter(object):
             except ValueError:
                 pass
 
+        if 'context' in line:
+            context = line.pop('context')
+            context_json = json.loads(context)
+
         if iobj is not None:
             iobj.slug = slug
             iobj.ident = ident
@@ -82,7 +87,7 @@ class CSVImporter(object):
             iobj.publicbody = pb
             iobj.geo = point
             iobj.title = title
-            iobj.context = line
+            iobj.context = context_json
             iobj.save()
             return iobj
         return InformationObject.objects.create(
@@ -92,7 +97,7 @@ class CSVImporter(object):
             publicbody=pb,
             ident=ident,
             ordering=ordering,
-            context=line,
+            context=context_json,
             geo=point
         )
 
