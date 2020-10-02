@@ -1,3 +1,7 @@
+import operator
+
+from functools import reduce
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.template.defaultfilters import slugify
@@ -26,9 +30,18 @@ class AmenityProvider(BaseProvider):
         ident_list = iobs.values_list('ident', flat=True)
         osm_ids = [int(ident.split('_')[1])
                    for ident in ident_list if 'custom' not in ident]
-        return Amenity.objects.filter(
+
+        amenities =  Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')]
         ).exclude(Q(name='') | Q(osm_id__in=osm_ids))
+
+        if self.kwargs.get('exclude'):
+            clauses = (Q(name__icontains=p) for p in self.kwargs.get('exclude'))
+            query = reduce(operator.or_, clauses)
+            amenities =amenities.exclude(query)
+
+        return amenities
+
 
     def get_ident_list(self, qs):
         return [
