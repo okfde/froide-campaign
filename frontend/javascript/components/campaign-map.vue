@@ -13,6 +13,10 @@
       :extraText="config.requestExtraText"
       :subscribeText="config.subscribe_text"
       :hasSubscription="config.hasSubscription"
+      :publicbody="publicbody"
+      :publicbodies="[publicbody]"
+      :publicbodiesOptions="publicbodies"
+      @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"
@@ -332,7 +336,9 @@ export default {
   		markerOptions: {
         riseOnHover: true
       },
-  		stacked: this.isStacked(),
+      stacked: this.isStacked(),
+      publicbody: {},
+      publicbodies: [],
       query: query || '',
       lastQuery: '',
       onlyRequested: false,
@@ -472,6 +478,9 @@ export default {
     },
   },
   methods: {
+    updatePublicBody (publicbody) {
+      this.publicbody = publicbody
+    },
     tokenUpdated (token) {
       this.$root.csrfToken = token
     },
@@ -482,6 +491,8 @@ export default {
       this.alreadyRequested[data.id] = true
     },
     detailFetched (data) {
+      this.publicbody = data.publicbody
+      this.publicbodies = data.publicbodies.results
       this.locations = this.locations.map((f) => {
         if (f.ident === data.ident) {
           f.publicbody = data.publicbody
