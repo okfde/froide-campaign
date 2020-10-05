@@ -49,6 +49,7 @@ class CampaignListPlugin(CMSPluginBase):
     name = _("Campaign List")
     render_template = "froide_campaign/plugins/campaign_list.html"
     model = CampaignRequestsCMSPlugin
+    cache = False
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
