@@ -55,5 +55,4 @@ class AmenityLocalProvider(AmenityProvider):
         same_name = self._get_same_name_pbs(amenity)
         nearby_pbs = self._get_nearby_publicbodies(amenity)
         with_cat = super().get_publicbodies(ident)
-        all_pbs = same_name | nearby_pbs | with_cat
-        return all_pbs
+        return same_name.union(nearby_pbs, with_cat)
