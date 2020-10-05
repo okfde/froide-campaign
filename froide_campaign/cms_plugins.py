@@ -44,6 +44,25 @@ class CampaignRequestsPlugin(CMSPluginBase):
 
 
 @plugin_pool.register_plugin
+class CampaignListPlugin(CMSPluginBase):
+    module = _("Campaign")
+    name = _("Campaign List")
+    render_template = "froide_campaign/plugins/campaign_list.html"
+    model = CampaignRequestsCMSPlugin
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        campaigns = instance.campaign_page.campaigns.all()
+        iobjs = InformationObject.objects.filter(
+            campaign__in=campaigns,
+            foirequest__isnull=True
+        )
+        context.update({
+            'iobjs': iobjs
+        })
+        return context
+
+@plugin_pool.register_plugin
 class CampaignPlugin(CMSPluginBase):
     module = _("Campaign")
     name = _("Campaign Map")

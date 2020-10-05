@@ -1,0 +1,19 @@
+{% load follower_tags i18n %}
+
+
+{% for iobj in iobjs %}
+
+<div class="card mb-2">
+  <div class="card-body">
+    <h5 class="card-title">
+      {{ iobj.title }}
+    </h5>
+
+    <div class="text-right">
+      <a href="{{ iobj.make_request_url }}" class="btn btn-primary">{% trans "Make request" %}</a>
+    </div>
+
+  </div>
+</div>
+
+{% endfor %}
