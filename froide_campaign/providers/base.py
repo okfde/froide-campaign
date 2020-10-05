@@ -155,6 +155,9 @@ class BaseProvider:
         obj = self.get_by_ident(ident)
         return self._get_publicbody(obj)
 
+    def get_publicbodies(self, ident):
+        return [self.get_publicbody(ident)]
+
     def _get_publicbody(self, obj):
         return obj.publicbody
 

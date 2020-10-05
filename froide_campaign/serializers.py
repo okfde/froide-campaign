@@ -27,6 +27,7 @@ class CampaignProviderRequestSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
     address = serializers.CharField(required=False)
     publicbody = PublicBodySerializer(required=False)
+    publicbodies = PublicBodySerializer(many=True, required=False)
     makeRequestURL = serializers.CharField(required=False)
 
 
