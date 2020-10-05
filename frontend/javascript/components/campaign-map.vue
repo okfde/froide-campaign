@@ -485,6 +485,7 @@ export default {
       this.locations = this.locations.map((f) => {
         if (f.ident === data.ident) {
           f.publicbody = data.publicbody
+          f.publicbodies = data.publicbodies.results
           f.makeRequestURL = data.makeRequestURL
           f.full = true
           return f

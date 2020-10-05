@@ -82,7 +82,7 @@ class AmenityProvider(BaseProvider):
             })
         return d
 
-    def _get_publicbody(self, amenity):
+    def _get_publicbodies(self, amenity):
         pbs = PublicBody.objects.all()
         if self.kwargs.get('category'):
             pbs = pbs.filter(
@@ -98,11 +98,19 @@ class AmenityProvider(BaseProvider):
         pbs = pbs.filter(
             regions__in=regions
         )
+        return pbs
+
+    def _get_publicbody(self, amenity):
+        pbs = self._get_publicbodies(amenity)
         if len(pbs) == 0:
             return None
         elif len(pbs) > 1:
             return pbs[0]
         return pbs[0]
+
+    def get_publicbodies(self, ident):
+        amenity = self.get_by_ident(ident)
+        return self._get_publicbodies(amenity)
 
     def get_request_url_context(self, obj):
         return {

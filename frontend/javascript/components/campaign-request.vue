@@ -25,6 +25,12 @@
             <input type="hidden" name="public" value="1"/>
             <input type="hidden" v-for="k in hideParams" :key="k" :name="k" value="1"/>
 
+            <campaign-choose-publicbody v-if="!fetching"
+              :publicbodies="publicbodies"
+            >
+
+            </campaign-choose-publicbody>
+
             <request-form v-if="!fetching"
               :publicbodies="publicbodies"
               :request-form="requestForm"
@@ -34,7 +40,7 @@
               :initial-subject="subject"
               :initial-body="body"
               :show-draft="false"
-              :hide-publicbody-chooser="true"
+              :hide-publicbody-chooser="false"
               :hide-full-text="true"
               :hide-editing="true"
               :law-type="lawType"
@@ -90,6 +96,7 @@
 </template>
 
 <script>
+import CampaignChoosePublicbody from './campaign-choose-publicbody.vue'
 import RequestForm from 'froide/frontend/javascript/components/makerequest/request-form.vue'
 import UserRegistration from 'froide/frontend/javascript/components/makerequest/user-registration.vue'
 import UserTerms from 'froide/frontend/javascript/components/makerequest/user-terms.vue'
@@ -109,7 +116,8 @@ export default {
     RequestForm,
     CampaignLoader,
     UserTerms,
-    UserRegistration
+    UserRegistration,
+    CampaignChoosePublicbody
   },
   props: {
     buttonText: {
@@ -170,7 +178,7 @@ export default {
       return this.$root.csrfToken
     },
     publicbodies () {
-      return [this.data.publicbody]
+      return this.data.publicbodies
     },
     publicBody () {
       return this.data.publicbody

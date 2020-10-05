@@ -21,9 +21,7 @@ class AmenityLocalProvider(AmenityProvider):
             geo__dwithin=(amenity.geo, self.NEARBY_RADIUS)
         ).filter(
             geo__distance_lte=(amenity.geo, D(m=self.NEARBY_RADIUS))
-        ).annotate(
-            distance=Distance("geo", amenity.geo)
-        ).order_by("-number_of_requests", "distance")
+        )
         return nearby_pbs
 
     def _get_same_name_pbs(self, amenity):
@@ -34,7 +32,9 @@ class AmenityLocalProvider(AmenityProvider):
         if same_name_pbs and same_name_pbs.count() == 1:
             return same_name_pbs.first()
 
-        nearby_pbs = self._get_nearby_publicbodies(amenity)
+        nearby_pbs = self._get_nearby_publicbodies(amenity).annotate(
+            distance=Distance("geo", amenity.geo)
+        ).order_by("-number_of_requests", "distance")
 
         if nearby_pbs:
             by_name = nearby_pbs.filter(name=amenity.name)
@@ -54,6 +54,6 @@ class AmenityLocalProvider(AmenityProvider):
         amenity = self.get_by_ident(ident)
         same_name = self._get_same_name_pbs(amenity)
         nearby_pbs = self._get_nearby_publicbodies(amenity)
-        with_cat = super()._get_publicbody(amenity)
-        all_pbs = same_name | nearby_pbs
+        with_cat = super().get_publicbodies(ident)
+        all_pbs = same_name | nearby_pbs | with_cat
         return all_pbs
