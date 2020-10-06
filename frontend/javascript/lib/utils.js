@@ -50,6 +50,13 @@ const COLORS = {
   failure: '#dc3545',
 }
 
+const STATUS_STRINGS = {
+  normal: 'Jetzt anfragen!',
+  pending: 'Anfrage läuft',
+  success: 'Anfrage erfolgreich',
+  failure: 'Anfrage abgelehnt',
+}
+
 function getRequestStatus (status, resolution) {
   if (status === 'resolved') {
     if (resolution === 'successful' ||
@@ -115,5 +122,6 @@ export {
   getRequestStatus,
   getPinURL,
   COLORS,
+  STATUS_STRINGS,
   latlngToGrid
 }
