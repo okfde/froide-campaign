@@ -46,7 +46,7 @@ function getPinURL (color) {
 const COLORS = {
   normal: '#007bff',
   pending: '#ffc107',
-  success: '#28a745',
+  success: '#6db750',
   failure: '#dc3545',
 }
 
