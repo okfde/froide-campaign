@@ -6,7 +6,7 @@ from .views import (
     index, campaign_page,
     CampaignPageListView, CampaignPageEditView, AssignCampaignPageTeamView,
     CampaignPageEmbedView, CampaignPageUpdateEmbedView,
-    redirect_to_make_request
+    redirect_to_make_request, CampaignStatistics
 )
 from .api_views import InformationObjectViewSet
 
@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^(?P<slug>[-\w]+)/update-embed/$',
         CampaignPageUpdateEmbedView.as_view(),
         name='campaign-updated_embed'),
+    url(r'^(?P<slug>[-\w]+)/_stats/$',
+        CampaignStatistics.as_view(),
+        name='campaign-statisitcs')
 ]
 
 
