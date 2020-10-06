@@ -111,10 +111,10 @@
               <l-control-zoom position="bottomright"/>
               <l-control position="bottomleft" >
                 <ul class="color-legend">
-                  <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
-                  <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
-                  <li :style="colorLegend.success"><span>Anfrage erfolgreich</span></li>
-                  <li :style="colorLegend.failure"><span>Anfrage abgelehnt</span></li>
+                  <li :style="colorLegend.normal"><span>{{getStatusString('normal')}}</span></li>
+                  <li :style="colorLegend.pending"><span>{{getStatusString('pending')}}</span></li>
+                  <li :style="colorLegend.success"><span>{{getStatusString('success')}}</span></li>
+                  <li :style="colorLegend.failure"><span>{{getStatusString('failure')}}</span></li>
                 </ul>
               </l-control>
               <l-marker v-for="(location, index) in locationWithGeo" :key="index"
@@ -148,7 +148,7 @@
             <campaign-sidebar-item v-for="(location, index) in locations"
               :key="index"
               :color="getStatusColor(getStatus(location))"
-              :status="getStatus(location)"
+              :status="getStatusString(getStatus(location))"
               :data="location"
               :buttonText="config.button_text"
               @startRequest="startRequest"
@@ -195,7 +195,7 @@ import CampaignNewLocation from './campaign-new-location'
 import CampaignRequest from './campaign-request'
 
 import {
-  getQueryVariable, canUseLocalStorage, getPinURL, COLORS, latlngToGrid
+  getQueryVariable, canUseLocalStorage, getPinURL, COLORS, STATUS_STRINGS, latlngToGrid
 } from '../lib/utils'
 
 Vue.directive('scroll', {
@@ -711,6 +711,11 @@ export default {
     getStatusColor (status) {
       return COLORS[status]
 
+    },
+    getStatusString (status) {
+      if (status) {
+        return STATUS_STRINGS[status]
+      }
     },
     getIconUrl (status) {
       return getPinURL(COLORS[status])

@@ -14,6 +14,9 @@
         <div class="row">
           <div class="col-12">
             <div v-if="hasRequests" class="request-status">
+              <p :style="{'color':color}">
+                  {{ status }}
+              </p>
               <p>
                 <a :href="'/a/' + data.foirequest" target="_blank">zur Anfrage&nbsp;&rarr;</a>
               </p>
