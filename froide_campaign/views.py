@@ -1,8 +1,10 @@
+from django.db.models import Count, F
 from django.views.generic import DetailView, ListView
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, Http404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.http import QueryDict
@@ -12,6 +14,8 @@ import django_filters
 
 from froide.team.forms import AssignTeamForm
 from froide.team.views import AssignTeamView
+from froide.campaign.models import Campaign as FroideCampaign
+from froide.foirequest.models.request import FoiRequest
 
 from froide.helper.cache import cache_anonymous_page
 from froide.helper.auth import (can_read_object, can_manage_object,
@@ -250,3 +254,49 @@ class CampaignPageUpdateEmbedView(AuthRequiredMixin, DetailView):
         )
         self.object.save()
         return self.get(request)
+
+
+class CampaignStatistics(DetailView):
+    model = Campaign
+    template_name = 'froide_campaign/campaign_statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        context['stats'] = self.get_stats()
+        return context
+
+    def get_base_stats(self):
+        base_stats = dict(
+            request_count=Count('*'),
+            user_count=Count('user_id', distinct=True)
+        )
+        return base_stats
+
+    def agg_requests(self, qs):
+        return qs.annotate(
+            **self.get_base_stats()
+        ).order_by('-request_count')
+
+    def get_stats(self):
+        campaign = self.object
+
+        froide_cat = FroideCampaign.objects.get(ident=campaign.slug)
+        foirequest_total = FoiRequest.published.all()
+        all_requests = foirequest_total.filter(campaign=froide_cat)
+        aggregated = all_requests.aggregate(**self.get_base_stats())
+
+        foirequest_success = FoiRequest.published.successful()
+        success = foirequest_success.filter(campaign=froide_cat)
+
+        by_jurisdiction = self.agg_requests(
+            all_requests.annotate(
+                population=F('public_body__jurisdiction__region__population')
+            ).values('public_body__jurisdiction__name', 'population'),
+        )
+        return {
+            'all_requests': all_requests.count(),
+            'successfull_requests': success.count(),
+            'all_users': aggregated.get('user_count'),
+            'by_jurisdiction': by_jurisdiction
+        }
