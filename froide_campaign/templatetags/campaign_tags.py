@@ -55,7 +55,8 @@ def request_population_ratio(value):
     else:
         req = value.request_count
         pop = value.population
-    return round(req / pop * 100_000, 1)
+    if value and pop:
+        return round(req / pop * 100_000, 1)
 
 
 @register.filter
