@@ -113,6 +113,8 @@
                 <ul class="color-legend">
                   <li :style="colorLegend.normal"><span>Jetzt anfragen!</span></li>
                   <li :style="colorLegend.pending"><span>Anfrage läuft</span></li>
+                  <li :style="colorLegend.success"><span>Anfrage erfolgreich</span></li>
+                  <li :style="colorLegend.failure"><span>Anfrage abgelehnt</span></li>
                 </ul>
               </l-control>
               <l-marker v-for="(location, index) in locationWithGeo" :key="index"
@@ -688,6 +690,12 @@ export default {
     },
     getStatus (location) {
       if (location.foirequests.length > 0) {
+        if (location.resolution === 'successful') {
+          return 'success'
+        }
+        if (location.resolution === 'refused') {
+          return 'failed'
+        }
         return 'pending'
       }
       return 'normal'

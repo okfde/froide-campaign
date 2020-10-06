@@ -50,6 +50,7 @@ class BaseProvider:
         iobjs = self.get_queryset()
         iobjs = self.filter(iobjs, **filter_kwargs)
         iobjs = self.filter_geo(iobjs, **filter_kwargs)
+        iobjs = iobjs.order_by('id').distinct()
         iobjs = self.limit(iobjs)
 
         foirequests_mapping = self.get_foirequests_mapping(iobjs)
@@ -112,7 +113,7 @@ class BaseProvider:
         return qs[:self.kwargs.get('limit', LIMIT)]
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
-        d = {
+        data = {
             'ident': obj.ident,
             'title': obj.title,
             'address': obj.address,
@@ -123,13 +124,28 @@ class BaseProvider:
             'lng': obj.get_longitude,
             'foirequest': None,
             'foirequests': [],
+            'resolution': None
         }
-        if foirequests:
-            d.update({
-                'foirequest': first(foirequests[obj.ident]),
-                'foirequests': foirequests[obj.ident]
+
+        if foirequests and foirequests[obj.ident]:
+            fr, res = self._get_foirequest_info(foirequests[obj.ident])
+            data.update({
+                'foirequest': fr,
+                'foirequests': foirequests[obj.ident],
+                'resolution': res
             })
-        return d
+        return data
+
+    def _get_foirequest_info(self, frs):
+        id, res = frs[0].get('id'), ''
+
+        for fr in frs:
+            if fr.get('resolution'):
+                if not fr.get('resolution') == 'refused':
+                    id = fr.get('id')
+                    res = fr.get('resolution')
+
+        return id, res
 
     def get_foirequests_mapping(self, qs):
         ident_list = self.get_ident_list(qs)
@@ -140,9 +156,11 @@ class BaseProvider:
 
         iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
-            ).values_list('informationobject__ident', 'foirequest_id')
-        for iobj_ident, fr_id in iterable:
-            mapping[iobj_ident].append(fr_id)
+            ).values_list('informationobject__ident', 'foirequest_id',
+                          'foirequest__resolution')
+        for iobj_ident, fr_id, resolution in iterable:
+            mapping[iobj_ident].append({'id': fr_id,
+                                        'resolution': resolution})
 
         return mapping
 

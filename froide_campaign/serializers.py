@@ -11,13 +11,13 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     request_url = serializers.CharField(required=False)
     publicbody_name = serializers.CharField(required=False)
     description = serializers.CharField()
-    # TODO: remove foirequest
     foirequest = serializers.IntegerField(min_value=0, required=False)
     foirequests = serializers.ListField(
-        child=serializers.IntegerField(min_value=0), required=False
+        child=serializers.DictField(required=False)
     )
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
+    resolution = serializers.CharField(required=False)
 
 
 class CampaignProviderRequestSerializer(serializers.Serializer):
