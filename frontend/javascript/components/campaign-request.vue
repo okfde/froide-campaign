@@ -1,15 +1,18 @@
 <template>
-  <div class="container mb-5">
+  <div class="container mt-5 mb-5">
     <div class="row">
       <div class="col-12">
         <div v-if="fetching" class="loading">
           <campaign-loader></campaign-loader>
         </div>
         <template v-else>
-          <div class="text-right">
-            <button class="btn btn-sm btn-light" @click="$emit('close')">
-              zurück
-            </button>
+            <button class="btn btn-sm btn-light" @click="$emit('close')"> < zurück zur Karte</button>
+          <div class="row justify-content-md-end mt-5">
+            <campaign-choose-publicbody v-if="!fetching && publicbodiesOptions.length > 1"
+            :publicbodies="publicbodiesOptions"
+            :publicbody="publicbody"
+            @publicBodyChanged="updatePublicBody"
+            ></campaign-choose-publicbody>
           </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
@@ -19,14 +22,12 @@
           </template> -->
           <form method="post" @submit="formSubmit" :action="config.url.makeRequest" target="_blank">
             <input type="hidden" name="csrfmiddlewaretoken" :value="csrfToken"/>
-
             <input type="hidden" name="redirect_url" v-model="params.redirect"/>
             <input type="hidden" name="reference" v-model="params.ref"/>
             <input type="hidden" name="public" value="1"/>
             <input type="hidden" v-for="k in hideParams" :key="k" :name="k" value="1"/>
-
             <request-form v-if="!fetching"
-              :publicbodies="publicbodies"
+              :publicbodies="[publicbody]"
               :request-form="requestForm"
               :user="userInfo"
               :default-law="defaultLaw"
@@ -90,6 +91,7 @@
 </template>
 
 <script>
+import CampaignChoosePublicbody from './campaign-choose-publicbody.vue'
 import RequestForm from 'froide/frontend/javascript/components/makerequest/request-form.vue'
 import UserRegistration from 'froide/frontend/javascript/components/makerequest/user-registration.vue'
 import UserTerms from 'froide/frontend/javascript/components/makerequest/user-terms.vue'
@@ -109,7 +111,8 @@ export default {
     RequestForm,
     CampaignLoader,
     UserTerms,
-    UserRegistration
+    UserRegistration,
+    CampaignChoosePublicbody
   },
   props: {
     buttonText: {
@@ -149,6 +152,15 @@ export default {
     },
     campaignId: {
       type: Number
+    },
+    publicbody: {
+      type: Object
+    },
+    publicbodies: {
+      type: Array
+    },
+    publicbodiesOptions: {
+      type: Array
     }
   },
   mounted () {
@@ -162,18 +174,12 @@ export default {
       closedWarning: false,
       submitting: false,
       userHasSubscription: this.hasSubscription,
-      addressHelpText: 'Ihre Adresse wird nicht öffentlich angezeigt.'
+      addressHelpText: 'Ihre Adresse wird nicht öffentlich angezeigt.',
     }
   },
   computed: {
     csrfToken () {
       return this.$root.csrfToken
-    },
-    publicbodies () {
-      return [this.data.publicbody]
-    },
-    publicBody () {
-      return this.data.publicbody
     },
     showWarning () {
       return this.userInfo && this.data.userRequestCount >= MAX_REQUEST_COUNT && !this.closedWarning
@@ -208,10 +214,13 @@ export default {
       return a
     },
     defaultLaw () {
-      return selectBestLaw(this.publicBody.laws, this.lawType)
+      return selectBestLaw(this.publicbody.laws, this.lawType)
     }
   },
   methods: {
+    updatePublicBody (publicbody) {
+      this.$emit('publicBodyChanged', publicbody)
+    },
     close () {
       this.$emit('close')
     },

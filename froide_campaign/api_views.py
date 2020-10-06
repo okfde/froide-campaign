@@ -86,6 +86,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         obj = provider.get_by_ident(ident)
         data = provider.get_provider_item_data(obj)
         data['publicbody'] = provider.get_publicbody(ident)
+        data['publicbodies'] = provider.get_publicbodies(ident)
         data['makeRequestURL'] = provider.get_request_url(ident)
 
         serializer = CampaignProviderRequestSerializer(
