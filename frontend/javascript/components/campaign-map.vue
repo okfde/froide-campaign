@@ -121,7 +121,7 @@
                 :lat-lng="[location.lat, location.lng]" :title="location.title"
                 :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
                 <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
-                  <l-popup :options="popupOptions" v-if="!isMobile">
+                  <l-popup :options="popupOptions" >
                     <campaign-popup
                         :color="getStatusColor(getStatus(location))"
                         :status="getStatus(location)"
