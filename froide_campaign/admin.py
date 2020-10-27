@@ -3,6 +3,7 @@ import io
 from datetime import timedelta
 
 from django.contrib import admin
+from django import forms
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
 from django.conf.urls import url
@@ -14,7 +15,8 @@ from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
 
 from .models import (CampaignPage, Campaign, InformationObject,
-                     CampaignSubscription)
+                     CampaignSubscription,
+                     Questionaire, Question, Report, Answer)
 from .utils import CSVImporter
 
 
@@ -137,7 +139,53 @@ class InformationObjectAdmin(admin.ModelAdmin):
     clean_requests.short_description = _("Clean out bad requests")
 
 
+class QuestionForm(forms.ModelForm):
+
+    class Meta:
+        fields = '__all__'
+        model = Question
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    form = QuestionForm
+    extra = 0
+    min_num = 0
+
+
+class CampaignQuestionaireAdmin(admin.ModelAdmin):
+    list_filter = ('campaign',)
+    list_display = ('campaign', 'title')
+    inlines = [
+        QuestionInline
+    ]
+
+
+class AnswerForm(forms.ModelForm):
+
+    class Meta:
+        fields = '__all__'
+        model = Answer
+
+
+class AnswerInline(admin.TabularInline):
+    model = Answer
+    form = AnswerForm
+    extra = 0
+    min_num = 0
+
+
+class CampaignReportAdmin(admin.ModelAdmin):
+    raw_id_fields = ('informationsobject',)
+    list_filter = ('questionaire',)
+    inlines = [
+        AnswerInline
+    ]
+
+
 admin.site.register(CampaignPage, CampaignPageAdmin)
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(InformationObject, InformationObjectAdmin)
 admin.site.register(CampaignSubscription, CampaignSubscriptionsAdmin)
+admin.site.register(Questionaire, CampaignQuestionaireAdmin)
+admin.site.register(Report, CampaignReportAdmin)

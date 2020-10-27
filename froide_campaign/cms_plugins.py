@@ -1,17 +1,23 @@
 import json
 import logging
 
+from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 
+from froide.foirequest.models.request import Resolution
 from froide.foirequest.views import MakeRequestView
 
 from .models import (CampaignRequestsCMSPlugin,
                      InformationObject,
                      CampaignSubscription,
-                     CampaignCMSPlugin)
+                     CampaignCMSPlugin,
+                     CampaignQuestionaireCMSPlugin)
+
+from .serializers import InformationObjectSerializer
+from .providers import BaseProvider
 
 try:
     from django.contrib.gis.geoip2 import GeoIP2
@@ -62,6 +68,7 @@ class CampaignListPlugin(CMSPluginBase):
             'iobjs': iobjs
         })
         return context
+
 
 @plugin_pool.register_plugin
 class CampaignPlugin(CMSPluginBase):
@@ -137,5 +144,47 @@ class CampaignPlugin(CMSPluginBase):
                 fake_make_request_view.get_js_context()),
             'request_form': fake_make_request_view.get_form(),
             'user_form': fake_make_request_view.get_user_form()
+        })
+        return context
+
+
+@plugin_pool.register_plugin
+class CampaignQuestionairePlugin(CMSPluginBase):
+    module = _("Campaign")
+    name = _("Campaign Questionaire")
+    render_template = "froide_campaign/plugins/campaign_questionaire.html"
+    model = CampaignQuestionaireCMSPlugin
+    cache = False
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        iobjs = instance.questionaire.campaign.informationobject_set.all()
+
+        iobjs_success = iobjs.filter(
+            report__isnull=True,
+            foirequests__resolution=Resolution.SUCCESSFUL)
+
+        provider = BaseProvider(campaign=instance.questionaire.campaign)
+        mapping = provider.get_foirequests_mapping(iobjs_success)
+        data = [provider.get_provider_item_data(obj, foirequests=mapping)
+                for obj in iobjs_success]
+
+        questions = [{'text': question.text,
+                      'id': question.id,
+                      'options': question.options.split(','),
+                      'required': question.is_required,
+                      'helptext': question.help_text
+                      }
+                     for question in instance.questionaire.question_set.all()]
+
+        config = {
+            'viewerUrl': static('filingcabinet/viewer/web/viewer.html')
+        }
+
+        context.update({
+            'questionaire': instance.questionaire.id,
+            'informationobjects': json.dumps(data),
+            'questions': json.dumps(questions),
+            'config': json.dumps(config)
         })
         return context

@@ -114,14 +114,15 @@ class BaseProvider:
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         data = {
+            'id': obj.id,
             'ident': obj.ident,
             'title': obj.title,
             'address': obj.address,
             'request_url': self.get_request_url_redirect(obj.ident),
             'publicbody_name': self.get_publicbody_name(obj),
             'description': obj.get_description(),
-            'lat': obj.get_latitude,
-            'lng': obj.get_longitude,
+            'lat': obj.get_latitude(),
+            'lng': obj.get_longitude(),
             'foirequest': None,
             'foirequests': [],
             'resolution': None
@@ -144,7 +145,6 @@ class BaseProvider:
                 if not fr.get('resolution') == 'refused':
                     id = fr.get('id')
                     res = fr.get('resolution')
-
         return id, res
 
     def get_foirequests_mapping(self, qs):

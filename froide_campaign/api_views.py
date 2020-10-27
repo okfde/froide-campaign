@@ -2,7 +2,6 @@ import random
 
 from django.contrib.gis.geos import Point
 from django.shortcuts import get_object_or_404
-from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import mixins
 from rest_framework import viewsets
@@ -13,7 +12,9 @@ from rest_framework.decorators import action
 
 from froide.foirequest.api_views import throttle_action
 
-from .models import Campaign, InformationObject, CampaignSubscription
+from .models import (Campaign, InformationObject,
+                     CampaignSubscription, Questionaire,
+                     Question, Report, Answer)
 
 from .serializers import InformationObjectSerializer
 from .serializers import CampaignProviderRequestSerializer
@@ -103,6 +104,37 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             if geo:
                 lat_lng = geo[0]
                 return Point(lat_lng[1], lat_lng[0])
+
+    @action(detail=False, methods=['post'])
+    def report(self, request):
+        questionaire_id = int(request.data.get('questionaire'))
+        iobj_id = int(request.data.get('informationObject'))
+        answers = request.data.get('answers')
+        report_id = request.data.get('report')
+
+        questionaire = Questionaire.objects.get(id=questionaire_id)
+        information_object = InformationObject.objects.get(id=iobj_id)
+
+        if report_id:
+            report = Report.objects.get(id=report_id)
+            report.answer_set.all().delete()
+        else:
+            report = Report.objects.create(
+                questionaire=questionaire,
+                informationsobject=information_object
+            )
+
+        for answer in answers:
+            question_id = int(answer['questionId'])
+            question = Question.objects.get(id=question_id)
+            Answer.objects.create(
+                text=answer['answer'],
+                report=report,
+                question=question
+            )
+        return Response({
+            'report': report.id
+        })
 
     @action(detail=False, methods=['post'])
     def subscribe(self, request):

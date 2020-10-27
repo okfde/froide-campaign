@@ -1,0 +1,27 @@
+{% load static %}
+{% load sekizai_tags %}
+
+{% csrf_token %}
+
+<campaign-questionaire
+    id="campaign-questionaire-component"
+    :questionaire="{{ questionaire }}"
+    :informationobjects="{{ informationobjects }}"
+    :questions="{{ questions }}"
+    :config="{{ config }}"
+  >
+</campaign-questionaire>
+
+{% addtoblock 'js' %}
+  <script src="{% static 'js/common.js' %}" charset="utf-8"></script>
+{% endaddtoblock %}
+{% addtoblock 'js' %}
+<script src="{% static 'js/campaign_questionaire.js' %}" charset="utf-8"></script>
+{% endaddtoblock %}
+
+{% addtoblock 'css' %}
+  <link rel="stylesheet" href="{% static 'css/common.css' %}">
+{% endaddtoblock %}
+{% addtoblock 'css' %}
+  <link rel="stylesheet" href="{% static 'css/campaign_questionaire.css' %}">
+{% endaddtoblock %}
