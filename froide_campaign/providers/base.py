@@ -1,3 +1,5 @@
+import json
+
 from collections import defaultdict
 from urllib.parse import urlencode, quote
 
@@ -51,7 +53,8 @@ class BaseProvider:
         iobjs = self.filter(iobjs, **filter_kwargs)
         iobjs = self.filter_geo(iobjs, **filter_kwargs)
         iobjs = iobjs.order_by('id').distinct()
-        iobjs = self.limit(iobjs)
+        if filter_kwargs.get('limit') == '':
+            iobjs = self.limit(iobjs)
 
         foirequests_mapping = self.get_foirequests_mapping(iobjs)
 
@@ -125,7 +128,8 @@ class BaseProvider:
             'lng': obj.get_longitude(),
             'foirequest': None,
             'foirequests': [],
-            'resolution': None
+            'resolution': 'normal',
+            'context': obj.context
         }
 
         if foirequests and foirequests[obj.ident]:
@@ -138,13 +142,18 @@ class BaseProvider:
         return data
 
     def _get_foirequest_info(self, frs):
-        id, res = frs[0].get('id'), ''
+        id, res = frs[0].get('id'), 'pending'
+
+        refused = None
 
         for fr in frs:
             if fr.get('resolution'):
-                if not fr.get('resolution') == 'refused':
-                    id = fr.get('id')
-                    res = fr.get('resolution')
+                if fr.get('resolution') == 'successful':
+                    return fr.get('id'), fr.get('resolution')
+                if fr.get('resolution') == 'refused':
+                    refused = (fr.get('id'), fr.get('resolution'))
+        if refused:
+            return refused[0], refused[1]
         return id, res
 
     def get_foirequests_mapping(self, qs):
