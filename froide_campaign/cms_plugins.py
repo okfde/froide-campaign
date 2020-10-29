@@ -48,28 +48,6 @@ class CampaignRequestsPlugin(CMSPluginBase):
         })
         return context
 
-
-@plugin_pool.register_plugin
-class CampaignListPlugin(CMSPluginBase):
-    module = _("Campaign")
-    name = _("Campaign List")
-    render_template = "froide_campaign/plugins/campaign_list.html"
-    model = CampaignRequestsCMSPlugin
-    cache = False
-
-    def render(self, context, instance, placeholder):
-        context = super().render(context, instance, placeholder)
-        campaigns = instance.campaign_page.campaigns.all()
-        iobjs = InformationObject.objects.filter(
-            campaign__in=campaigns,
-            foirequest__isnull=True
-        )
-        context.update({
-            'iobjs': iobjs
-        })
-        return context
-
-
 @plugin_pool.register_plugin
 class CampaignPlugin(CMSPluginBase):
     module = _("Campaign")
@@ -188,3 +166,24 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             'config': json.dumps(config)
         })
         return context
+
+
+@plugin_pool.register_plugin
+class CampaignListPlugin(CMSPluginBase):
+    module = _("Campaign")
+    name = _("Campaign List")
+    render_template = "froide_campaign/plugins/campaign_list.html"
+    model = CampaignCMSPlugin
+    cache = False
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        campaign = instance.campaign.id
+        config = {
+            'campaignId': campaign,
+        }
+        context.update({
+            'config': json.dumps(config)
+        })
+        return context
+

@@ -18,6 +18,7 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
     resolution = serializers.CharField(required=False)
+    context = serializers.DictField(required=False)
 
 
 class CampaignProviderRequestSerializer(serializers.Serializer):

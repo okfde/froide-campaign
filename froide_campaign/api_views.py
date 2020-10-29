@@ -194,8 +194,10 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         )
 
         provider = campaign.get_provider()
+
         filters = {
             'q': request.GET.get('q', ''),
+            'limit': request.GET.get('limit', '')
         }
 
         try:
@@ -228,6 +230,9 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             pass
 
         data = provider.search(**filters)
-        iobjs = BaseProvider(campaign).search(**filters)
-        data = data + iobjs
+
+        if not type(provider) == BaseProvider:
+            iobjs = BaseProvider(campaign).search(**filters)
+            data = data + iobjs
+
         return Response(data)
