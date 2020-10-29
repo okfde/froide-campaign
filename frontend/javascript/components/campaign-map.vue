@@ -694,7 +694,7 @@ export default {
           return 'success'
         }
         if (location.resolution === 'refused') {
-          return 'failed'
+          return 'failure'
         }
         return 'pending'
       }
