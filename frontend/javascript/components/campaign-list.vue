@@ -28,8 +28,8 @@
           <div class="col">
             <a v-if="object.resolution === 'normal'" :href="object.request_url" class="btn btn-normal text-white">Anfragen</a>
             <a v-if="object.resolution === 'pending'" :href="'/a/' + object.foirequest" class="btn btn-pending text-white">Anfrage ansehen</a>
-            <a v-if="object.resolution === 'successful'" class="btn btn-successful text-white">Anfrage ansehen</a>
-            <a v-if="object.resolution === 'refused'" class="btn btn-refused text-white">Anfrage ansehen</a>
+            <a v-if="object.resolution === 'successful'" :href="'/a/' + object.foirequest" class="btn btn-successful text-white">Anfrage ansehen</a>
+            <a v-if="object.resolution === 'refused'" :href="'/a/' + object.foirequest" class="btn btn-refused text-white">Anfrage ansehen</a>
           </div>
         </div>
       </div>
@@ -54,13 +54,13 @@ export default {
       resolutions: {
         normal: 'Noch nicht angefragt',
         pending: 'Anfrage läuft',
-        successfull: 'Anfrage erfolgreich',
+        successful: 'Anfrage erfolgreich',
         refused: 'Anfrage abgelehnt'
       }
     }
   },
   mounted() {
-    this.search()
+    this.fetch()
   },
   methods: {
     setFilter (name) {
@@ -83,7 +83,10 @@ export default {
     isInFilter (object) {
       return (!this.resolution || this.resolution == object.resolution)
     },
-    search() {
+    search () {
+      this.filteredObjects = this.filter(this.objects)
+    },
+    fetch () {
       window
         .fetch(
           `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&limit=off`
@@ -154,7 +157,7 @@ export default {
     background-color: $pending;
   }
 
-  .filter-badge-successfull:before {
+  .filter-badge-successful:before {
     @extend .filter-badge;
     background-color: $successful;
   }
