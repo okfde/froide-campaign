@@ -24,60 +24,26 @@
       </CampaignListTag>
     </div>
 
-    <div
-      class="card mb-2"
-      v-for="object in filteredObjects"
-      :key="object.ident"
-    >
-      <div class="card-body">
-        <h5>{{ object.title }}</h5>
-        <div class="row mt-3">
-          <div class="col">
-            <small class="text-muted">{{ object.context.ident }}</small>
-          </div>
-          <div class="col text-right">
-            <h5>
-              <CampaignListTag
-                v-for="(tag, i) in object.context.tags"
-                :key="i"
-                :active="tagFilters.includes(tag)"
-                @click="setTagFilter(tag)"
-              >
-                #{{ tag }}
-              </CampaignListTag>
-            </h5>
-          </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col">
-            <a
-              v-if="object.resolution === 'normal'"
-              :href="object.request_url"
-              class="btn btn-normal text-white"
-            >
-              Anfragen
-            </a>
-            <a
-              v-else
-              :href="'/a/' + object.foirequest"
-              class="btn text-white"
-              :class="[`btn-${object.resolution}`]"
-            >
-              Anfrage ansehen
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <transition-group name="list">
+      <CampaignListItem
+        v-for="object in filteredObjects"
+        :key="object.ident"
+        :object="object"
+        :tagFilters="tagFilters"
+        class="list-item"
+        @filter="setTagFilter"
+      />
+    </transition-group>
   </div>
 </template>
 
 <script>
 import CampaignListTag from './campaign-list-tag';
+import CampaignListItem from './campaign-list-item';
 
 export default {
   name: 'campaign-list',
-  components: { CampaignListTag },
+  components: { CampaignListTag, CampaignListItem },
   props: {
     config: {
       type: Object,
@@ -151,35 +117,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$normal: #007bff;
-$pending: #ffc107;
-$successful: #28a745;
-$refused: #dc3545;
-
-.btn-normal {
-  background-color: $normal;
-  border-color: $normal;
-  box-shadow: none;
+.list-item {
+  transition: all 0.3s ease;
 }
 
-.btn-pending {
-  background-color: $pending;
-  border-color: $pending;
-  box-shadow: none;
-  background-color: $pending;
+.list-enter, .list-leave-to {
+  opacity: 0;
 }
 
-.btn-successful {
-  background-color: $successful;
-  border-color: $successful;
-  box-shadow: none;
-  background-color: $successful;
-}
-
-.btn-refused {
-  background-color: $refused;
-  border-color: $refused;
-  box-shadow: none;
-  background-color: $refused;
+.list-leave-active {
+  position: relative;
 }
 </style>
