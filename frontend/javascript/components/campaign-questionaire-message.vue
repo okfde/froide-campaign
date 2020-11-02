@@ -7,7 +7,7 @@
       </h4>
     </div>
     <div class="card-body">
-      <div class="content" @mouseup="checkSelection" ref="content">{{ message.content}}</div>
+      <div class="content" @mouseup="checkSelection" ref="content"></div>
         <div v-for="att in attachmentList" :key="att.id" class="mb-3">
             <span>{{ att.name }}  <button class="btn btn-light btn-sm" @click.prevent="loadAttachment(att)">Ansehen</button></span>
         </div>

@@ -6,6 +6,11 @@
             Anfrage: {{ request.title }} <br>
             <small>An: {{ currentObject.publicbody_name }}</small>
           </h4>
+          <a :href="request.url"
+            target="_blank"
+            class="btn btn-secondary mb-2"
+            >Zur Anfrage
+          </a>
           <button
               @click.prevent="next"
               class="btn btn-secondary mb-2"
@@ -30,10 +35,7 @@
           <span class="sr-only">Loading...</span>
         </div>
         <div v-if="request">
-          <p>Folgende Behörden-Antworten wurden zu dieser Anfrage eingereicht.
-             Bitte gehen Sie die Antworten durch und versuchen Sie die Fragen auf der rechten Seite zu beantworten.
-             Wenn Sie die Fragen nicht beantworten können, können Sie einfach zur nächsten Anfrage springen.
-          </p>
+          <p v-if="description" v-html="description"></p>
           <campaign-questionair-message
           v-for="message in this.filteredMessages()"
           :key="message.id"
@@ -106,6 +108,9 @@ export default {
     },
     config: {
       type: Object
+    },
+    description: {
+      type: String
     }
   },
   mounted () {
@@ -146,7 +151,7 @@ export default {
       return answers
     },
     filteredMessages () {
-      return this.request.messages.filter( message => message.sender_public_body !== null)
+      return this.request.messages.filter( message => (message.sender_public_body !== null && message.attachments.length > 0))
     },
     getNextRequest () {
       let id = this.currentObject.foirequest
