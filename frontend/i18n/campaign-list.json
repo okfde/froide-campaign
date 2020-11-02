@@ -1,0 +1,24 @@
+{
+  "en": {
+    "resolutions": {
+      "normal": "Not yet requested",
+      "pending": "Request pending",
+      "successful": "Request successful",
+      "refused": "Request refused"
+    },
+    "request": "Request",
+    "viewRequest": "View request",
+    "search": "Search..."
+  },
+  "de": {
+    "resolutions": {
+      "normal": "Noch nicht angefragt",
+      "pending": "Anfrage läuft",
+      "successful": "Anfrage erfolgreich",
+      "refused": "Anfrage abgelehnt"
+    },
+    "request": "Anfragen",
+    "viewRequest": "Anfrage ansehen",
+    "search": "Suchen..."
+  }
+}
