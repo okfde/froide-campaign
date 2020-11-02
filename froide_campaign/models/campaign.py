@@ -233,6 +233,7 @@ class InformationObject(models.Model):
 
     ident = models.CharField(max_length=255)
     title = models.CharField(max_length=1000)
+    subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
 
