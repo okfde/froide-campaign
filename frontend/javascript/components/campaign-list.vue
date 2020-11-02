@@ -56,7 +56,11 @@ export default {
   components: { CampaignListTag, CampaignListItem },
   props: {
     config: Object,
-    settings: Object
+    settings: Object,
+    language: {
+      type: String,
+      default: 'de'
+    }
   },
   data() {
     return {
@@ -101,9 +105,6 @@ export default {
         .forEach(tag => tags.add(tag))
       
       return [...tags].sort().filter(Boolean)
-    },
-    language() {
-      return this.settings.language || 'de'
     },
     i18n() {
       return i18n[this.language]
