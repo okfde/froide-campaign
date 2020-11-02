@@ -80,6 +80,10 @@ class CSVImporter(object):
             context = line.pop('context')
             context_json = json.loads(context)
 
+        subtitle = ''
+        if 'subtitle' in line:
+            subtitle = line.pop('subtitle')
+
         if iobj is not None:
             iobj.slug = slug
             iobj.ident = ident
@@ -87,12 +91,14 @@ class CSVImporter(object):
             iobj.publicbody = pb
             iobj.geo = point
             iobj.title = title
+            iobj.subtitle = subtitle
             iobj.context = context_json
             iobj.save()
             return iobj
         return InformationObject.objects.create(
             campaign=campaign,
             title=title,
+            subtitle=subtitle,
             slug=slug,
             publicbody=pb,
             ident=ident,

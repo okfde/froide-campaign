@@ -120,6 +120,7 @@ class BaseProvider:
             'id': obj.id,
             'ident': obj.ident,
             'title': obj.title,
+            'subtitle': obj.subtitle,
             'address': obj.address,
             'request_url': self.get_request_url_redirect(obj.ident),
             'publicbody_name': self.get_publicbody_name(obj),
