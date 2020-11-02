@@ -4,15 +4,22 @@
       Filter
     </h5>
 
+    <input
+      type="search"
+      v-model="search"
+      :placeholder="i18n.search"
+      class="form-control my-4"
+    />
+
     <div class="mb-3">
       <CampaignListTag
-        v-for="res in Object.keys(resolutions)"
+        v-for="res in resolutions"
         :key="res"
         :active="res === resolution"
         :status="res"
         @click="setResolutionFilter(res)"
       >
-        {{ resolutions[res] }}
+        {{ i18n.resolutions[res] }}
       </CampaignListTag>
       <CampaignListTag
         v-for="tag in allTags"
@@ -30,6 +37,7 @@
         :key="object.ident"
         :object="object"
         :tagFilters="tagFilters"
+        :language="language"
         class="list-item"
         @filter="setTagFilter"
       />
@@ -38,41 +46,52 @@
 </template>
 
 <script>
-import CampaignListTag from './campaign-list-tag';
-import CampaignListItem from './campaign-list-item';
+import CampaignListTag from './campaign-list-tag'
+import CampaignListItem from './campaign-list-item'
+import Fuse from 'fuse.js'
+import i18n from '../../i18n/campaign-list.json'
 
 export default {
   name: 'campaign-list',
   components: { CampaignListTag, CampaignListItem },
   props: {
-    config: {
-      type: Object,
-    },
+    config: Object,
+    settings: Object
   },
   data() {
     return {
+      search: '',
       objects: [],
       tagFilters: [],
       resolution: null,
-      resolutions: {
-        normal: 'Noch nicht angefragt',
-        pending: 'Anfrage läuft',
-        successful: 'Anfrage erfolgreich',
-        refused: 'Anfrage abgelehnt',
-      },
-    };
+      resolutions: ['normal', 'pending', 'successful', 'refused']
+    }
   },
   mounted() {
-    this.fetch();
+    this.fetch()
   },
   computed: {
     filteredObjects() {
-      return this.objects.filter(object => {
-        const resolution = !this.resolution || this.resolution === object.resolution
-        const tag = this.tagFilters.length === 0 || this.tagFilters.some(t => object.context.tags.includes(t))
+      const filtered =  this.objects
+        .filter(object => {
+          const resolution = !this.resolution || this.resolution === object.resolution
+          const tag = this.tagFilters.length === 0 || this.tagFilters.some(t => object.context.tags.includes(t))
 
-        return resolution && tag
+          return resolution && tag
+        })
+        .map(object => ({
+          ...object,
+          title: (object.context.intl[this.language] || object).title
+        }))
+
+      if (this.search.length < 2) return filtered
+
+      const fuse = new Fuse(filtered, {
+        keys: this.settings.fuseKeys || ['title'],
+        sort: true
       })
+
+      return fuse.search(this.search)
     },
     allTags() {
       const tags = new Set()
@@ -81,20 +100,26 @@ export default {
         .flat()
         .forEach(tag => tags.add(tag))
       
-      return [...tags].sort()
+      return [...tags].sort().filter(Boolean)
+    },
+    language() {
+      return this.settings.language || 'de'
+    },
+    i18n() {
+      return i18n[this.language]
     }
   },
   methods: {
     setResolutionFilter(name) {
       if (this.resolution === name) {
-        this.resolution = null;
+        this.resolution = null
       } else {
-        this.resolution = name;
+        this.resolution = name
       }
     },
     setTagFilter(tag) {
       if (this.tagFilters.includes(tag)) {
-        const i = this.tagFilters.findIndex(t => t === tag);
+        const i = this.tagFilters.findIndex(t => t === tag)
         this.tagFilters.splice(i, 1)
       } else {
         this.tagFilters.push(tag)
@@ -105,15 +130,13 @@ export default {
         .fetch(
           `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&limit=off`
         )
-        .then((response) => {
-          return response.json();
+        .then(response => response.json())
+        .then(data => {
+          this.objects = data.map(d => ({...d, context:{...d.context, tags: undefined}}));
         })
-        .then((data) => {
-          this.objects = data;
-        });
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
