@@ -4,7 +4,7 @@
       <h5>{{ object.title }}</h5>
       <div class="row mt-3">
         <div class="col">
-          <small class="text-muted">{{ object.context.ident }}</small>
+          <small class="text-muted">{{ object.subtitle }}</small>
         </div>
         <div class="col text-right">
           <h5>
@@ -26,7 +26,7 @@
             :href="object.request_url"
             class="btn btn-normal text-white"
           >
-            Anfragen
+            {{ i18n.request }}
           </a>
           <a
             v-else
@@ -34,7 +34,7 @@
             class="btn text-white"
             :class="[`btn-${object.resolution}`]"
           >
-            Anfrage ansehen
+            {{ i18n.viewRequest }}
           </a>
         </div>
       </div>
@@ -44,13 +44,20 @@
 
 <script>
 import CampaignListTag from './campaign-list-tag';
+import i18n from '../../i18n/campaign-list.json';
 
 export default {
   props: {
     object: Object,
-    tagFilters: Array
+    tagFilters: Array,
+    language: String
   },
-  components: { CampaignListTag }
+  components: { CampaignListTag },
+  computed: {
+    i18n() {
+      return i18n[this.language];
+    }
+  }
 };
 </script>
 

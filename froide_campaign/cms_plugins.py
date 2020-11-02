@@ -179,11 +179,13 @@ class CampaignListPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
         campaign = instance.campaign.id
+        plugin_settings = instance.settings
         config = {
             'campaignId': campaign,
         }
         context.update({
-            'config': json.dumps(config)
+            'config': json.dumps(config),
+            'settings': json.dumps(plugin_settings)
         })
         return context
 
