@@ -6,7 +6,7 @@
             Anfrage: {{ request.title }} <br>
             <small>An: {{ currentObject.publicbody_name }}</small>
           </h4>
-          <a :href="request.url"
+          <a v-if="request" :href="request.url"
             target="_blank"
             class="btn btn-secondary mb-2"
             >Zur Anfrage
