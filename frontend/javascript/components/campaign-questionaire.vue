@@ -6,6 +6,11 @@
             Anfrage: {{ request.title }} <br>
             <small>An: {{ currentObject.publicbody_name }}</small>
           </h4>
+          <a :href="request.url"
+            target="_blank"
+            class="btn btn-secondary mb-2"
+            >Zur Anfrage
+          </a>
           <button
               @click.prevent="next"
               class="btn btn-secondary mb-2"
@@ -103,6 +108,9 @@ export default {
     },
     config: {
       type: Object
+    },
+    description: {
+      type: String
     }
   },
   mounted () {
