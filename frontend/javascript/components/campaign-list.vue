@@ -132,7 +132,7 @@ export default {
         )
         .then(response => response.json())
         .then(data => {
-          this.objects = data.map(d => ({...d, context:{...d.context, tags: undefined}}));
+          this.objects = data
         })
     }
   }
