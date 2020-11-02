@@ -161,6 +161,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
 
         context.update({
             'questionaire': instance.questionaire.id,
+            'description': instance.questionaire.description,
             'informationobjects': json.dumps(data),
             'questions': json.dumps(questions),
             'config': json.dumps(config)

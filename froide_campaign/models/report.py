@@ -2,8 +2,10 @@ from django.db import models
 
 from .campaign import Campaign, InformationObject
 
+
 class Questionaire(models.Model):
     title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
     campaign = models.ForeignKey(Campaign,
                                  on_delete=models.CASCADE)
 

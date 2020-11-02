@@ -30,10 +30,7 @@
           <span class="sr-only">Loading...</span>
         </div>
         <div v-if="request">
-          <p>Folgende Behörden-Antworten wurden zu dieser Anfrage eingereicht.
-             Bitte gehen Sie die Antworten durch und versuchen Sie die Fragen auf der rechten Seite zu beantworten.
-             Wenn Sie die Fragen nicht beantworten können, können Sie einfach zur nächsten Anfrage springen.
-          </p>
+          <p v-if="description" v-html="description"></p>
           <campaign-questionair-message
           v-for="message in this.filteredMessages()"
           :key="message.id"
