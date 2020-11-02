@@ -151,7 +151,7 @@ export default {
       return answers
     },
     filteredMessages () {
-      return this.request.messages.filter( message => message.sender_public_body !== null)
+      return this.request.messages.filter( message => (message.sender_public_body !== null && message.attachments.length > 0))
     },
     getNextRequest () {
       let id = this.currentObject.foirequest
