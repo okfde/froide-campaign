@@ -8,9 +8,6 @@
     </div>
     <div class="card-body">
       <div class="content" @mouseup="checkSelection" ref="content"></div>
-        <div v-for="att in attachmentList" :key="att.id" class="mb-3">
-            <span>{{ att.name }}  <button class="btn btn-light btn-sm" @click.prevent="loadAttachment(att)">Ansehen</button></span>
-        </div>
       <template v-if="attachment">
         <div v-if="attachment.is_pdf" class="container-sm-full">
           <iframe :src="pdfViewerUrl" frameborder="0" style="width: 100%; height: 90vh; border: 0;"></iframe>
@@ -75,6 +72,9 @@ export default {
       attachment: null,
       reportdate: ''
     }
+  },
+  mounted () {
+    this.attachmentList.forEach(att => this.loadAttachment(att))
   },
   computed: {
     attachmentList () {
