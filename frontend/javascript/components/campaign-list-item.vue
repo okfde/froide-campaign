@@ -4,8 +4,7 @@
       <h5>{{ object.title }}</h5>
       <div class="row mt-3">
         <div class="col">
-          <!-- TODO: replace context.ident with upcoming subtitle field -->
-          <small class="text-muted">{{ object.context.ident }}</small>
+          <small class="text-muted">{{ object.subtitle }}</small>
         </div>
         <div class="col text-right">
           <h5>
