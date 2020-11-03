@@ -48,6 +48,7 @@ const COLORS = {
   pending: '#ffc107',
   success: '#6db750',
   failure: '#dc3545',
+  withdrawn: '#007bff'
 }
 
 const STATUS_STRINGS = {
@@ -55,6 +56,7 @@ const STATUS_STRINGS = {
   pending: 'Anfrage läuft',
   success: 'Anfrage erfolgreich',
   failure: 'Anfrage abgelehnt',
+  withdrawn: 'Anfrage zurückgezogen'
 }
 
 function getRequestStatus (status, resolution) {

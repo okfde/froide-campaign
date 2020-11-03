@@ -1,5 +1,3 @@
-import json
-
 from collections import defaultdict
 from urllib.parse import urlencode, quote
 
@@ -146,15 +144,23 @@ class BaseProvider:
         id, res = frs[0].get('id'), 'pending'
 
         refused = None
+        withdrawn = None
+
+        success_strings = ['successful', 'partially_successful']
+        withdrawn_strings = ['user_withdrew_costs', 'user_withdrew']
 
         for fr in frs:
             if fr.get('resolution'):
-                if fr.get('resolution') == 'successful':
-                    return fr.get('id'), fr.get('resolution')
+                if fr.get('resolution') in success_strings:
+                    return fr.get('id'), 'successful'
                 if fr.get('resolution') == 'refused':
                     refused = (fr.get('id'), fr.get('resolution'))
+                if fr.get('resolution') in withdrawn_strings:
+                    withdrawn = (fr.get('id'), 'user_withdrew')
         if refused:
             return refused[0], refused[1]
+        if withdrawn:
+            return withdrawn[0], withdrawn[1]
         return id, res
 
     def get_foirequests_mapping(self, qs):

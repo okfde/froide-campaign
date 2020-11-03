@@ -125,6 +125,7 @@
                     <campaign-popup
                         :color="getStatusColor(getStatus(location))"
                         :status="getStatus(location)"
+                        :statusString="getStatusString(getStatus(location))"
                         :data="location"
                         :buttonText="config.button_text"
                         @startRequest="startRequest"
@@ -148,7 +149,8 @@
             <campaign-sidebar-item v-for="(location, index) in locations"
               :key="index"
               :color="getStatusColor(getStatus(location))"
-              :status="getStatusString(getStatus(location))"
+              :status="getStatus(location)"
+              :statusString="getStatusString(getStatus(location))"
               :data="location"
               :buttonText="config.button_text"
               @startRequest="startRequest"
@@ -695,6 +697,9 @@ export default {
         }
         if (location.resolution === 'refused') {
           return 'failure'
+        }
+        if (location.resolution  === 'user_withdrew') {
+          return 'withdrawn'
         }
         return 'pending'
       }

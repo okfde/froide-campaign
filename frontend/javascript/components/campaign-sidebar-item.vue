@@ -13,15 +13,15 @@
         </div>
         <div class="row">
           <div class="col-12">
-            <div v-if="hasRequests" class="request-status">
+            <div v-if="status !== 'normal'" class="request-status">
               <p :style="{'color':color}">
-                  {{ status }}
+                  {{ statusString }}
               </p>
               <p>
                 <a :href="'/a/' + data.foirequest" target="_blank">zur Anfrage&nbsp;&rarr;</a>
               </p>
             </div>
-            <p v-if="!hasRequests">
+            <p v-if="status === 'normal' || status === 'withdrawn'">
               <a v-if="buttonText" @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
                 <br class="d-block d-sm-none"/>
                 {{this.buttonText}}&nbsp;&rarr;
@@ -52,6 +52,9 @@ export default {
       type: String
     },
     status: {
+      type: String
+    },
+    statusString: {
       type: String
     },
     data: {
