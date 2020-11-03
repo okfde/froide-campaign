@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="min-vh-100">
     <h5>
       Filter
     </h5>
@@ -41,6 +41,14 @@
         class="list-item"
         @filter="setTagFilter"
       />
+
+      <div
+        class="text-center my-5 py-5"
+        v-if="filteredObjects.length === 0"
+        key="noResults"
+      >
+        <p class="text-secondary">{{ i18n.noResults }}</p>
+      </div>
     </transition-group>
   </div>
 </template>
