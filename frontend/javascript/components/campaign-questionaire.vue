@@ -14,19 +14,19 @@
           <button
               @click.prevent="next"
               class="btn btn-secondary mb-2"
-              v-if="objectListIndex < maxIndex"
+              v-if="objectListIndex < maxIndex && maxIndex > 0"
             >
               Überspringen
           </button>
           <button
               @click.prevent="next"
               class="btn btn-light mb-2"
-              v-if="objectListIndex == maxIndex"
+              v-if="objectListIndex == maxIndex && maxIndex > 0"
               disabled
             >
               Überspringen
           </button><br>
-          <small  v-if="objectListIndex == maxIndex">Kein weiteren Anfragen mehr! Vielen Dank!</small>
+          <small  v-if="objectListIndex == maxIndex && maxIndex > 0" >Kein weiteren Anfragen mehr! Vielen Dank!</small>
       </div>
     </div>
     <div class="row my-5">
@@ -158,7 +158,22 @@ export default {
       getData(`/api/v1/request/${id}/`).then((data) => {
           this.request = data
           this.loading = false
-          this.answers = this.getEmptyAnswerSet()
+          if (this.currentObject.answers.length > 0) {
+            this.answers = this.currentObject.answers.map((answer) => {
+              return {
+                questionId: answer.questionId,
+                question: answer.question,
+                options: answer.options,
+                required: answer.required,
+                answer: answer.answer,
+                helptext: answer.helptext,
+                error: ''
+              }
+            })
+            this.reportId  = this.currentObject.report
+          } else {
+            this.answers = this.getEmptyAnswerSet()
+          }
         }
       )
     },
