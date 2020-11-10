@@ -8,6 +8,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 
 from froide.foirequest.models.request import Resolution
+from froide.foirequest.models.request import FoiRequest
 from froide.foirequest.views import MakeRequestView
 
 from .models import (CampaignRequestsCMSPlugin,
@@ -16,7 +17,6 @@ from .models import (CampaignRequestsCMSPlugin,
                      CampaignCMSPlugin,
                      CampaignQuestionaireCMSPlugin)
 
-from .serializers import InformationObjectSerializer
 from .providers import BaseProvider
 
 try:
@@ -134,39 +134,96 @@ class CampaignQuestionairePlugin(CMSPluginBase):
     model = CampaignQuestionaireCMSPlugin
     cache = False
 
-    def render(self, context, instance, placeholder):
-        context = super().render(context, instance, placeholder)
-        iobjs = instance.questionaire.campaign.informationobject_set.all()
+    def get_questions(self, instance):
+        return [{'text': question.text,
+                 'id': question.id,
+                 'options': question.options.split(','),
+                 'required': question.is_required,
+                 'helptext': question.help_text
+                 }
+                for question in instance.questionaire.question_set.all()]
 
-        iobjs_success = iobjs.filter(
+    def get_answers(self, iobj):
+        if iobj.report_set.all():
+            report = iobj.report_set.all().first()
+            answers = report.answer_set.all()
+            answer_list = []
+            for answer in answers:
+                question = answer.question
+                answer_dict = {
+                    'questionId': question.id,
+                    'question': question.text,
+                    'options': question.options.split(','),
+                    'required': question.is_required,
+                    'answer': answer.text,
+                    'helptext': question.help_text,
+                    'error': ''
+                }
+                answer_list.append(answer_dict)
+            return report.id, answer_list
+        return None, []
+
+    def get_iobjs_list(self, instance, iobjs):
+        provider = BaseProvider(campaign=instance.questionaire.campaign)
+        mapping = provider.get_foirequests_mapping(iobjs)
+        data = []
+        for obj in iobjs:
+            provider_data = provider.get_provider_item_data(
+                obj, foirequests=mapping)
+            report_id, answers = self.get_answers(obj)
+            provider_data['report'] = report_id
+            provider_data['answers'] = answers
+            data.append(provider_data)
+        return data
+
+    def get_list_context(self, context, instance):
+        campaign = instance.questionaire.campaign
+        iobjs_success = campaign.informationobject_set.filter(
             report__isnull=True,
             foirequests__resolution=Resolution.SUCCESSFUL)
+        data = self.get_iobjs_list(instance, iobjs_success)
+        context.update({
+            'informationobjects': json.dumps(data)
+        })
+        return context
 
-        provider = BaseProvider(campaign=instance.questionaire.campaign)
-        mapping = provider.get_foirequests_mapping(iobjs_success)
-        data = [provider.get_provider_item_data(obj, foirequests=mapping)
-                for obj in iobjs_success]
+    def get_object_context(self, context, instance, request_id):
+        campaign = instance.questionaire.campaign
+        iobjs = campaign.informationobject_set.filter(
+            foirequests__resolution=Resolution.SUCCESSFUL
+        )
+        try:
+            foi_request = FoiRequest.objects.get(id=request_id)
+            iobjs_request = iobjs.filter(foirequests=foi_request)
+            data = self.get_iobjs_list(instance, iobjs_request)
+            context.update({
+                'informationobjects': json.dumps(data)
+            })
+            return context
 
-        questions = [{'text': question.text,
-                      'id': question.id,
-                      'options': question.options.split(','),
-                      'required': question.is_required,
-                      'helptext': question.help_text
-                      }
-                     for question in instance.questionaire.question_set.all()]
+        except FoiRequest.DoesNotExist:
+            return self.get_list_context(context, instance)
 
+    def render(self, context, instance, placeholder):
+        request = context.get('request')
+        context = super().render(context, instance, placeholder)
         config = {
             'viewerUrl': static('filingcabinet/viewer/web/viewer.html')
         }
-
         context.update({
             'questionaire': instance.questionaire.id,
             'description': instance.questionaire.description,
-            'informationobjects': json.dumps(data),
-            'questions': json.dumps(questions),
-            'config': json.dumps(config)
+            'questions': json.dumps(self.get_questions(instance)),
+            'config': json.dumps(config),
         })
-        return context
+
+        request_id = request.GET.get('request_id')
+        if request_id:
+            return self.get_object_context(context,
+                                           instance,
+                                           request_id)
+
+        return self.get_list_context(context, instance)
 
 
 @plugin_pool.register_plugin
@@ -189,4 +246,3 @@ class CampaignListPlugin(CMSPluginBase):
             'settings': json.dumps(plugin_settings)
         })
         return context
-
