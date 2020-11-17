@@ -1,3 +1,4 @@
+import json
 from froide.publicbody.api_views import PublicBodySerializer
 from rest_framework import serializers
 
@@ -37,15 +38,36 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     lat = serializers.FloatField(source='get_latitude', required=False)
     lng = serializers.FloatField(source='get_longitude', required=False)
     ident = serializers.CharField(required=False)
+    context = serializers.SerializerMethodField()
     request_url = serializers.SerializerMethodField()
+    resolution = serializers.SerializerMethodField()
+    foirequest = serializers.SerializerMethodField()
 
     class Meta:
         model = InformationObject
         fields = (
-            'title', 'address', 'campaign', 'lat', 'lng',
-            'request_url', 'foirequests', 'ident'
+            'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
+            'request_url', 'foirequests', 'ident', 'context', 'resolution',
+            'id', 'foirequest'
         )
 
     def get_request_url(self, obj):
         provider = obj.campaign.get_provider()
         return provider.get_request_url_redirect(obj.ident)
+
+    def get_context(self, obj):
+        if obj.context and obj.context['context_as_json']:
+            context_as_json = json.loads(obj.context['context_as_json'])
+            if 'categories' in context_as_json:
+                categories = context_as_json['categories'].split(';')
+                context_as_json['categories'] = categories
+            obj.context['context_as_json'] = context_as_json
+        return obj.context
+
+    def get_foirequest(self, obj):
+        foirequest = obj.get_best_foirequest()
+        if foirequest:
+            return foirequest.id
+
+    def get_resolution(self, obj):
+        return obj.get_resolution()
