@@ -140,6 +140,7 @@ class Campaign(models.Model):
     public = models.BooleanField(default=False)
 
     category = models.CharField(max_length=255, blank=True)
+    tags = JSONField(blank=True, default=list)
 
     description = models.TextField(blank=True)
 
@@ -236,6 +237,7 @@ class InformationObject(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
+    tags = JSONField(blank=True, default=list)
 
     context = JSONField(blank=True, default=dict)
 
