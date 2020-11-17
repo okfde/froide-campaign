@@ -10,7 +10,7 @@
         <div class="col text-right">
           <h5>
             <CampaignListTag
-              v-for="(tag, i) in object.context.context_as_json.categories"
+              v-for="(tag, i) in object.tags"
               :key="i"
               :active="currentTag === tag"
               @click="$emit('filter', tag)"
