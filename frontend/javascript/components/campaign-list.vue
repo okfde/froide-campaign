@@ -26,7 +26,7 @@
         <CampaignListTag
           v-for="tag in config.tags"
           :key="tag"
-          :active="currenTag === tag"
+          :active="currentTag === tag"
           @click="setTagFilter(tag)"
         >
           #{{ tag }}
@@ -39,7 +39,7 @@
         v-for="object in objects"
         :key="object.id"
         :object="object"
-        :currentTag="currenTag"
+        :currentTag="currentTag"
         :language="language"
         class="list-item"
         @filter="setTagFilter"
@@ -86,7 +86,7 @@ export default {
       baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}`,
       nextUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}`,
       meta: [],
-      currenTag: '',
+      currentTag: '',
       resolution: null,
       resolutions: ['normal', 'pending', 'successful', 'refused']
     }
@@ -100,54 +100,46 @@ export default {
     }
   },
   methods: {
+    getUrlWithParams (url) {
+      return url + `&search=${this.search}&status=${this.resolution}&tag=${this.currentTag}`
+    },
     setResolutionFilter(name) {
       if (this.resolution === name) {
         this.resolution = null
       } else {
         this.resolution = name
       }
-      window
-        .fetch(
-          this.baseUrl + `&search=${this.search}&status=${this.resolution}&tag=${this.currenTag}`
-        )
-        .then(response => response.json())
-        .then(data => {
-          this.meta = data.meta
-          this.nextUrl = data.meta.next
-          this.objects = data.objects
-      })
+      this.updateData()
     },
     setTagFilter(tag) {
-      this.currenTag = tag
-      window
-        .fetch(
-          this.baseUrl + `&search=${this.search}&status=${this.resolution}&tag=${this.currenTag}`
-        )
-        .then(response => response.json())
-        .then(data => {
-          this.meta = data.meta
-          this.nextUrl = data.meta.next
-          this.objects = data.objects
-      })
+      if (this.currentTag == tag) {
+        this.currentTag = ''
+      } else {
+        this.currentTag = tag
+      }
+      this.updateData()
     },
     searchObjects() {
       setTimeout(() => {
-        window
-          .fetch(
-            this.baseUrl + `&search=${this.search}&status=${this.resolution}&tag=${this.currenTag}`
-          )
-          .then(response => response.json())
-          .then(data => {
-            this.meta = data.meta
-            this.nextUrl = data.meta.next
-            this.objects = data.objects
-        })
+        this.updateData()
       }, 200)
+    },
+    updateData() {
+      window
+        .fetch(
+          this.getUrlWithParams(this.baseUrl)
+        )
+        .then(response => response.json())
+        .then(data => {
+          this.meta = data.meta
+          this.nextUrl = data.meta.next
+          this.objects = data.objects
+      })
     },
     fetch() {
       window
         .fetch(
-          this.nextUrl + `&search=${this.search}&status=${this.resolution}`
+          this.getUrlWithParams(this.nextUrl)
         )
         .then(response => response.json())
         .then(data => {
