@@ -8,6 +8,7 @@
               {{ data.title }}
             </h5>
             <div v-else class="venue-name-dummy dummy dummy-blinker"></div>
+            <p v-if="data.subtitle">{{ data.subtitle }}</p>
             <p v-if="data.address" class="venue-address">{{ data.address }}</p>
           </div>
         </div>

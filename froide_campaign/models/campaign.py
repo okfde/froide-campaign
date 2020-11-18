@@ -213,7 +213,9 @@ class InformationObjectManager(models.Manager):
         if query:
             query_search = SearchQuery(query, config=self.SEARCH_LANG)
             qs = qs.filter(
-                Q(search_vector=query_search) | Q(title__contains=query))
+                Q(search_vector=query_search) |
+                Q(title__contains=query) |
+                Q(subtitle__contains=query))
         return qs
 
     def export_csv(self, queryset):
