@@ -38,14 +38,25 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     lng = serializers.FloatField(source='get_longitude', required=False)
     ident = serializers.CharField(required=False)
     request_url = serializers.SerializerMethodField()
+    resolution = serializers.SerializerMethodField()
+    foirequest = serializers.SerializerMethodField()
 
     class Meta:
         model = InformationObject
         fields = (
-            'title', 'address', 'campaign', 'lat', 'lng',
-            'request_url', 'foirequests', 'ident'
+            'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
+            'request_url', 'foirequests', 'ident', 'resolution',
+            'id', 'foirequest', 'tags'
         )
 
     def get_request_url(self, obj):
         provider = obj.campaign.get_provider()
         return provider.get_request_url_redirect(obj.ident)
+
+    def get_foirequest(self, obj):
+        foirequest = obj.get_best_foirequest()
+        if foirequest:
+            return foirequest.id
+
+    def get_resolution(self, obj):
+        return obj.get_resolution()

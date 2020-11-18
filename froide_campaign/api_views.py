@@ -3,10 +3,12 @@ import random
 from django.contrib.gis.geos import Point
 from django.shortcuts import get_object_or_404
 
+from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.decorators import action
 
@@ -51,12 +53,45 @@ class AddLocationThrottle(UserRateThrottle):
     }
 
 
+class StatusFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get('status'):
+            status = request.GET.get('status')
+            if status == 'normal':
+                return queryset.filter(foirequests__isnull=True)
+            if status == 'pending':
+                return queryset.filter(foirequests__isnull=False).exclude(
+                    foirequests__status='resolved')
+            if status == 'successful':
+                successful = ['successful', 'partially_successful']
+                return queryset.filter(foirequests__status='resolved',
+                                       foirequests__resolution__in=successful)
+            if status == 'refused':
+                return queryset.filter(foirequests__status='resolved',
+                                       foirequests__resolution='refused')
+        return queryset
+
+
+class TagFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get('tag'):
+            tag = request.GET.get('tag')
+            return queryset.filter(tags__contains=tag)
+        return queryset
+
+
 class InformationObjectViewSet(mixins.CreateModelMixin,
                                mixins.RetrieveModelMixin,
+                               mixins.ListModelMixin,
                                viewsets.GenericViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
+    pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+    filter_backends = [filters.SearchFilter, StatusFilter, TagFilter]
+    search_fields = ['title', 'subtitle', 'address', 'ident']
 
     def get_permissions(self):
         if self.action == 'create':
@@ -96,6 +131,13 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         return Response(serializer.data)
 
     def get_queryset(self):
+        campaign_id = self.request.GET.get('campaign')
+        campaign = get_object_or_404(
+            Campaign.objects.get_public(),
+            id=campaign_id
+        )
+        if campaign:
+            return InformationObject.objects.filter(campaign=campaign)
         return InformationObject.objects.none()
 
     def get_geo(self, obj):

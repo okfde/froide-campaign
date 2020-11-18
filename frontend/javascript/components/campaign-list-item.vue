@@ -4,14 +4,15 @@
       <h5>{{ object.title }}</h5>
       <div class="row mt-3">
         <div class="col">
-          <small class="text-muted">{{ object.subtitle }}</small>
+          <p class="text-muted">{{ object.subtitle }}</p>
+          <small class="text-muted">{{ object.address }}</small>
         </div>
         <div class="col text-right">
           <h5>
             <CampaignListTag
-              v-for="(tag, i) in object.context.tags"
+              v-for="(tag, i) in object.tags"
               :key="i"
-              :active="tagFilters.includes(tag)"
+              :active="currentTag === tag"
               @click="$emit('filter', tag)"
             >
               #{{ tag }}
@@ -49,7 +50,7 @@ import i18n from '../../i18n/campaign-list.json';
 export default {
   props: {
     object: Object,
-    tagFilters: Array,
+    currentTag: String,
     language: String
   },
   components: { CampaignListTag },

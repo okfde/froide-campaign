@@ -140,6 +140,7 @@ class Campaign(models.Model):
     public = models.BooleanField(default=False)
 
     category = models.CharField(max_length=255, blank=True)
+    tags = JSONField(blank=True, default=list)
 
     description = models.TextField(blank=True)
 
@@ -236,6 +237,7 @@ class InformationObject(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
+    tags = JSONField(blank=True, default=list)
 
     context = JSONField(blank=True, default=dict)
 
@@ -314,8 +316,39 @@ class InformationObject(models.Model):
         return provider.get_request_url_with_object(self.ident, self)
 
     def get_froirequest_url(self):
-        if self.foirequest:
-            return self.foirequest.get_absolute_url()
+        if self.get_best_foirequest():
+            return self.get_best_foirequest().get_absolute_url()
+
+    def get_best_foirequest(self):
+        success = ['successful', 'partially_successful']
+        withdrawn = ['user_withdrew_costs', 'user_withdrew']
+
+        if self.foirequests.all():
+            frs_success = self.foirequests.filter(resolution__in=success)
+            if frs_success:
+                return frs_success.first()
+            frs_refused = self.foirequests.filter(resolution='refused')
+            if frs_refused:
+                return frs_refused.first()
+            frs_withdrawn = self.foirequests.filter(resolution__in=withdrawn)
+            if frs_withdrawn:
+                return frs_withdrawn.first()
+            return self.foirequests.all().first()
+
+    def get_resolution(self):
+        success = ['successful', 'partially_successful']
+        withdrawn = ['user_withdrew_costs', 'user_withdrew']
+
+        foirequest = self.get_best_foirequest()
+        if foirequest:
+            if foirequest.resolution in success:
+                return 'successful'
+            if foirequest.resolution == 'refused':
+                return 'refused'
+            if foirequest.resolution in withdrawn:
+                return 'withdrawn'
+            return 'pending'
+        return 'normal'
 
 
 class CampaignSubscription(models.Model):

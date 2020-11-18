@@ -240,6 +240,7 @@ class CampaignListPlugin(CMSPluginBase):
         plugin_settings = instance.settings
         config = {
             'campaignId': campaign,
+            'tags': instance.campaign.tags
         }
         context.update({
             'config': json.dumps(config),

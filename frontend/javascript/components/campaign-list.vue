@@ -7,6 +7,7 @@
     <input
       type="search"
       v-model="search"
+      @keyup="searchObjects"
       :placeholder="i18n.search"
       class="form-control my-4"
     />
@@ -21,22 +22,24 @@
       >
         {{ i18n.resolutions[res] }}
       </CampaignListTag>
-      <CampaignListTag
-        v-for="tag in allTags"
-        :key="tag"
-        :active="tagFilters.includes(tag)"
-        @click="setTagFilter(tag)"
-      >
-        #{{ tag }}
-      </CampaignListTag>
+      <div v-if="!this.settings.hide_tag_filters">
+        <CampaignListTag
+          v-for="tag in config.tags"
+          :key="tag"
+          :active="currentTag === tag"
+          @click="setTagFilter(tag)"
+        >
+          #{{ tag }}
+        </CampaignListTag>
+      </div>
     </div>
 
     <transition-group name="list">
       <CampaignListItem
-        v-for="object in filteredObjects"
-        :key="object.ident"
+        v-for="object in objects"
+        :key="object.id"
         :object="object"
-        :tagFilters="tagFilters"
+        :currentTag="currentTag"
         :language="language"
         class="list-item"
         @filter="setTagFilter"
@@ -44,12 +47,18 @@
 
       <div
         class="text-center my-5 py-5"
-        v-if="filteredObjects.length === 0"
+        v-if="objects.length === 0"
         key="noResults"
       >
         <p class="text-secondary">{{ i18n.noResults }}</p>
       </div>
     </transition-group>
+    <div
+      class="row justify-content-center mb-5"
+      v-if="this.meta.next"
+    >
+        <button @click="fetch" class="btn btn-light">Load more</button>
+    </div>
   </div>
 </template>
 
@@ -74,7 +83,10 @@ export default {
     return {
       search: '',
       objects: [],
-      tagFilters: [],
+      baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}`,
+      nextUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}`,
+      meta: [],
+      currentTag: '',
       resolution: null,
       resolutions: ['normal', 'pending', 'successful', 'refused']
     }
@@ -83,65 +95,57 @@ export default {
     this.fetch()
   },
   computed: {
-    filteredObjects() {
-      const filtered =  this.objects
-        .filter(object => {
-          const resolution = !this.resolution || this.resolution === object.resolution
-          const tag = this.tagFilters.length === 0 || this.tagFilters.some(t => object.context.tags.includes(t))
-
-          return resolution && tag
-        })
-        .map(object => ({
-          ...object,
-          title: (object.context.intl[this.language] || object).title
-        }))
-
-      if (this.search.length < 2) return filtered
-
-      const fuse = new Fuse(filtered, {
-        keys: this.settings.fuseKeys || ['title'],
-        sort: true
-      })
-
-      return fuse.search(this.search)
-    },
-    allTags() {
-      const tags = new Set()
-      this.objects
-        .map(object => object.context.tags)
-        .flat()
-        .forEach(tag => tags.add(tag))
-      
-      return [...tags].sort().filter(Boolean)
-    },
     i18n() {
       return i18n[this.language]
     }
   },
   methods: {
+    getUrlWithParams (url) {
+      return url + `&search=${this.search}&status=${this.resolution}&tag=${this.currentTag}`
+    },
     setResolutionFilter(name) {
       if (this.resolution === name) {
         this.resolution = null
       } else {
         this.resolution = name
       }
+      this.updateData()
     },
     setTagFilter(tag) {
-      if (this.tagFilters.includes(tag)) {
-        const i = this.tagFilters.findIndex(t => t === tag)
-        this.tagFilters.splice(i, 1)
+      if (this.currentTag == tag) {
+        this.currentTag = ''
       } else {
-        this.tagFilters.push(tag)
+        this.currentTag = tag
       }
+      this.updateData()
+    },
+    searchObjects() {
+      setTimeout(() => {
+        this.updateData()
+      }, 200)
+    },
+    updateData() {
+      window
+        .fetch(
+          this.getUrlWithParams(this.baseUrl)
+        )
+        .then(response => response.json())
+        .then(data => {
+          this.meta = data.meta
+          this.nextUrl = data.meta.next
+          this.objects = data.objects
+      })
     },
     fetch() {
       window
         .fetch(
-          `/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&limit=off`
+          this.getUrlWithParams(this.nextUrl)
         )
         .then(response => response.json())
         .then(data => {
-          this.objects = data
+          this.meta = data.meta
+          this.nextUrl = data.meta.next
+          this.objects.push(...data.objects)
         })
     }
   }
