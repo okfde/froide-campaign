@@ -2,7 +2,9 @@ import csv
 import io
 from datetime import timedelta
 
+from django.http import HttpResponse
 from django.contrib import admin
+from django.contrib import messages
 from django import forms
 from django.shortcuts import redirect
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +15,7 @@ from django.db.models import Count
 
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
+from froide.georegion.models import GeoRegion
 
 from .models import (CampaignPage, Campaign, InformationObject,
                      CampaignSubscription,
@@ -181,6 +184,57 @@ class CampaignReportAdmin(admin.ModelAdmin):
     inlines = [
         AnswerInline
     ]
+
+    actions = [
+        'export_csv'
+    ]
+
+    def get_zipcode(self, point):
+        zip_codes = GeoRegion.objects.filter(kind='zipcode')
+        zip_code = zip_codes.filter(geom__bboverlaps=point)
+        if zip_code:
+            return zip_code.first().description
+        return ''
+
+    def export_csv(self, request, queryset):
+        questionaire_ids = queryset.values_list('questionaire_id', flat=True)
+        if len(set(questionaire_ids)) > 1:
+            msg = 'You can only export reports from the same questionaire'
+            self.message_user(request, msg, level=messages.ERROR)
+        else:
+            q_id = questionaire_ids[0]
+            questionaire = Questionaire.objects.get(id=q_id)
+            questions = questionaire.question_set.all()
+
+            content = 'attachment; filename="{}_{}.csv"'.format(
+                questionaire.title, timezone.now())
+
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = content
+            writer = csv.writer(response)
+
+            header = ['Name', 'PLZ'] + [question.text
+                                        for question in questions]
+            writer.writerow(header)
+            for report in queryset:
+                iobject = report.informationsobject
+                zipcode = ''
+                if iobject.geo:
+                    zipcode = self.get_zipcode(iobject.geo)
+                infooject_details = [
+                    iobject.title,
+                    zipcode
+                ]
+                answer_texts = []
+                for question in questions:
+                    answers = report.answer_set.all()
+                    text = answers.get(question=question).text
+                    answer_texts.append(text)
+                row = infooject_details + answer_texts
+                writer.writerow(row)
+            return response
+
+    export_csv.short_description = _("Export to CSV")
 
 
 admin.site.register(CampaignPage, CampaignPageAdmin)

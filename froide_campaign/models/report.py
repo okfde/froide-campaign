@@ -23,6 +23,7 @@ class Question(models.Model):
 
     def __str__(self):
         return self.text
+        ordering = ('id', )
 
 
 class Report(models.Model):
