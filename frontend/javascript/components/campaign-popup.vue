@@ -8,6 +8,18 @@
       </div>
     </div>
     <div class="row">
+      <div class="col">
+        <h5>
+          <CampaignListTag
+            v-for="(tag, i) in data.tags"
+            :key="i"
+          >
+            #{{ tag }}
+          </CampaignListTag>
+        </h5>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-12">
         <div v-if="status !== 'normal'" class="request-status">
           <p :style="{'color':color}">
@@ -34,10 +46,12 @@
 
 <script>
 import CampaignItemMixin from '../lib/mixin'
+import CampaignListTag from './campaign-list-tag'
 
 export default {
   name: 'campaign-popup',
   mixins: [CampaignItemMixin],
+  components: { CampaignListTag },
   props: {
     buttonText: {
       type: String

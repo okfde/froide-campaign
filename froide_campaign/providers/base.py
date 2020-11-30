@@ -51,7 +51,7 @@ class BaseProvider:
         iobjs = self.filter(iobjs, **filter_kwargs)
         iobjs = self.filter_geo(iobjs, **filter_kwargs)
         iobjs = iobjs.order_by('id').distinct()
-        if filter_kwargs.get('limit') == '':
+        if not filter_kwargs.get('featured') == 1:
             iobjs = self.limit(iobjs)
 
         foirequests_mapping = self.get_foirequests_mapping(iobjs)
@@ -80,6 +80,10 @@ class BaseProvider:
         if filter_kwargs.get('requested') is not None:
             iobjs = iobjs.filter(
                 foirequests__isnull=not bool(filter_kwargs['requested'])
+            )
+        if filter_kwargs.get('featured') is not None:
+            iobjs = iobjs.filter(
+                featured=bool(filter_kwargs['featured'])
             )
         return iobjs
 
@@ -128,7 +132,9 @@ class BaseProvider:
             'foirequest': None,
             'foirequests': [],
             'resolution': 'normal',
-            'context': obj.context
+            'context': obj.context,
+            'tags': obj.tags,
+            'featured': obj.featured
         }
 
         if foirequests and foirequests[obj.ident]:

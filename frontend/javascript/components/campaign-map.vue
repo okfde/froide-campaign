@@ -87,6 +87,11 @@
                     <span class="d-none d-lg-inline">Ort</span>
                   </button>
                 </div>
+                <!-- <div class="input-group-append">
+                  <div class="switch-filter">
+                    <switch-button v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
+                  </div>
+                </div> -->
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                     <i class="fa fa-gears" aria-hidden="true"></i>
@@ -119,7 +124,7 @@
               </l-control>
               <l-marker v-for="(location, index) in locationWithGeo" :key="index"
                 :lat-lng="[location.lat, location.lng]" :title="location.title"
-                :draggable="false" :icon="getMarker(getStatus(location))" :options="markerOptions" v-focusmarker>
+                :draggable="false" :icon="getMarker(getStatus(location), location.featured)" :options="markerOptions" v-focusmarker>
                 <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
                   <l-popup :options="popupOptions" >
                     <campaign-popup
@@ -705,12 +710,18 @@ export default {
       }
       return 'normal'
     },
-    getMarker (status) {
+    getMarker (status, featured) {
+      let iconSize = [25,41]
+      if (featured) {
+        iconSize = [50, 82]
+      }
+
       return L.icon.glyph({
         className: 'campaign-marker-icon',
         prefix: 'fa',
         glyph:'',
-        iconUrl: this.getIconUrl(status)
+        iconUrl: this.getIconUrl(status),
+        iconSize: iconSize
       })
     },
     getStatusColor (status) {
@@ -816,7 +827,7 @@ $icon-failure: #dc3545;
   overflow: scroll;
 
   &.modal-active {
-    overflow: hidden;  
+    overflow: hidden;
   }
 }
 

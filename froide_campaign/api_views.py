@@ -238,9 +238,14 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         provider = campaign.get_provider()
 
         filters = {
-            'q': request.GET.get('q', ''),
-            'limit': request.GET.get('limit', '')
+            'q': request.GET.get('q', '')
         }
+
+        try:
+            if'featured' in request.GET:
+                filters['featured'] = int(request.GET['featured'])
+        except ValueError:
+            pass
 
         try:
             if'requested' in request.GET:
