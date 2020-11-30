@@ -1,27 +1,42 @@
 <template>
-  <div class="min-vh-100">
-    <h5>
-      Filter
-    </h5>
+  <div>
+    <div v-if="!this.settings.input_field" >
+      <h5>
+        Filter
+      </h5>
 
-    <input
-      type="search"
-      v-model="search"
-      @keyup="searchObjects"
-      :placeholder="i18n.search"
-      class="form-control my-4"
-    />
+      <input
+        type="search"
+        v-model="search"
+        @keyup="searchObjects"
+        :placeholder="i18n.search"
+        class="form-control mb-4"
+      />
+    </div>
+
+    <div v-if="this.settings.input_field == 'topf-secret-fleisch'" class="embed-responsive embed-responsive-21by9 d-inline-flex" style="overflow: unset !important; color: #000;">
+      <div class="d-flex flex-column justify-content-around align-items-center w-100 rounded-circle shadow py-2 px-5" style="border: 2px #000 solid;">
+        <p class="h4 font-weight-bolder">DE</p>
+        <div class="input-group">
+          <input type="search" v-model="search" @keyup="searchObjects" placeholder="BY-1234" class="form-control text-center h4" style="color: #000;"/>
+        </div>
+        <p class="h4 font-weight-bolder">EG</p>
+      </div>
+    </div>
 
     <div class="mb-3">
-      <CampaignListTag
-        v-for="res in resolutions"
-        :key="res"
-        :active="res === resolution"
-        :status="res"
-        @click="setResolutionFilter(res)"
-      >
-        {{ i18n.resolutions[res] }}
-      </CampaignListTag>
+      <div v-if="!this.settings.hide_status_filter">
+        <CampaignListTag
+          v-for="res in resolutions"
+          :key="res"
+          :active="res === resolution"
+          :status="res"
+          @click="setResolutionFilter(res)"
+        >
+
+          {{ i18n.resolutions[res] }}
+        </CampaignListTag>
+      </div>
       <div v-if="!this.settings.hide_tag_filters">
         <CampaignListTag
           v-for="tag in config.tags"
@@ -50,7 +65,7 @@
         v-if="objects.length === 0"
         key="noResults"
       >
-        <p class="text-secondary">{{ i18n.noResults }}</p>
+        <p v-if="hasSearched" class="text-secondary">{{ i18n.noResults }}</p>
       </div>
     </transition-group>
     <div
@@ -81,6 +96,7 @@ export default {
   },
   data() {
     return {
+      hasSearched: false,
       search: '',
       objects: [],
       baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}`,
@@ -92,7 +108,9 @@ export default {
     }
   },
   mounted() {
-    this.fetch()
+    if (!this.settings.show_list_after_search) {
+      this.fetch()
+    }
   },
   computed: {
     i18n() {
@@ -134,6 +152,7 @@ export default {
           this.meta = data.meta
           this.nextUrl = data.meta.next
           this.objects = data.objects
+          this.hasSearched = true
       })
     },
     fetch() {
