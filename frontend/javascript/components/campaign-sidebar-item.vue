@@ -11,6 +11,16 @@
             <p v-if="data.subtitle">{{ data.subtitle }}</p>
             <p v-if="data.address" class="venue-address">{{ data.address }}</p>
           </div>
+          <div class="col text-right">
+            <h5>
+              <CampaignListTag
+                v-for="(tag, i) in data.tags"
+                :key="i"
+              >
+                #{{ tag }}
+              </CampaignListTag>
+            </h5>
+          </div>
         </div>
         <div class="row">
           <div class="col-12">
@@ -41,10 +51,12 @@
 
 <script>
 import CampaignItemMixin from '../lib/mixin'
+import CampaignListTag from './campaign-list-tag'
 
 export default {
   name: 'campaign-sidebar-item',
   mixins: [CampaignItemMixin],
+  components: { CampaignListTag },
   props: {
     color: {
       type: String

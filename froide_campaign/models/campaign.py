@@ -262,6 +262,7 @@ class InformationObject(models.Model):
 
     address = models.TextField(_("Address"), blank=True)
     geo = gis_models.PointField(null=True, blank=True, geography=True)
+    featured = models.BooleanField(default=False)
 
     objects = InformationObjectManager()
 
