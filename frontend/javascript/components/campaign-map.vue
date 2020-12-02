@@ -644,6 +644,7 @@ export default {
           return response.json()
         })
         .then(this.searchDone(options))
+        .then(this.map.fitBounds(this.maxBounds))
       } else {
         this.search()
       }
