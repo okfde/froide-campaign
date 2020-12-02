@@ -674,7 +674,7 @@ export default {
       radius = Math.max(Math.round(Math.min(radius, 40000) / 100) * 100, 500)
       let reqCoords = latlngToGrid(this.searchCenter, radius)
       let locationParam = ''
-      if (!this.ignoreMapFilter  || this.onlyFeatured) {
+      if (!this.ignoreMapFilter  && !this.onlyFeatured) {
         locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
       }
       let onlyRequested = ''
@@ -685,7 +685,7 @@ export default {
       if (this.onlyFeatured) {
         onlyFeatured = '&featured=1'
       }
-      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}${onlyRequested}&${locationParam}`)
+      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}${onlyFeatured}&${locationParam}`)
         .then((response) => {
           return response.json()
         }).then(this.searchDone(options))
