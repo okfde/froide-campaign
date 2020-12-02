@@ -87,11 +87,11 @@
                     <span class="d-none d-lg-inline">Ort</span>
                   </button>
                 </div>
-                <!-- <div class="input-group-append">
-                  <div class="switch-filter">
-                    <switch-button v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
+                <div v-if="showFeaturedSwitch" class="input-group-append">
+                  <div class="switch-filter py-0 border-top border-bottom border-dark">
+                    <switch-button color="#FFC006" v-model="onlyFeatured" @toggle="getFeatured">{{ this.showFeaturedSwitchText }}</switch-button>
                   </div>
-                </div> -->
+                </div>
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                     <i class="fa fa-gears" aria-hidden="true"></i>
@@ -351,6 +351,7 @@ export default {
       query: query || '',
       lastQuery: '',
       onlyRequested: false,
+      onlyFeatured: false,
   		tileProvider: {
         name: 'Carto',
         url: `//cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}${window.L.Browser.retina ? '@2x' : ''}.png`,
@@ -425,6 +426,9 @@ export default {
       }
       return this.locations
     },
+    showFeaturedSwitch () {
+      return (this.config.showFeaturedSwitch) ? this.config.showFeaturedSwitch : false
+    },
     ignoreMapFilter () {
       return (this.config.ignore_mapfilter) ? this.config.ignore_mapfilter : false
     },
@@ -433,6 +437,9 @@ export default {
     },
     nothingFoundText () {
       return (this.config.nothing_found) ? this.config.nothing_found : 'Keine Orte gefunden.'
+    },
+    showFeaturedSwitchText () {
+      return (this.config.feature_switch_text) ? this.config.feature_switch_text : 'besondere Orte zeigen'
     },
     modalActive () {
       return this.showLocator || this.showDetail
@@ -594,7 +601,7 @@ export default {
       window.localStorage.setItem('froide-campaign:center', JSON.stringify(latlng))
     },
     mapHasMoved() {
-      if (this.autoMoved || this.ignoreMapFilter ) {
+      if (this.autoMoved || this.ignoreMapFilter || this.onlyFeatured ) {
         return
       }
       this.mapMoved = true
@@ -628,6 +635,19 @@ export default {
       }
       this.search()
     },
+    getFeatured (options = {}) {
+      let onlyFeatured = ''
+      if (this.onlyFeatured) {
+        onlyFeatured = '&featured=1'
+        window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyFeatured}`)
+        .then((response) => {
+          return response.json()
+        })
+        .then(this.searchDone(options))
+      } else {
+        this.search()
+      }
+    },
     search (options = {}) {
       this.map.closePopup()
       this.map.closeTooltip()
@@ -654,14 +674,18 @@ export default {
       radius = Math.max(Math.round(Math.min(radius, 40000) / 100) * 100, 500)
       let reqCoords = latlngToGrid(this.searchCenter, radius)
       let locationParam = ''
-      if (!this.ignoreMapFilter) {
+      if (!this.ignoreMapFilter  || this.onlyFeatured) {
         locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
       }
       let onlyRequested = ''
       if (this.onlyRequested) {
         onlyRequested = '&requested=1'
       }
-      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}&${locationParam}`)
+      let onlyFeatured = ''
+      if (this.onlyFeatured) {
+        onlyFeatured = '&featured=1'
+      }
+      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}${onlyRequested}&${locationParam}`)
         .then((response) => {
           return response.json()
         }).then(this.searchDone(options))
@@ -712,14 +736,15 @@ export default {
     },
     getMarker (status, featured) {
       let iconSize = [25,41]
+      let glyph = ''
       if (featured) {
-        iconSize = [50, 82]
+         glyph = 'fa-exclamation'
       }
 
       return L.icon.glyph({
         className: 'campaign-marker-icon',
         prefix: 'fa',
-        glyph:'',
+        glyph: glyph ,
         iconUrl: this.getIconUrl(status),
         iconSize: iconSize
       })
