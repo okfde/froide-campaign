@@ -81,18 +81,18 @@
                     <span class="d-none d-sm-none d-lg-inline">Suchen</span>
                   </button>
                 </div>
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" @click="setLocator(true)">
-                    <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">Ort</span>
-                  </button>
-                </div>
                 <div v-if="showFeaturedSwitch" class="input-group-append">
                   <div class="switch-filter py-0 border-top border-bottom border-dark">
                     <switch-button color="#FFC006" v-model="onlyFeatured" @toggle="getFeatured">{{ this.showFeaturedSwitchText }}</switch-button>
                   </div>
                 </div>
                 <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" @click="setLocator(true)">
+                    <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">Ort</span>
+                  </button>
+                </div>
+                <div v-if="!hideStatusFilter" class="input-group-append">
                   <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                     <i class="fa fa-gears" aria-hidden="true"></i>
                     <span class="d-none d-sm-none d-md-inline">Filter</span>
@@ -425,6 +425,9 @@ export default {
         return this.locations.filter(location => location.lat)
       }
       return this.locations
+    },
+    hideStatusFilter () {
+      return (this.config.hide_status_filter) ? this.config.hide_status_filter : false
     },
     showFeaturedSwitch () {
       return (this.config.showFeaturedSwitch) ? this.config.showFeaturedSwitch : false
