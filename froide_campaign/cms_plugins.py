@@ -264,11 +264,17 @@ class CampaignProgressPlugin(CMSPluginBase):
         return number.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def get_total(self, campaign):
-        return campaign.get_provider().get_queryset().count()
+        return 200
+        #return campaign.get_provider().get_queryset().count()
 
-    def get_amount(self, campaign):
+    def get_requests(self, campaign):
         return campaign.informationobject_set.filter(
             foirequests__isnull=False).distinct().count()
+
+    def get_success(self, campaign):
+        return campaign.informationobject_set.filter(
+            foirequests__status='resolved',
+            foirequests__resolution='successful').distinct().count()
 
     def get_perc(self, amount, total):
         if amount and amount > 0 and total > 0:
@@ -278,10 +284,13 @@ class CampaignProgressPlugin(CMSPluginBase):
             return 0
 
     def render(self, context, instance, placeholder):
+        campaign = instance.campaign
         context = super().render(context, instance, placeholder)
-        total = self.get_total(instance.campaign)
-        amount = self.get_amount(instance.campaign)
-        context['amount'] = self.german_number_display(amount)
-        context['percentage'] = self.get_perc(amount, total)
+        total = self.get_total(campaign)
+        requests = self.get_requests(campaign)
+        success = self.get_success(campaign)
+        context['amount'] = self.german_number_display(requests)
+        context['percentage'] = self.get_perc(requests - success, total)
+        context['percentage_success'] = self.get_perc(success, total)
         context['total'] = self.german_number_display(total)
         return context
