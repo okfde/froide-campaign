@@ -264,8 +264,7 @@ class CampaignProgressPlugin(CMSPluginBase):
         return number.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def get_total(self, campaign):
-        return 200
-        #return campaign.get_provider().get_queryset().count()
+        return campaign.get_provider().get_queryset().count()
 
     def get_requests(self, campaign):
         return campaign.informationobject_set.filter(
