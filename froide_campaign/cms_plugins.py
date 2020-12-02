@@ -15,7 +15,9 @@ from .models import (CampaignRequestsCMSPlugin,
                      InformationObject,
                      CampaignSubscription,
                      CampaignCMSPlugin,
-                     CampaignQuestionaireCMSPlugin)
+                     CampaignQuestionaireCMSPlugin,
+                     CampaignProgressCMSPlugin
+                     )
 
 from .providers import BaseProvider
 
@@ -246,4 +248,40 @@ class CampaignListPlugin(CMSPluginBase):
             'config': json.dumps(config),
             'settings': json.dumps(plugin_settings)
         })
+        return context
+
+
+@plugin_pool.register_plugin
+class CampaignProgressPlugin(CMSPluginBase):
+    module = _("Campaign")
+    name = _("Campaign Progress")
+    render_template = "froide_campaign/plugins/campaign_progress.html"
+    model = CampaignProgressCMSPlugin
+    cache = False
+
+    def german_number_display(self, number):
+        number = '{0:,}'.format(number)
+        return number.replace(",", "X").replace(".", ",").replace("X", ".")
+
+    def get_total(self, campaign):
+        return campaign.get_provider().get_queryset().count()
+
+    def get_amount(self, campaign):
+        return campaign.informationobject_set.filter(
+            foirequests__isnull=False).distinct().count()
+
+    def get_perc(self, amount, total):
+        if amount and amount > 0 and total > 0:
+            perc = min(int(amount / total * 100), 100)
+            return perc
+        else:
+            return 0
+
+    def render(self, context, instance, placeholder):
+        context = super().render(context, instance, placeholder)
+        total = self.get_total(instance.campaign)
+        amount = self.get_amount(instance.campaign)
+        context['amount'] = self.german_number_display(amount)
+        context['percentage'] = self.get_perc(amount, total)
+        context['total'] = self.german_number_display(total)
         return context
