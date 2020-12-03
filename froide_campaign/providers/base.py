@@ -1,6 +1,7 @@
 from collections import defaultdict
 from urllib.parse import urlencode, quote
 
+from django.core.exceptions import FieldError
 from django.urls import reverse
 from django.conf import settings
 from django.template import Context
@@ -25,6 +26,7 @@ def first(x):
 class BaseProvider:
     ORDER_ZOOM_LEVEL = 15
     CREATE_ALLOWED = False
+    ORDER_BY = '-featured'
 
     def __init__(self, campaign, **kwargs):
         self.campaign = campaign
@@ -50,7 +52,8 @@ class BaseProvider:
         iobjs = self.get_queryset()
         iobjs = self.filter(iobjs, **filter_kwargs)
         iobjs = self.filter_geo(iobjs, **filter_kwargs)
-        iobjs = iobjs.order_by('id').distinct()
+        iobjs = iobjs.order_by(self.ORDER_BY).distinct()
+        iobjs.distinct()
         if not filter_kwargs.get('featured') == 1:
             iobjs = self.limit(iobjs)
 
