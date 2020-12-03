@@ -212,10 +212,7 @@ class InformationObjectManager(models.Manager):
     def search(self, qs, query):
         if query:
             query_search = SearchQuery(query, config=self.SEARCH_LANG)
-            qs = qs.filter(
-                Q(search_vector=query_search) |
-                Q(title__contains=query) |
-                Q(subtitle__contains=query))
+            qs = qs.filter(search_vector=query_search)
         return qs
 
     def export_csv(self, queryset):
@@ -310,9 +307,12 @@ class InformationObject(models.Model):
         )
 
     def get_search_text(self):
-        return ' '.join([
+        text = ' '.join([ self.title, self.subtitle,
             self.publicbody.name if self.publicbody else ''
-            ] + [str(v) for v in self.context.values()]).strip()
+            ] + self.tags + [str(v) for v in self.context.values()]).strip()
+        if self.featured:
+            print(text)
+        return text
 
     def make_request_url(self):
         provider = self.campaign.get_provider()
