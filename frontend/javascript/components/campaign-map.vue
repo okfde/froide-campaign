@@ -741,7 +741,7 @@ export default {
       let iconSize = [25,41]
       let glyph = ''
       if (featured) {
-         glyph = 'fa-exclamation'
+         glyph = this.config.featured_icon ? this.config.featured_icon : 'fa-exclamation'
       }
 
       return L.icon.glyph({
