@@ -24,6 +24,7 @@ class AmenityProvider(BaseProvider):
         'borough', 'municipality', 'admin_cooperation',
         'district', 'state'
     ]
+    ORDER_BY = 'id'
 
     def get_queryset(self):
         iobs = super().get_queryset()
