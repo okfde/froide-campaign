@@ -238,15 +238,22 @@ class CampaignListPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
+        request = context.get('request')
         campaign = instance.campaign.id
         plugin_settings = instance.settings
         config = {
             'campaignId': campaign,
-            'tags': instance.campaign.tags
+            'tags': instance.campaign.tags,
+            'requestExtraText': instance.request_extra_text,
         }
+        fake_make_request_view = MakeRequestView(request=request)
         context.update({
             'config': json.dumps(config),
-            'settings': json.dumps(plugin_settings)
+            'settings': json.dumps(plugin_settings),
+            'request_config': json.dumps(
+                fake_make_request_view.get_js_context()),
+            'request_form': fake_make_request_view.get_form(),
+            'user_form': fake_make_request_view.get_user_form()
         })
         return context
 

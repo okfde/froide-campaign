@@ -16,6 +16,7 @@
               <CampaignListTag
                 v-for="(tag, i) in data.tags"
                 :key="i"
+                :isButton="false"
               >
                 #{{ tag }}
               </CampaignListTag>

@@ -6,7 +6,7 @@
           <campaign-loader></campaign-loader>
         </div>
         <template v-else>
-            <button class="btn btn-sm btn-light" @click="$emit('close')"> < zurück zur Karte</button>
+            <button class="btn btn-sm btn-light" @click="$emit('close')"> < zurück</button>
           <div class="row justify-content-md-end mt-5">
             <campaign-choose-publicbody v-if="!fetching && publicbodiesOptions.length > 1"
             :publicbodies="publicbodiesOptions"
@@ -57,7 +57,7 @@
               <div class="col-md-12">
                 <div class="card mb-3">
                   <div class="card-body">
-                    <div class="form-group row">
+                    <div v-if="!hideNewsletterCheckbox" class="form-group row">
                       <div class="col-lg-9">
                         <div class="form-check">
                           <label class="form-check-label">
@@ -143,6 +143,9 @@ export default {
     },
     extraText: {
       type: String
+    },
+    hideNewsletterCheckbox: {
+      type: Boolean
     },
     subscribeText: {
       type: String
