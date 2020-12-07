@@ -25,7 +25,7 @@
       @close="requestFormClosed"
     ></campaign-request>
 
-    <div v-show="!showRequestForm">
+    <div class="container col-md-5 mx-auto" v-show="!showRequestForm">
       <div v-if="!this.settings.input_field" >
         <h5>
           Filter
@@ -163,7 +163,7 @@ export default {
       return i18n[this.language]
     },
     hideNewsletterCheckbox () {
-      return (this.settings.hide_newsletter_checkbox) ? this.settings.hide_newsletter_checkbox : false
+      return (this.settings.hide_newsletter_checkbox) ? this.settings.hide_newsletter_checkbox : true
     },
   },
   methods: {
