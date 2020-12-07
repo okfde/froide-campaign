@@ -241,12 +241,19 @@ class CampaignListPlugin(CMSPluginBase):
         request = context.get('request')
         campaign = instance.campaign.id
         plugin_settings = instance.settings
+        law_type = None
+        try:
+            law_type = instance.campaign.provider_kwargs.get('law_type')
+        except AttributeError:
+            pass
         config = {
             'campaignId': campaign,
+            'lawType': law_type,
             'tags': instance.campaign.tags,
             'requestExtraText': instance.request_extra_text,
         }
         fake_make_request_view = MakeRequestView(request=request)
+
         context.update({
             'config': json.dumps(config),
             'settings': json.dumps(plugin_settings),

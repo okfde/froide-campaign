@@ -14,7 +14,7 @@ from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
 
 
-LIMIT = 200
+LIMIT = 100
 
 
 def first(x):
@@ -106,14 +106,15 @@ class BaseProvider:
                 geo__distance_lte=(coordinates, D(m=radius))
             )
         )
-        order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
-        if not q and order_distance:
-            qs = (
-                qs.annotate(distance=Distance("geo", coordinates))
-                .order_by("distance")
-            )
-        else:
-            qs = qs.order_by('?')
+
+        # order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
+        # if not q and order_distance:
+        #     qs = (
+        #         qs.annotate(distance=Distance("geo", coordinates))
+        #         .order_by("distance")
+        #     )
+        # else:
+        #     qs = qs.order_by('?')
 
         return qs
 
