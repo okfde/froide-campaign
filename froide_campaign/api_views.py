@@ -91,7 +91,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
     filter_backends = [filters.SearchFilter, StatusFilter, TagFilter]
-    search_fields = ['title', 'subtitle', 'address', 'ident']
+    search_fields = ['title', 'subtitle']
 
     def get_permissions(self):
         if self.action == 'create':

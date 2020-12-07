@@ -14,7 +14,7 @@ from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
 
 
-LIMIT = 50
+LIMIT = 200
 
 
 def first(x):
@@ -52,7 +52,7 @@ class BaseProvider:
         iobjs = self.get_queryset()
         iobjs = self.filter(iobjs, **filter_kwargs)
         iobjs = self.filter_geo(iobjs, **filter_kwargs)
-        iobjs = iobjs.order_by(self.ORDER_BY).distinct()
+        iobjs = iobjs.order_by(self.ORDER_BY, '?').distinct()
         iobjs.distinct()
         if not filter_kwargs.get('featured') == 1:
             iobjs = self.limit(iobjs)

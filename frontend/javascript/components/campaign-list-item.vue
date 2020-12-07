@@ -13,8 +13,7 @@
               v-for="(tag, i) in object.tags"
               :key="i"
               :active="currentTag === tag"
-              @click="$emit('filter', tag)"
-            >
+              :isButton="false"            >
               #{{ tag }}
             </CampaignListTag>
           </h5>
@@ -24,7 +23,7 @@
         <div class="col">
           <a
             v-if="object.resolution === 'normal'"
-            :href="object.request_url"
+            @click.prevent.stop="$emit('startRequest', object)"
             class="btn btn-normal text-white"
           >
             {{ i18n.request }}

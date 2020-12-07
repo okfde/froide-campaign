@@ -11,6 +11,7 @@
       :campaignId="config.campaignId"
       :lawType="config.lawType"
       :extraText="config.requestExtraText"
+      :hideNewsletterCheckbox="hideNewsletterCheckbox"
       :subscribeText="config.subscribe_text"
       :hasSubscription="config.hasSubscription"
       :publicbody="publicbody"
@@ -45,13 +46,19 @@
                 <span class="d-none d-sm-none d-md-inline">Ort</span>
               </button>
             </div>
-            <div class="input-group-append">
+            <div v-if="!this.config.hide_status_filter || this.config.show_featured_only_filter" class="input-group-append">
               <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
                 <i class="fa fa-gears" aria-hidden="true"></i>
                 <span class="d-none d-sm-none d-md-inline">Filter</span>
               </button>
             </div>
           </div>
+          <slide-up-down :active="showFilter" :duration="300">
+            <div class="switch-filter">
+              <switch-button v-if="!this.config.hide_status_filter" v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
+              <switch-button v-if="this.config.show_featured_only_filter" color="#FFC006" v-model="onlyFeatured" @toggle="getFeatured">{{ this.showFeaturedSwitchText }}</switch-button>
+            </div>
+          </slide-up-down>
         </div>
       </div>
 
@@ -102,17 +109,13 @@
 
               <slide-up-down :active="showFilter" :duration="300">
                 <div class="switch-filter">
-                  <switch-button v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
+                  <switch-button v-if="!this.config.hide_status_filter" v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
                 </div>
               </slide-up-down>
           </div>
 
           <l-map ref="map" :zoom.sync="zoom" :center="center" :options="mapOptions" :max-bounds="maxBounds">
-            <l-tile-layer :url="tileProvider.url"/>
-              <l-control-attribution
-                position="bottomright"
-                :prefix="tileProvider.attribution"
-              />
+            <l-tile-layer :url="tileProvider.url" :prefix="tileProvider.attribution" :attribution="attribution"/>
               <l-control-zoom position="bottomright"/>
               <l-control position="bottomleft" >
                 <ul class="color-legend">
@@ -316,6 +319,7 @@ export default {
 
   	return {
       alreadyRequested: {},
+      attribution: 'leaflet | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       user: this.userInfo,
       showRequestForm: null,
   		locations: [],
@@ -425,6 +429,9 @@ export default {
         return this.locations.filter(location => location.lat)
       }
       return this.locations
+    },
+    hideNewsletterCheckbox () {
+      return (this.config.hide_newsletter_checkbox) ? this.config.hide_newsletter_checkbox : false
     },
     hideStatusFilter () {
       return (this.config.hide_status_filter) ? this.config.hide_status_filter : false
@@ -639,17 +646,7 @@ export default {
       this.search()
     },
     getFeatured (options = {}) {
-      let onlyFeatured = ''
-      if (this.onlyFeatured) {
-        onlyFeatured = '&featured=1'
-        window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyFeatured}`)
-        .then((response) => {
-          return response.json()
-        })
-        .then(this.searchDone(options))
-      } else {
-        this.search()
-      }
+      this.search()
     },
     search (options = {}) {
       this.map.closePopup()
@@ -674,10 +671,10 @@ export default {
             bounds.getSouthEast()
           )
         )
-      radius = Math.max(Math.round(Math.min(radius, 40000) / 100) * 100, 500)
+      radius = Math.max(Math.round(Math.min(radius, 100000) / 100) * 100, 500)
       let reqCoords = latlngToGrid(this.searchCenter, radius)
       let locationParam = ''
-      if (!this.ignoreMapFilter  && !this.onlyFeatured) {
+      if (!this.ignoreMapFilter  && !this.onlyFeatured  && this.map.getZoom() > 7) {
         locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
       }
       let onlyRequested = ''
