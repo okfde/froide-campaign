@@ -76,13 +76,19 @@ class CSVImporter(object):
             except ValueError:
                 pass
 
-        if 'context' in line:
-            context = line.pop('context')
-            context_json = json.loads(context)
-
         subtitle = ''
         if 'subtitle' in line:
             subtitle = line.pop('subtitle')
+
+        tags = []
+        if 'tags' in line:
+            tags = line.pop('tags')
+
+        if 'context' in line:
+            context = line.pop('context')
+            context_json = json.loads(context)
+        else:
+            context_json = line
 
         if iobj is not None:
             iobj.slug = slug
@@ -93,6 +99,7 @@ class CSVImporter(object):
             iobj.title = title
             iobj.subtitle = subtitle
             iobj.context = context_json
+            iobj.tags = tags
             iobj.save()
             return iobj
         return InformationObject.objects.create(
@@ -104,6 +111,7 @@ class CSVImporter(object):
             ident=ident,
             ordering=ordering,
             context=context_json,
+            tags=tags,
             geo=point
         )
 
