@@ -9,7 +9,8 @@
     "request": "Request",
     "viewRequest": "View request",
     "search": "Search...",
-    "noResults": "No results found."
+    "noResults": "No results found.",
+    "loadMore": "Load more"
   },
   "de": {
     "resolutions": {
@@ -21,6 +22,7 @@
     "request": "Anfragen",
     "viewRequest": "Anfrage ansehen",
     "search": "Suchen...",
-    "noResults": "Keine Ergebnisse gefunden."
+    "noResults": "Keine Ergebnisse gefunden.",
+    "loadMore": "Mehr laden"
   }
 }

@@ -100,7 +100,7 @@
         class="row justify-content-center mb-5"
         v-if="this.meta.next"
       >
-          <button @click="fetch" class="btn btn-light">Load more</button>
+          <button @click="fetch" class="btn btn-light">{{ i18n.loadMore }}</button>
       </div>
     </div>
   </div>
