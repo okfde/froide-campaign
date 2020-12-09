@@ -31,6 +31,7 @@
           <a
             v-else
             :href="'/a/' + object.foirequest"
+            target="_blank"
             class="btn text-white"
             :class="[`btn-${object.resolution}`]"
           >
