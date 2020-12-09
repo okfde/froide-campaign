@@ -39,12 +39,11 @@
         />
       </div>
 
-      <div class="fleisch-form-background">
+      <div class="fleisch-form-background" v-if="this.settings.input_field == 'topf-secret-fleisch'">
         <div class="container">
           <div class="col-md-5 mx-auto">
             <div
               class="fleisch-form-container embed-responsive embed-responsive-21by9"
-              v-if="this.settings.input_field == 'topf-secret-fleisch'"
             >
               <div class="fleisch-form shadow">
                 <p class="h4 font-weight-bolder">DE</p>
