@@ -100,7 +100,7 @@
             v-if="objects.length === 0"
             key="noResults"
           >
-            <p v-if="hasSearched" class="text-secondary">{{ i18n.noResults }}</p>
+            <p v-if="hasSearched" class="text-secondary" v-html="i18n.noResults">
           </div>
         </transition-group>
         <div
