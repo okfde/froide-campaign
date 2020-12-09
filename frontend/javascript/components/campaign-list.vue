@@ -25,8 +25,8 @@
       @close="requestFormClosed"
     ></campaign-request>
 
-    <div class="container col-md-5 mx-auto" v-show="!showRequestForm">
-      <div v-if="!this.settings.input_field" >
+    <div v-show="!showRequestForm">
+      <div v-if="!this.settings.input_field" class="container col-md-5 mx-auto">
         <h5>
           Filter
         </h5>
@@ -39,17 +39,25 @@
         />
       </div>
 
-      <div v-if="this.settings.input_field == 'topf-secret-fleisch'" class="embed-responsive embed-responsive-21by9 d-inline-flex" style="overflow: unset !important; color: #000;">
-        <div class="d-flex flex-column justify-content-around align-items-center w-100 rounded-circle shadow py-2 px-5" style="border: 2px #000 solid;">
-          <p class="h4 font-weight-bolder">DE</p>
-          <div class="input-group">
-            <input v-model="search" @keyup="searchObjects" placeholder="BY 1234" class="form-control text-center h4" style="color: #000;"/>
+      <div class="fleisch-form-background" v-if="this.settings.input_field == 'topf-secret-fleisch'">
+        <div class="container">
+          <div class="col-md-5 mx-auto">
+            <div
+              class="fleisch-form-container embed-responsive embed-responsive-21by9"
+            >
+              <div class="fleisch-form shadow">
+                <p class="h4 font-weight-bolder">DE</p>
+                <div class="input-group">
+                  <input v-model="search" @keyup="searchObjects" placeholder="BY 1234" class="form-control text-center h4"/>
+                </div>
+                <p class="h4 font-weight-bolder">EG</p>
+              </div>
+            </div>
           </div>
-          <p class="h4 font-weight-bolder">EG</p>
         </div>
       </div>
 
-      <div class="mb-3">
+      <div class="container col-md-5 mx-auto mb-3">
         <div v-if="!this.settings.hide_status_filter">
           <CampaignListTag
             v-for="res in resolutions"
@@ -74,33 +82,34 @@
             #{{ tag }}
           </CampaignListTag>
         </div>
-      </div>
 
-      <transition-group name="list">
-        <CampaignListItem
-          v-for="object in objects"
-          :key="object.id"
-          :object="object"
-          :currentTag="currentTag"
-          :language="language"
-          class="list-item"
-          @filter="setTagFilter"
-          @startRequest="startRequest"
-        />
+        <transition-group name="list">
+          <CampaignListItem
+            v-for="object in objects"
+            :key="object.id"
+            :object="object"
+            :currentTag="currentTag"
+            :language="language"
+            class="list-item"
+            @filter="setTagFilter"
+            @startRequest="startRequest"
+          />
 
+          <div
+            class="text-center my-5 py-5"
+            v-if="objects.length === 0"
+            key="noResults"
+          >
+            <p v-if="hasSearched" class="text-secondary">{{ i18n.noResults }}</p>
+          </div>
+        </transition-group>
         <div
-          class="text-center my-5 py-5"
-          v-if="objects.length === 0"
-          key="noResults"
+          class="row justify-content-center mb-5"
+          v-if="this.meta.next"
         >
-          <p v-if="hasSearched" class="text-secondary">{{ i18n.noResults }}</p>
+            <button @click="fetch" class="btn btn-light">{{ i18n.loadMore }}</button>
         </div>
-      </transition-group>
-      <div
-        class="row justify-content-center mb-5"
-        v-if="this.meta.next"
-      >
-          <button @click="fetch" class="btn btn-light">{{ i18n.loadMore }}</button>
+
       </div>
     </div>
   </div>
@@ -263,5 +272,34 @@ export default {
 
 .list-leave-active {
   position: relative;
+}
+
+.fleisch-form-background {
+  padding: 2rem 0;
+  margin-bottom: 1rem;
+  background-image: url('/static/campaign/img/fleisch-backdrop.jpg');
+  background-size: cover;
+}
+
+.fleisch-form-container {
+  display: inline-flex;
+  overflow: hidden;
+  color: #000;
+
+  .fleisch-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    border: 2px #000 solid;
+    padding: 0.5rem 3rem;
+    border-radius: 50%;
+    background-color: #fff;
+
+    input {
+      color: #000;
+    }
+  }
 }
 </style>
