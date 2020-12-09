@@ -97,10 +97,10 @@
 
           <div
             class="text-center my-5 py-5"
-            v-if="objects.length === 0"
+            v-if="hasSearched && objects.length === 0"
             key="noResults"
           >
-            <p v-if="hasSearched" class="text-secondary" v-html="i18n.noResults"/>
+            <p class="text-secondary" v-html="i18n.noResults" />
           </div>
         </transition-group>
         <div
