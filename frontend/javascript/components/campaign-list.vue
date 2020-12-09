@@ -100,7 +100,7 @@
             v-if="objects.length === 0"
             key="noResults"
           >
-            <p v-if="hasSearched" class="text-secondary">{{ i18n.noResults }}</p>
+            <p v-if="hasSearched" class="text-secondary" v-html="i18n.noResults"/>
           </div>
         </transition-group>
         <div
@@ -116,9 +116,10 @@
 </template>
 
 <script>
+import Fuse from 'fuse.js'
+import deepmerge from 'deepmerge'
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'
-import Fuse from 'fuse.js'
 import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
 
@@ -169,7 +170,10 @@ export default {
   },
   computed: {
     i18n() {
-      return i18n[this.language]
+      const settings = this.settings || {}
+      const messages = deepmerge(i18n, settings.overwrite_messages || {})
+
+      return messages[this.language]
     },
     hideNewsletterCheckbox () {
       return (this.settings.hide_newsletter_checkbox) ? this.settings.hide_newsletter_checkbox : true
