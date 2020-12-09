@@ -310,8 +310,6 @@ class InformationObject(models.Model):
         text = ' '.join([ self.title, self.subtitle,
             self.publicbody.name if self.publicbody else ''
             ] + self.tags + [str(v) for v in self.context.values()]).strip()
-        if self.featured:
-            print(text)
         return text
 
     def make_request_url(self):
