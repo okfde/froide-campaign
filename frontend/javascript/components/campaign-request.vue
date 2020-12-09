@@ -177,7 +177,7 @@ export default {
       closedWarning: false,
       submitting: false,
       userHasSubscription: this.hasSubscription,
-      addressHelpText: 'Ihre Adresse wird nicht öffentlich angezeigt.',
+      addressHelpText: this.getAddressHelptext()
     }
   },
   computed: {
@@ -221,6 +221,13 @@ export default {
     }
   },
   methods: {
+    getAddressHelptext () {
+      let text = 'Ihre Adresse wird nicht öffentlich angezeigt.'
+      if (this.lawType == 'VIG') {
+        text = text + '<strong class="text-danger">Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet.</strong>'
+      }
+      return text
+    },
     updatePublicBody (publicbody) {
       this.$emit('publicBodyChanged', publicbody)
     },
