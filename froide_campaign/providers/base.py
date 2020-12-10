@@ -1,3 +1,5 @@
+import html
+
 from collections import defaultdict
 from urllib.parse import urlencode, quote
 
@@ -232,10 +234,12 @@ class BaseProvider:
         else:
             url = reverse('foirequest-make_request')
         context = Context(context)
-        subject = self.campaign.get_subject_template().render(context)
+        subject = html.unescape(
+            self.campaign.get_subject_template().render(context))
         if len(subject) > 250:
             subject = subject[:250] + '...'
-        body = self.campaign.get_template().render(context).encode('utf-8')
+        body = html.unescape(
+            self.campaign.get_template().render(context)).encode('utf-8')
         ref = ('campaign:%s@%s' % (self.campaign.pk, ident)).encode('utf-8')
         query = {
             'subject': subject.encode('utf-8'),
