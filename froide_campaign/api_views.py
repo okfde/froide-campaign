@@ -82,6 +82,20 @@ class TagFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class CustomSearchFilter(filters.SearchFilter):
+
+    def get_search_terms(self, request):
+        """
+        Search terms are set by a ?search=... query parameter,
+        and may be comma and/or whitespace delimited.
+        """
+        params = request.query_params.get(self.search_param, '')
+        params = params.replace('\x00', '')  # strip null characters
+        params = params.replace(',', ' ')
+        params = params.replace('-', ' ')
+        return params.split()
+
+
 class InformationObjectViewSet(mixins.CreateModelMixin,
                                mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
@@ -90,7 +104,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-    filter_backends = [filters.SearchFilter, StatusFilter, TagFilter]
+    filter_backends = [CustomSearchFilter, StatusFilter, TagFilter]
     search_fields = ['title', 'subtitle']
 
     def get_permissions(self):
