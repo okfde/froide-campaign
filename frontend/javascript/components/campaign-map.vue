@@ -319,7 +319,7 @@ export default {
 
   	return {
       alreadyRequested: {},
-      attribution: 'leaflet | &copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution: 'leaflet | &copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
       user: this.userInfo,
       showRequestForm: null,
   		locations: [],
@@ -362,7 +362,7 @@ export default {
         // url: 'https://api.mapbox.com/styles/v1/{username}/{style}/tiles/{tileSize}/{z}/{x}/{y}{r}?access_token={accessToken}',
         // url: 'https://api.tiles.mapbox.com/v4/{style}/{z}/{x}/{y}.png?access_token={accessToken}',
         // url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
         options: {
           // style: 'mapbox.streets',
           // username: 'okfde',
