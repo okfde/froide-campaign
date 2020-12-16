@@ -572,13 +572,26 @@ export default {
           if (data['meta']['total_count'] === 0) {
             return
           }
-          this.locationKnown = true
-          let geoRegion = data.objects[0]
-        let coords = geoRegion.centroid.coordinates
-        let center = L.latLng([coords[1], coords[0]])
-        this.map.panTo(center)
-        this.search({coordinates: center })
-        this.preventMapMoved()
+          let id = data.objects[0].id
+          let url = `/api/v1/georegion/${id}/`
+          window.fetch(url)
+            .then((response) => {
+              return response.json()
+            }).then((data) => {
+              this.locationKnown = true
+              let geoRegion = data
+              let bounds = bbox(geoRegion.geom)
+              bounds = L.latLngBounds([
+                [bounds[1], bounds[0]],
+                [bounds[3], bounds[2]]
+              ])
+              let coords = geoRegion.centroid.coordinates
+              let center = L.latLng([coords[1], coords[0]])
+              this.map.fitBounds(bounds)
+              this.search({coordinates: center, bounds})
+              this.preventMapMoved()
+          })
+
       })
     },
     locationCreated (data) {
