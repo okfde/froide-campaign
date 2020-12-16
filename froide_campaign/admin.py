@@ -213,16 +213,19 @@ class CampaignReportAdmin(admin.ModelAdmin):
             response['Content-Disposition'] = content
             writer = csv.writer(response)
 
-            header = ['Name', 'PLZ'] + [question.text
+            header = ['Name', 'URL', 'Datum', 'PLZ'] + [question.text
                                         for question in questions]
             writer.writerow(header)
             for report in queryset:
                 iobject = report.informationsobject
                 zipcode = ''
+                foirequest = iobject.get_best_foirequest()
                 if iobject.geo:
                     zipcode = self.get_zipcode(iobject.geo)
                 infooject_details = [
                     iobject.title,
+                    foirequest.get_absolute_domain_short_url(),
+                    foirequest.messages[0].timestamp.date(),
                     zipcode
                 ]
                 answer_texts = []
