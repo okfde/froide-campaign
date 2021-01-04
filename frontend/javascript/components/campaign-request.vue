@@ -202,7 +202,7 @@ export default {
       return params
     },
     subject () {
-      return this.params.subject || ''
+      return this.params.subject.replace('\n', ' ') || ''
     },
     body () {
       return this.params.body || ''
