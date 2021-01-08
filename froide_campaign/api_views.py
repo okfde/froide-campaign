@@ -1,6 +1,7 @@
 import random
 
 from django.contrib.gis.geos import Point
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from rest_framework import filters
@@ -82,6 +83,18 @@ class TagFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class FeaturedFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get('featured'):
+            featured = request.GET.get('featured')
+            try:
+                return queryset.filter(featured=featured)
+            except ValidationError:
+                pass
+        return queryset
+
+
 class CustomSearchFilter(filters.SearchFilter):
 
     def get_search_terms(self, request):
@@ -104,7 +117,8 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-    filter_backends = [CustomSearchFilter, StatusFilter, TagFilter]
+    filter_backends = [CustomSearchFilter, StatusFilter,
+                       TagFilter, FeaturedFilter]
     search_fields = ['title', '@subtitle']
 
     def get_permissions(self):
