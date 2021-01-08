@@ -84,6 +84,9 @@ class CSVImporter(object):
         if 'tags' in line:
             tags = line.pop('tags')
 
+        if 'featured' in line:
+            featured = bool(line.pop('featured'))
+
         if 'context' in line:
             context = line.pop('context')
             context_json = json.loads(context)
@@ -100,6 +103,7 @@ class CSVImporter(object):
             iobj.subtitle = subtitle
             iobj.context = context_json
             iobj.tags = tags
+            iobj.featured = featured
             iobj.save()
             return iobj
         return InformationObject.objects.create(
@@ -112,6 +116,7 @@ class CSVImporter(object):
             ordering=ordering,
             context=context_json,
             tags=tags,
+            featured=featured,
             geo=point
         )
 
