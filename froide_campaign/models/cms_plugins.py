@@ -37,6 +37,8 @@ if CMSPlugin is not None:
             on_delete=models.CASCADE
         )
 
+        count_featured_only = models.BooleanField(default=False)
+
         def __str__(self):
             return str(self.campaign)
 
