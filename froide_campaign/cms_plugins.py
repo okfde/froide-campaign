@@ -277,8 +277,11 @@ class CampaignProgressPlugin(CMSPluginBase):
         number = '{0:,}'.format(number)
         return number.replace(",", "X").replace(".", ",").replace("X", ".")
 
-    def get_total(self, campaign):
-        return campaign.get_provider().get_queryset().count()
+    def get_total(self, instance):
+        if not instance.count_featured_only:
+            return instance.campaign.get_provider().get_queryset().count()
+        else:
+            return instance.campaign.informationobject_set.filter(featured=True).count()
 
     def get_requests(self, campaign):
         return campaign.informationobject_set.filter(
@@ -299,7 +302,7 @@ class CampaignProgressPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         campaign = instance.campaign
         context = super().render(context, instance, placeholder)
-        total = self.get_total(campaign)
+        total = self.get_total(instance)
         requests = self.get_requests(campaign)
         success = self.get_success(campaign)
         context['amount'] = self.german_number_display(requests)
