@@ -46,11 +46,11 @@ class CampaignSubscriptionsAdmin(admin.ModelAdmin):
 class InformationObjectAdmin(admin.ModelAdmin):
     list_display = (
         'title', 'ident', 'campaign', 'publicbody',
-        'request_count'
+        'request_count', 'featured'
     )
     list_filter = (
         'campaign', 'foirequest__status', 'foirequest__resolution',
-        'resolved',
+        'resolved', 'featured',
         make_nullfilter('foirequest', _('Has request')),
         make_nullfilter('documents', _('Has documents')),
         make_nullfilter('publicbody', _('Has public body')),
