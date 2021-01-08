@@ -32,17 +32,16 @@ class AmenityProvider(BaseProvider):
         osm_ids = [int(ident.split('_')[1])
                    for ident in ident_list if 'custom' not in ident]
 
-        amenities =  Amenity.objects.filter(
+        amenities = Amenity.objects.filter(
             topics__contains=[self.kwargs.get('amenity_topic', '')]
         ).exclude(Q(name='') | Q(osm_id__in=osm_ids))
 
         if self.kwargs.get('exclude'):
             clauses = (Q(name__icontains=p) for p in self.kwargs.get('exclude'))
             query = reduce(operator.or_, clauses)
-            amenities =amenities.exclude(query)
+            amenities = amenities.exclude(query)
 
         return amenities
-
 
     def get_ident_list(self, qs):
         return [
@@ -141,6 +140,10 @@ class AmenityProvider(BaseProvider):
                 foirequest=sender
             )
         )
+
+        if created:
+            qs = InformationObject.objects.filter(id=iobj.id)
+            InformationObject.objects.update_search_index(qs=qs)
 
         if not created:
             iobj.publicbody = sender.public_body
