@@ -283,9 +283,14 @@ class CampaignProgressPlugin(CMSPluginBase):
         else:
             return instance.campaign.informationobject_set.filter(featured=True).count()
 
-    def get_requests(self, campaign):
-        return campaign.informationobject_set.filter(
-            foirequests__isnull=False).distinct().count()
+    def get_requests(self, instance):
+        if not instance.count_featured_only:
+            return instance.campaign.informationobject_set.filter(
+                foirequests__isnull=False).distinct().count()
+        else:
+            return instance.campaign.informationobject_set.filter(
+                featured=True,
+                foirequests__isnull=False).distinct().count()
 
     def get_success(self, campaign):
         return campaign.informationobject_set.filter(
@@ -303,7 +308,7 @@ class CampaignProgressPlugin(CMSPluginBase):
         campaign = instance.campaign
         context = super().render(context, instance, placeholder)
         total = self.get_total(instance)
-        requests = self.get_requests(campaign)
+        requests = self.get_requests(instance)
         success = self.get_success(campaign)
         context['amount'] = self.german_number_display(requests)
         context['percentage'] = self.get_perc(requests - success, total)
