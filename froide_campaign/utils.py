@@ -82,7 +82,7 @@ class CSVImporter(object):
 
         tags = []
         if 'tags' in line:
-            tags = line.pop('tags')
+            tags = line.pop('tags').split(',')
 
         featured = False
         if 'featured' in line:
