@@ -89,6 +89,7 @@
             :key="object.id"
             :object="object"
             :currentTag="currentTag"
+            :allowMultipleRequests="allowMultipleRequests"
             :language="language"
             class="list-item"
             @filter="setTagFilter"
@@ -147,6 +148,7 @@ export default {
   data() {
     this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
     return {
+      allowMultipleRequests: this.settings.allow_multiple_requests ? this.settings.allow_multiple_requests: false,
       alreadyRequested: {},
       user: this.userInfo,
       hasSearched: false,

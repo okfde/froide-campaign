@@ -7,6 +7,7 @@
       "refused": "Request refused"
     },
     "request": "Request",
+    "requestAgain": "Request again",
     "viewRequest": "View request",
     "search": "Search...",
     "noResults": "No results found.",
@@ -20,6 +21,7 @@
       "refused": "Anfrage abgelehnt"
     },
     "request": "Anfragen",
+    "requestAgain": "Erneut anfragen",
     "viewRequest": "Anfrage ansehen",
     "search": "Suchen...",
     "noResults": "Keine Ergebnisse gefunden.",
