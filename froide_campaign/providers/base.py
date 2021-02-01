@@ -143,12 +143,12 @@ class BaseProvider:
             'featured': obj.featured
         }
 
-        if foirequests and foirequests[obj.ident]:
-            fr, res = self._get_foirequest_info(foirequests[obj.ident])
+        if obj.foirequests.all():
             data.update({
-                'foirequest': fr,
-                'foirequests': foirequests[obj.ident],
-                'resolution': res
+                'foirequest': obj.get_best_foirequest().id,
+                'foirequests': [{'id': fr.id, 'resolution': fr.resolution} for
+                               fr in obj.foirequests.all()],
+                'resolution': obj.get_resolution()
             })
         return data
 

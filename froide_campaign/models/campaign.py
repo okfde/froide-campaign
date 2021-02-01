@@ -321,20 +321,7 @@ class InformationObject(models.Model):
             return self.get_best_foirequest().get_absolute_url()
 
     def get_best_foirequest(self):
-        success = ['successful', 'partially_successful']
-        withdrawn = ['user_withdrew_costs', 'user_withdrew']
-
-        if self.foirequests.all():
-            frs_success = self.foirequests.filter(resolution__in=success)
-            if frs_success:
-                return frs_success.first()
-            frs_refused = self.foirequests.filter(resolution='refused')
-            if frs_refused:
-                return frs_refused.first()
-            frs_withdrawn = self.foirequests.filter(resolution__in=withdrawn)
-            if frs_withdrawn:
-                return frs_withdrawn.first()
-            return self.foirequests.all().first()
+        return self.foirequests.order_by('-first_message').first()
 
     def get_resolution(self):
         success = ['successful', 'partially_successful']
