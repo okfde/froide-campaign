@@ -136,6 +136,7 @@
                         :statusString="getStatusString(getStatus(location))"
                         :data="location"
                         :buttonText="config.button_text"
+                        :allowMultipleRequests="allowMultipleRequests"
                         @startRequest="startRequest"
                         @detail="setDetail"/>
                   </l-popup>
@@ -161,6 +162,7 @@
               :statusString="getStatusString(getStatus(location))"
               :data="location"
               :buttonText="config.button_text"
+              :allowMultipleRequests="allowMultipleRequests"
               @startRequest="startRequest"
             ></campaign-sidebar-item>
           </div>
@@ -318,6 +320,7 @@ export default {
     this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
 
   	return {
+      allowMultipleRequests: this.config.allow_multiple_requests ? this.config.allow_multiple_requests: false,
       alreadyRequested: {},
       attribution: 'leaflet | &copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
       user: this.userInfo,

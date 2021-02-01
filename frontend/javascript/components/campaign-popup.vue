@@ -24,10 +24,14 @@
       <div class="col-12">
         <div v-if="status !== 'normal'" class="request-status">
           <p :style="{'color':color}">
-              {{ statusString }}
+              {{ statusString }} <br>
+              <a :href="'/a/' + data.foirequest" target="_blank">zur Anfrage&nbsp;&rarr;</a>
           </p>
-          <p>
-            <a :href="'/a/' + data.foirequest" target="_blank">zur Anfrage&nbsp;&rarr;</a>
+          <p v-if="allowMultipleRequests">
+            <a @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
+            erneut<br class="d-block d-sm-none"/>
+            anfragen&nbsp;&rarr;
+          </a>
           </p>
         </div>
         <p v-if="status == 'normal' || status === 'withdrawn'">
@@ -68,6 +72,9 @@ export default {
     },
     data: {
       type: Object
+    },
+    allowMultipleRequests: {
+      type: Boolean
     }
   }
 }
