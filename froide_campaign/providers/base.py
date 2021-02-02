@@ -183,7 +183,7 @@ class BaseProvider:
                           'foirequest__first_message', 'foirequest__resolution')
         for iobj_ident, fr_id, first_message, resolution in iterable:
             mapping[iobj_ident].append({'id': fr_id,
-                                        'first_message': str(first_message),
+                                        'first_message': first_message,
                                         'resolution': resolution})
 
         return mapping
