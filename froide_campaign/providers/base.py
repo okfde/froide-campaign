@@ -150,30 +150,25 @@ class BaseProvider:
                 'foirequests': foirequests[obj.ident],
                 'resolution': res
             })
+
         return data
 
     def _get_foirequest_info(self, frs):
-        id, res = frs[0].get('id'), 'pending'
-
-        refused = None
-        withdrawn = None
+        frs.sort(key=lambda item: item['first_message'], reverse=True)
+        fr_id, res = frs[0].get('id'), frs[0].get('resolution')
 
         success_strings = ['successful', 'partially_successful']
         withdrawn_strings = ['user_withdrew_costs', 'user_withdrew']
 
-        for fr in frs:
-            if fr.get('resolution'):
-                if fr.get('resolution') in success_strings:
-                    return fr.get('id'), 'successful'
-                if fr.get('resolution') == 'refused':
-                    refused = (fr.get('id'), fr.get('resolution'))
-                if fr.get('resolution') in withdrawn_strings:
-                    withdrawn = (fr.get('id'), 'user_withdrew')
-        if refused:
-            return refused[0], refused[1]
-        if withdrawn:
-            return withdrawn[0], withdrawn[1]
-        return id, res
+        if res:
+            if res in success_strings:
+                return fr_id, 'successful'
+            if res == 'refused':
+                return fr_id, 'refused'
+            if res in withdrawn_strings:
+                return fr_id, 'user_withdrew'
+
+        return fr_id, 'pending'
 
     def get_foirequests_mapping(self, qs):
         ident_list = self.get_ident_list(qs)
@@ -185,9 +180,10 @@ class BaseProvider:
         iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
             ).values_list('informationobject__ident', 'foirequest_id',
-                          'foirequest__resolution')
-        for iobj_ident, fr_id, resolution in iterable:
+                          'foirequest__first_message', 'foirequest__resolution')
+        for iobj_ident, fr_id, first_message, resolution in iterable:
             mapping[iobj_ident].append({'id': fr_id,
+                                        'first_message': first_message,
                                         'resolution': resolution})
 
         return mapping

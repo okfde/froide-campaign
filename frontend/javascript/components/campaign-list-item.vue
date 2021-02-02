@@ -28,15 +28,23 @@
           >
             {{ i18n.request }}
           </a>
-          <a
-            v-else
-            :href="'/a/' + object.foirequest"
-            target="_blank"
-            class="btn text-white"
-            :class="[`btn-${object.resolution}`]"
-          >
+          <div v-else>
+            <a
+              :href="'/a/' + object.foirequest"
+              target="_blank"
+              class="btn text-white"
+              :class="[`btn-${object.resolution}`]"
+            >
             {{ i18n.viewRequest }}
-          </a>
+            </a>
+            <a
+              v-if="allowMultipleRequests"
+              @click.prevent.stop="$emit('startRequest', object)"
+              class="btn btn-link"
+              >
+              {{ i18n.requestAgain }}
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -51,7 +59,8 @@ export default {
   props: {
     object: Object,
     currentTag: String,
-    language: String
+    language: String,
+    allowMultipleRequests: Boolean
   },
   components: { CampaignListTag },
   computed: {
