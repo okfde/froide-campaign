@@ -3,6 +3,7 @@ import logging
 
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language_from_request
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
@@ -239,6 +240,9 @@ class CampaignListPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
         request = context.get('request')
+
+        lang = get_language_from_request(request)
+
         campaign = instance.campaign.id
         plugin_settings = instance.settings
         law_type = None
@@ -246,10 +250,16 @@ class CampaignListPlugin(CMSPluginBase):
             law_type = instance.campaign.provider_kwargs.get('law_type')
         except AttributeError:
             pass
+
+        categories = instance.campaign.categories.language(lang)
+        categories_dict = [{'id': cat.id, 'title': cat.title}
+                           for cat in categories]
+
         config = {
             'campaignId': campaign,
             'lawType': law_type,
             'tags': instance.campaign.tags,
+            'categories': categories_dict,
             'requestExtraText': instance.request_extra_text,
         }
         fake_make_request_view = MakeRequestView(request=request)
@@ -260,7 +270,8 @@ class CampaignListPlugin(CMSPluginBase):
             'request_config': json.dumps(
                 fake_make_request_view.get_js_context()),
             'request_form': fake_make_request_view.get_form(),
-            'user_form': fake_make_request_view.get_user_form()
+            'user_form': fake_make_request_view.get_user_form(),
+            'language': lang,
         })
         return context
 
