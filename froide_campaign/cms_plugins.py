@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
 
@@ -176,6 +177,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             provider_data['report'] = report_id
             provider_data['answers'] = answers
             data.append(provider_data)
+
         return data
 
     def get_list_context(self, context, instance):
@@ -185,7 +187,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             foirequests__resolution=Resolution.SUCCESSFUL)
         data = self.get_iobjs_list(instance, iobjs_success)
         context.update({
-            'informationobjects': json.dumps(data)
+            'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
         })
         return context
 
@@ -199,7 +201,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             iobjs_request = iobjs.filter(foirequests=foi_request)
             data = self.get_iobjs_list(instance, iobjs_request)
             context.update({
-                'informationobjects': json.dumps(data)
+                'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
             })
             return context
 
