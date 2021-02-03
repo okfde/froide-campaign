@@ -1,4 +1,5 @@
 from froide.publicbody.api_views import PublicBodySerializer
+
 from rest_framework import serializers
 
 from .models import InformationObject
@@ -42,14 +43,21 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     request_url = serializers.SerializerMethodField()
     resolution = serializers.SerializerMethodField()
     foirequest = serializers.SerializerMethodField()
+    categories = serializers.SerializerMethodField()
 
     class Meta:
         model = InformationObject
         fields = (
             'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
             'request_url', 'foirequests', 'ident', 'resolution',
-            'id', 'foirequest', 'tags'
+            'id', 'foirequest', 'tags', 'categories'
         )
+
+    def get_categories(self, obj):
+        categories = obj.categories.language(
+            self.context.get('language'))
+        return [{'id': cat.id, 'title': cat.title}
+                for cat in categories]
 
     def get_request_url(self, obj):
         provider = obj.campaign.get_provider()

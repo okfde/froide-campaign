@@ -131,6 +131,12 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
                        TagFilter, FeaturedFilter]
     search_fields = ['title', 'subtitle']
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        lang = self.request.GET.get('language')
+        context.update({'language': lang})
+        return context
+
     def get_permissions(self):
         if self.action == 'create':
             permission_classes = [AddLocationPermission]
