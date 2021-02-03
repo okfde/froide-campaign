@@ -2,9 +2,9 @@ import json
 import logging
 
 from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import get_language_from_request
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
@@ -51,6 +51,7 @@ class CampaignRequestsPlugin(CMSPluginBase):
             'iobjs': iobjs
         })
         return context
+
 
 @plugin_pool.register_plugin
 class CampaignPlugin(CMSPluginBase):
@@ -178,6 +179,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             provider_data['report'] = report_id
             provider_data['answers'] = answers
             data.append(provider_data)
+
         return data
 
     def get_list_context(self, context, instance):
@@ -187,7 +189,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             foirequests__resolution=Resolution.SUCCESSFUL)
         data = self.get_iobjs_list(instance, iobjs_success)
         context.update({
-            'informationobjects': json.dumps(data)
+            'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
         })
         return context
 
@@ -201,7 +203,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
             iobjs_request = iobjs.filter(foirequests=foi_request)
             data = self.get_iobjs_list(instance, iobjs_request)
             context.update({
-                'informationobjects': json.dumps(data)
+                'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
             })
             return context
 
@@ -293,7 +295,8 @@ class CampaignProgressPlugin(CMSPluginBase):
         if not instance.count_featured_only:
             return instance.campaign.get_provider().get_queryset().count()
         else:
-            return instance.campaign.informationobject_set.filter(featured=True).count()
+            return instance.campaign.informationobject_set.filter(
+                featured=True).count()
 
     def get_requests(self, instance):
         if not instance.count_featured_only:
