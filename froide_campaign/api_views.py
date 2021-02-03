@@ -1,9 +1,9 @@
 import random
 
+from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-from django.utils.translation import get_language_from_request
 
 from rest_framework import filters
 from rest_framework import mixins
@@ -133,7 +133,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        lang = self.request.GET.get('language')
+        lang = self.request.GET.get('language', settings.LANGUAGE_CODE)
         context.update({'language': lang})
         return context
 
