@@ -246,6 +246,7 @@ class CategoryAdmin(TranslatableAdmin):
     fields = ('title', 'description', 'slug')
     list_display = ('title',)
     search_fields = ('translations__title', 'translations__description')
+    list_filter = ('information_objects__campaign', )
 
     def get_prepopulated_fields(self, request, obj=None):
         # can't use `prepopulated_fields = ..` because it breaks the admin
