@@ -1,16 +1,15 @@
 import random
 
+from rest_framework.settings import api_settings
+
 from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
-from rest_framework import filters
 from rest_framework import mixins
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.decorators import action
 
@@ -25,6 +24,8 @@ from .serializers import CampaignProviderRequestSerializer
 from .geocode import run_geocode
 
 from .providers.base import BaseProvider
+from .filters import (CustomSearchFilter, StatusFilter, CategoryFilter,
+                      TagFilter, FeaturedFilter)
 
 
 def get_lat_lng(request):
@@ -55,70 +56,6 @@ class AddLocationThrottle(UserRateThrottle):
     }
 
 
-class StatusFilter(filters.BaseFilterBackend):
-
-    def filter_queryset(self, request, queryset, view):
-        if request.GET.get('status'):
-            status = request.GET.get('status')
-            if status == 'normal':
-                return queryset.filter(foirequests__isnull=True)
-            if status == 'pending':
-                return queryset.filter(foirequests__isnull=False).exclude(
-                    foirequests__status='resolved')
-            if status == 'successful':
-                successful = ['successful', 'partially_successful']
-                return queryset.filter(foirequests__status='resolved',
-                                       foirequests__resolution__in=successful)
-            if status == 'refused':
-                return queryset.filter(foirequests__status='resolved',
-                                       foirequests__resolution='refused')
-        return queryset
-
-
-class TagFilter(filters.BaseFilterBackend):
-
-    def filter_queryset(self, request, queryset, view):
-        if request.GET.get('tag'):
-            tag = request.GET.get('tag')
-            return queryset.filter(tags__contains=tag)
-        return queryset
-
-
-class CategoryFilter(filters.BaseFilterBackend):
-
-    def filter_queryset(self, request, queryset, view):
-        if request.GET.get('category'):
-            category = request.GET.get('category')
-            return queryset.filter(categories__id=category)
-        return queryset
-
-
-class FeaturedFilter(filters.BaseFilterBackend):
-
-    def filter_queryset(self, request, queryset, view):
-        if request.GET.get('featured'):
-            featured = request.GET.get('featured')
-            try:
-                return queryset.filter(featured=featured)
-            except ValidationError:
-                pass
-        return queryset
-
-
-class CustomSearchFilter(filters.SearchFilter):
-
-    def get_search_terms(self, request):
-        """
-        Search terms are set by a ?search=... query parameter,
-        and may be comma and/or whitespace delimited.
-        """
-        params = request.query_params.get(self.search_param, '')
-        params = params.replace('\x00', '')  # strip null characters
-        params = params.replace(',', ' ')
-        params = params.replace('-', ' ')
-        return params.split()
-
-
 class InformationObjectViewSet(mixins.CreateModelMixin,
                                mixins.RetrieveModelMixin,
                                mixins.ListModelMixin,
@@ -129,7 +66,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
     filter_backends = [CustomSearchFilter, StatusFilter, CategoryFilter,
                        TagFilter, FeaturedFilter]
-    search_fields = ['title', 'subtitle']
+    search_fields = ['translations__title', 'translations__subtitle']
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
