@@ -13,13 +13,15 @@ from django.utils import timezone
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 
+from parler.admin import TranslatableAdmin
+
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
 from froide.georegion.models import GeoRegion
 
 from .models import (CampaignPage, Campaign, InformationObject,
                      CampaignSubscription,
-                     Questionaire, Question, Report, Answer)
+                     Questionaire, Question, Report, Answer, CampaignCategory)
 from .utils import CSVImporter
 
 
@@ -240,9 +242,25 @@ class CampaignReportAdmin(admin.ModelAdmin):
     export_csv.short_description = _("Export to CSV")
 
 
+class CategoryAdmin(TranslatableAdmin):
+    fields = ('title', 'description', 'slug')
+    list_display = ('title',)
+    search_fields = ('translations__title', 'translations__description')
+    list_filter = ('information_objects__campaign', )
+
+    def get_prepopulated_fields(self, request, obj=None):
+        # can't use `prepopulated_fields = ..` because it breaks the admin
+        # validation for translated fields. This is the official django-parler
+        # workaround.
+        return {
+            'slug': ('title',)
+        }
+
+
 admin.site.register(CampaignPage, CampaignPageAdmin)
 admin.site.register(Campaign, CampaignAdmin)
 admin.site.register(InformationObject, InformationObjectAdmin)
 admin.site.register(CampaignSubscription, CampaignSubscriptionsAdmin)
 admin.site.register(Questionaire, CampaignQuestionaireAdmin)
 admin.site.register(Report, CampaignReportAdmin)
+admin.site.register(CampaignCategory, CategoryAdmin)

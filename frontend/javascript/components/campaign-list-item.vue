@@ -10,11 +10,11 @@
         <div class="col text-right">
           <h5>
             <CampaignListTag
-              v-for="(tag, i) in object.tags"
-              :key="i"
-              :active="currentTag === tag"
-              :isButton="false"            >
-              #{{ tag }}
+              v-for="(category) in object.categories"
+              :key="category.id"
+              :active="currentCategory === category.id.toString()"
+              :isButton="false">
+              #{{ category.title }}
             </CampaignListTag>
           </h5>
         </div>
@@ -58,7 +58,7 @@ import i18n from '../../i18n/campaign-list.json';
 export default {
   props: {
     object: Object,
-    currentTag: String,
+    currentCategory: String,
     language: String,
     allowMultipleRequests: Boolean
   },

@@ -6,7 +6,7 @@
 <campaign-list
     id="campaign-list-component"
     :config="{{ config }}"
-    :language="{{ request.LANGUAGE_CODE }}"
+    :language="{{ language }}"
     :settings="{{ settings }}"
     :request-config="{{ request_config }}"
     {% if request.user.is_authenticated %}:user-info="{{ request.user.as_json }}"{% endif %}

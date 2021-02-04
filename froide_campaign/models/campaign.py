@@ -15,6 +15,9 @@ from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.search import (SearchVectorField, SearchVector,
                                             SearchVectorExact, SearchQuery)
 
+from parler.models import TranslatableModel, TranslatedFields
+from parler.managers import TranslatableManager
+
 from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest, FoiAttachment
 from froide.team.models import Team
@@ -55,6 +58,31 @@ SearchVectorField.register_lookup(SearchVectorStartsWith)
 
 def get_embed_path(instance, filename):
     return 'campaign/page/embed/{0}/index.html'.format(instance.slug)
+
+
+class CampaignCategoryManager(TranslatableManager):
+    pass
+
+
+class CampaignCategory(TranslatableModel):
+    translations = TranslatedFields(
+        title=models.CharField(
+            _('title'), max_length=255),
+        slug=models.SlugField(
+            _('slug'), unique=False, max_length=255,
+            help_text=_("Used to build the category's URL.")),
+        description=models.TextField(
+            _('description'), blank=True)
+    )
+
+    objects = CampaignCategoryManager()
+
+    class Meta:
+        verbose_name = _('category')
+        verbose_name_plural = _('categories')
+
+    def __str__(self):
+      return self.title
 
 
 class CampaignPage(models.Model):
@@ -141,6 +169,12 @@ class Campaign(models.Model):
 
     category = models.CharField(max_length=255, blank=True)
     tags = JSONField(blank=True, default=list)
+
+    categories = models.ManyToManyField(
+        CampaignCategory,
+        related_name='campaigns',
+        blank=True,
+        verbose_name=_('categories'))
 
     description = models.TextField(blank=True)
 
@@ -236,6 +270,13 @@ class InformationObject(models.Model):
     subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
+
+    categories = models.ManyToManyField(
+        CampaignCategory,
+        related_name='information_objects',
+        blank=True,
+        verbose_name=_('categories'))
+
     tags = JSONField(blank=True, default=list)
 
     context = JSONField(blank=True, default=dict)

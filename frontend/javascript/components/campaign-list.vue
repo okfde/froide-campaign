@@ -73,13 +73,13 @@
         </div>
         <div v-if="!this.settings.hide_tag_filters">
           <CampaignListTag
-            v-for="tag in config.tags"
-            :key="tag"
-            :active="currentTag === tag"
-            @click="setTagFilter(tag)"
+            v-for="category in config.categories"
+            :key="category.id"
+            :active="currentCategory === category.id"
+            @click="setCategoryFilter(category.id)"
             :isButton="true"
           >
-            #{{ tag }}
+            #{{ category.title }}
           </CampaignListTag>
         </div>
 
@@ -88,11 +88,10 @@
             v-for="object in objects"
             :key="object.id"
             :object="object"
-            :currentTag="currentTag"
+            :currentCategory="currentCategory.toString()"
             :allowMultipleRequests="allowMultipleRequests"
             :language="language"
             class="list-item"
-            @filter="setTagFilter"
             @startRequest="startRequest"
           />
 
@@ -154,10 +153,10 @@ export default {
       hasSearched: false,
       search: '',
       objects: [],
-      baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}`,
-      nextUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}`,
+      baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}&language=${this.language}`,
+      nextUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}&language=${this.language}`,
       meta: [],
-      currentTag: '',
+      currentCategory: '',
       resolution: null,
       resolutions: ['normal', 'pending', 'successful', 'refused'],
       showRequestForm: null,
@@ -215,7 +214,7 @@ export default {
       this.showRequestForm = null
     },
     getUrlWithParams (url) {
-      return url + `&search=${this.search}&status=${this.resolution}&tag=${this.currentTag}`
+      return url + `&search=${this.search}&status=${this.resolution}&category=${this.currentCategory}`
     },
     setResolutionFilter(name) {
       if (this.resolution === name) {
@@ -225,11 +224,11 @@ export default {
       }
       this.updateData()
     },
-    setTagFilter(tag) {
-      if (this.currentTag == tag) {
-        this.currentTag = ''
+    setCategoryFilter(category) {
+      if (this.currentCategory == category) {
+        this.currentCategory = ''
       } else {
-        this.currentTag = tag
+        this.currentCategory = category
       }
       this.updateData()
     },

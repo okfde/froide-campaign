@@ -1,5 +1,6 @@
 import random
 
+from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
@@ -83,6 +84,15 @@ class TagFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class CategoryFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get('category'):
+            category = request.GET.get('category')
+            return queryset.filter(categories__id=category)
+        return queryset
+
+
 class FeaturedFilter(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
@@ -117,9 +127,15 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-    filter_backends = [CustomSearchFilter, StatusFilter,
+    filter_backends = [CustomSearchFilter, StatusFilter, CategoryFilter,
                        TagFilter, FeaturedFilter]
     search_fields = ['title', 'subtitle']
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        lang = self.request.GET.get('language', settings.LANGUAGE_CODE)
+        context.update({'language': lang})
+        return context
 
     def get_permissions(self):
         if self.action == 'create':
