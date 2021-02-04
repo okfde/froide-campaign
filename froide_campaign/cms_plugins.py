@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language
 
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
@@ -244,7 +245,7 @@ class CampaignListPlugin(CMSPluginBase):
         context = super().render(context, instance, placeholder)
         request = context.get('request')
 
-        lang = request.GET.get('language', settings.LANGUAGE_CODE)
+        lang = get_language()
 
         campaign = instance.campaign.id
         plugin_settings = instance.settings
