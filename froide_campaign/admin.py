@@ -45,11 +45,10 @@ class CampaignSubscriptionsAdmin(admin.ModelAdmin):
     list_display = ('campaign', 'email')
 
 
-class InformationObjectAdmin(admin.ModelAdmin):
-    list_display = (
-        'title', 'ident', 'campaign', 'publicbody',
-        'request_count', 'featured'
-    )
+class InformationObjectAdmin(TranslatableAdmin):
+    list_display = ('title',
+                    'ident', 'campaign', 'publicbody',
+                    'request_count', 'featured')
     list_filter = (
         'campaign', 'foirequest__status', 'foirequest__resolution',
         'resolved', 'featured',
@@ -61,12 +60,20 @@ class InformationObjectAdmin(admin.ModelAdmin):
     raw_id_fields = (
         'publicbody', 'foirequest', 'foirequests', 'documents'
     )
-    search_fields = ('title', 'ident')
+    search_fields = ('translations__title', 'ident')
 
     actions = [
         'clean_requests', 'resolve_requests', 'export_csv',
         'update_search_index'
     ]
+
+    def get_prepopulated_fields(self, request, obj=None):
+        # can't use `prepopulated_fields = ..` because it breaks the admin
+        # validation for translated fields. This is the official django-parler
+        # workaround.
+        return {
+            'slug': ('title',)
+        }
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -225,7 +232,7 @@ class CampaignReportAdmin(admin.ModelAdmin):
                 if iobject.geo:
                     zipcode = self.get_zipcode(iobject.geo)
                 infooject_details = [
-                    iobject.title,
+                    iobject.translations_title,
                     foirequest.get_absolute_domain_short_url(),
                     foirequest.messages[0].timestamp.date(),
                     zipcode

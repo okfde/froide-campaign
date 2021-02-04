@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import django.db.models.deletion
 import jsonfield.fields
+import parler
 
 
 class Migration(migrations.Migration):
@@ -36,5 +37,6 @@ class Migration(migrations.Migration):
                 ('foirequest', models.ForeignKey(to='foirequest.FoiRequest', null=True, on_delete=django.db.models.deletion.SET_NULL)),
                 ('publicbody', models.ForeignKey(to='publicbody.PublicBody', null=True, on_delete=django.db.models.deletion.SET_NULL)),
             ],
+            bases=(parler.models.TranslatableModelMixin, models.Model),
         ),
     ]

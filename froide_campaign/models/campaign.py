@@ -221,7 +221,7 @@ class Campaign(models.Model):
         return get_provider(self, self.provider, self.provider_kwargs)
 
 
-class InformationObjectManager(models.Manager):
+class InformationObjectManager(TranslatableManager, models.Manager):
 
     SEARCH_LANG = 'simple'
 
@@ -262,14 +262,20 @@ class InformationObjectManager(models.Manager):
         return export_csv(queryset, fields)
 
 
-class InformationObject(models.Model):
+class InformationObject(TranslatableModel):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
     ident = models.CharField(max_length=255)
-    title = models.CharField(max_length=1000)
-    subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
+
+    _title=models.CharField(max_length=1000)
+    _subtitle=models.CharField(max_length=255, blank=True)
+
+    translations = TranslatedFields(
+        title=models.CharField(max_length=1000),
+        subtitle=models.CharField(max_length=255, blank=True)
+    )
 
     categories = models.ManyToManyField(
         CampaignCategory,
@@ -305,7 +311,7 @@ class InformationObject(models.Model):
     objects = InformationObjectManager()
 
     class Meta:
-        ordering = ('-ordering', 'title')
+        ordering = ('-ordering',)
         verbose_name = _('Information object')
         verbose_name_plural = _('Information objects')
 
