@@ -2,7 +2,7 @@ var CampaignDetailMixin = {
   methods: {
     getDetail (data, campaignId) {
       this.fetching = true
-      window.fetch(`/api/v1/campaigninformationobject/${data.ident}/?campaign=${campaignId}&lat=${data.lat}&lng=${data.lng}&name=${encodeURIComponent(data.name)}&address=${encodeURIComponent(data.address)}&city=${data.city ? encodeURIComponent(data.city) : ''}`)
+      window.fetch(`/api/v1/campaigninformationobject/${data.ident}/?campaign=${campaignId}&lat=${data.lat}&lng=${data.lng}&name=${encodeURIComponent(data.name)}&address=${encodeURIComponent(data.address)}&city=${data.city ? encodeURIComponent(data.city) : ''}&language=${document.documentElement.lang}`)
         .then((response) => {
           return response.json()
         }).then((data) => {
