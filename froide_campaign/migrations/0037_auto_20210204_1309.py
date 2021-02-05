@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='informationobject',
-            options={'ordering': ('-ordering', '_title'), 'verbose_name': 'Information object', 'verbose_name_plural': 'Information objects'},
+            options={'ordering': ('-ordering', 'id'), 'verbose_name': 'Information object', 'verbose_name_plural': 'Information objects'},
         ),
         migrations.RenameField(
             model_name='informationobject',

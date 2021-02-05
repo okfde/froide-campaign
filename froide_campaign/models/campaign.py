@@ -308,7 +308,7 @@ class InformationObject(TranslatableModel):
     objects = InformationObjectManager()
 
     class Meta:
-        ordering = ('-ordering',)
+        ordering = ('-ordering', 'id')
         verbose_name = _('Information object')
         verbose_name_plural = _('Information objects')
 
