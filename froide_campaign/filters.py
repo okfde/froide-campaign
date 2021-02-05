@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from rest_framework import filters
+from rest_framework.compat import distinct
 
 
 class StatusFilter(filters.BaseFilterBackend):
