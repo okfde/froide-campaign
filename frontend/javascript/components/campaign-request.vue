@@ -6,7 +6,7 @@
           <campaign-loader></campaign-loader>
         </div>
         <template v-else>
-            <button class="btn btn-sm btn-light" @click="$emit('close')"> < zurück</button>
+            <button class="btn btn-sm btn-light" @click="$emit('close')"> < {{ messages.back }}</button>
           <div class="row justify-content-md-end mt-5">
             <campaign-choose-publicbody v-if="!fetching && publicbodiesOptions.length > 1"
             :publicbodies="publicbodiesOptions"
@@ -80,7 +80,7 @@
               </button>
               <button v-else type="submit" class="btn btn-lg btn-success" :disabled="submitting">
                 <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                Anfrage abschicken
+                {{ messages.sendRequest }}
               </button>
             </div>
           </form>
@@ -96,6 +96,7 @@ import RequestForm from 'froide/frontend/javascript/components/makerequest/reque
 import UserRegistration from 'froide/frontend/javascript/components/makerequest/user-registration.vue'
 import UserTerms from 'froide/frontend/javascript/components/makerequest/user-terms.vue'
 import {selectBestLaw} from 'froide/frontend/javascript/lib/law-select'
+import campaign_i18n from '../../i18n/campaign-request.json'
 
 import CampaignLoader from './campaign-loader'
 import CampaignDetailMixin from '../lib/detailmixin'
@@ -172,12 +173,21 @@ export default {
     }
   },
   data () {
+    let language = document.documentElement.lang
+    let messages = campaign_i18n[language]
+    let text = messages.addressInfo
+    if (this.lawType == 'VIG') {
+      text = text + '<strong class="text-danger">' + messages.warningVIG + '</strong>'
+    }
+
     return {
       fetching: !this.data.full,
       closedWarning: false,
       submitting: false,
+      addressHelpText: text,
       userHasSubscription: this.hasSubscription,
-      addressHelpText: this.getAddressHelptext()
+      language: language,
+      messages: messages
     }
   },
   computed: {
@@ -221,13 +231,6 @@ export default {
     }
   },
   methods: {
-    getAddressHelptext () {
-      let text = 'Ihre Adresse wird nicht öffentlich angezeigt.'
-      if (this.lawType == 'VIG') {
-        text = text + '<strong class="text-danger">Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet.</strong>'
-      }
-      return text
-    },
     updatePublicBody (publicbody) {
       this.$emit('publicBodyChanged', publicbody)
     },
