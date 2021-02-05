@@ -1,0 +1,16 @@
+{
+    "en": {
+      "back": "Back",
+      "sendRequest": "Send request",
+      "newsletterText": "Please send me Information about this campaign via email.",
+      "addressInfo": "Your address will not be displayed publicly.",
+      "warningVIG": "It may happen that the competent authority forwards your name and address to the establishment when asked."
+    },
+    "de": {
+        "back": "Zurück",
+        "sendRequest": "Anfrage abschicken",
+        "newsletterText": "Bitte senden Sie mir Informationen zu dieser Kampagne per E-mail",
+        "addressInfo": "Ihre Adresse wird nicht öffentlich angezeigt.",
+        "warningVIG": "Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet."
+    }
+  }
