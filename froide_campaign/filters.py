@@ -95,7 +95,8 @@ class CustomSearchFilter(filters.SearchFilter):
             conditions.append(reduce(operator.or_, queries))
 
         queryset = queryset.filter(
-            models.Q(translations__language_code=language) & reduce(operator.or_, conditions))
+            models.Q(translations__language_code=language) & reduce(
+                operator.or_, conditions))
 
         if self.must_call_distinct(queryset, search_fields):
             queryset = distinct(queryset, base)
