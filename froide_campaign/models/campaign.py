@@ -1,6 +1,7 @@
 import functools
 import json
 
+from django.apps import apps
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -227,7 +228,6 @@ class InformationObjectManager(TranslatableManager, models.Manager):
 
     def get_search_vector(self):
         fields = [
-            ('title', 'A'),
             ('search_text', 'A'),
         ]
         return functools.reduce(lambda a, b: a + b, [
@@ -351,9 +351,22 @@ class InformationObject(TranslatableModel):
         )
 
     def get_search_text(self):
-        text = ' '.join([ self.title, self.subtitle,
+
+        titles = ' '.join([translation.title
+                          for translation in self.translations.all()])
+        subtitles = ' '.join([translation.subtitle
+                              for translation in self.translations.all()])
+        cat_ids = self.categories.all().values_list('id', flat=True)
+        CategoryTranslation = apps.get_model('froide_campaign',
+                                             'CampaignCategoryTranslation')
+        all_cats = CategoryTranslation.objects.filter(
+            master__in=cat_ids).values_list('title', flat=True)
+
+        as_list = [cat for cat in all_cats]
+
+        text = ' '.join([titles, subtitles,
             self.publicbody.name if self.publicbody else ''
-            ] + self.tags + [str(v) for v in self.context.values()]).strip()
+            ] + as_list + [str(v) for v in self.context.values()]).strip()
         return text
 
     def make_request_url(self):
