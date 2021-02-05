@@ -1,36 +1,12 @@
-import random
-
 import operator
 from functools import reduce
 
 from django.db import models
-from rest_framework.settings import api_settings
-
 from django.conf import settings
-from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
 
 from rest_framework import filters
-from rest_framework import mixins
-from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework.throttling import UserRateThrottle
-from rest_framework.decorators import action
-from rest_framework.compat import distinct
 
-from froide.foirequest.api_views import throttle_action
-
-from .models import (Campaign, InformationObject,
-                     CampaignSubscription, Questionaire,
-                     Question, Report, Answer)
-
-from .serializers import InformationObjectSerializer
-from .serializers import CampaignProviderRequestSerializer
-from .geocode import run_geocode
-
-from .providers.base import BaseProvider
 
 class StatusFilter(filters.BaseFilterBackend):
 
