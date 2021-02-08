@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ 'mx-n3': settings.twoColumns }">
     <campaign-request v-if="showRequestForm"
       :config="requestConfig"
       :buttonText="config.button_text"
@@ -26,7 +26,11 @@
     ></campaign-request>
 
     <div v-show="!showRequestForm">
-      <div v-if="!this.settings.input_field" class="container col-md-5 mx-auto">
+      <div
+        v-if="!this.settings.input_field"
+        class="container mx-auto"
+        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
+      >
         <h5>
           Filter
         </h5>
@@ -35,7 +39,7 @@
           v-model="search"
           @keyup="searchObjects"
           :placeholder="i18n.search"
-          class="form-control mb-4"
+          class="form-control mb-3"
         />
       </div>
 
@@ -57,14 +61,16 @@
         </div>
       </div>
 
-      <div class="container col-md-5 mx-auto mb-3">
+      <div
+        class="container mx-auto mb-3"
+        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
+      >
         <div v-if="!this.settings.hide_status_filter">
           <CampaignListTag
             v-for="res in resolutions"
             :key="res"
             :active="res === resolution"
             :status="res"
-            :isButton="true"
             @click="setResolutionFilter(res)"
           >
 
@@ -77,13 +83,17 @@
             :key="category.id"
             :active="currentCategory === category.id"
             @click="setCategoryFilter(category.id)"
-            :isButton="true"
           >
             #{{ category.title }}
           </CampaignListTag>
         </div>
 
-        <transition-group name="list">
+        <transition-group
+          name="list"
+          tag="div"
+          class="row mt-3 mx-0"
+          :class="{ 'mx-n2': settings.twoColumns}"
+        >
           <CampaignListItem
             v-for="object in objects"
             :key="object.id"
@@ -92,11 +102,13 @@
             :allowMultipleRequests="allowMultipleRequests"
             :language="language"
             class="list-item"
+            :class="{ 'col-md-6 px-2': settings.twoColumns }"
             @startRequest="startRequest"
+            @setCategoryFilter="setCategoryFilter"
           />
 
           <div
-            class="text-center my-5 py-5"
+            class="text-center my-5 py-5 w-100"
             v-if="hasSearched && objects.length === 0"
             key="noResults"
           >
@@ -116,7 +128,6 @@
 </template>
 
 <script>
-import Fuse from 'fuse.js'
 import deepmerge from 'deepmerge'
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'

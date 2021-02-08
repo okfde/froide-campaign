@@ -168,10 +168,7 @@ export default {
     }
   },
   mounted () {
-    let top = this.$refs.campaignRequest.getBoundingClientRect().top
-    window.scrollTo({
-      top: -top
-    })
+    this.$refs.campaignRequest.scrollIntoView(true)
     if (!this.data.full) {
       this.getDetail(this.data, this.campaignId)
     }

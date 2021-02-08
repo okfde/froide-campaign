@@ -1,9 +1,10 @@
 <template>
   <span
-    :type="isButton ? 'button' : '' "
     class="flex badge badge-pill badge-light mb-1 mr-1"
     :class="[{ 'badge-dark': active }, status && 'filter-badge-' + status]"
     v-on="$listeners"
+    type="button"
+    aria-role="button"
   >
     <slot />
   </span>
@@ -13,8 +14,7 @@
 export default {
   props: {
     active: Boolean,
-    status: String,
-    isButton: Boolean
+    status: String
   }
 }
 </script>
