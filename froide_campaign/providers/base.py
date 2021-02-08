@@ -139,7 +139,8 @@ class BaseProvider:
             'foirequests': [],
             'resolution': 'normal',
             'context': obj.context,
-            'tags': obj.tags,
+            'categories': obj.categories.values_list('translations__title',
+                                                     flat=True),
             'featured': obj.featured
         }
 

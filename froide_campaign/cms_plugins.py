@@ -262,7 +262,6 @@ class CampaignListPlugin(CMSPluginBase):
         config = {
             'campaignId': campaign,
             'lawType': law_type,
-            'tags': instance.campaign.tags,
             'categories': categories_dict,
             'requestExtraText': instance.request_extra_text,
         }
