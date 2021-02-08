@@ -220,9 +220,12 @@ class Campaign(TranslatableModel):
         return get_provider(self, self.provider, self.provider_kwargs)
 
 
-class InformationObjectManager(TranslatableManager, models.Manager):
+class InformationObjectManager(TranslatableManager):
 
     SEARCH_LANG = 'simple'
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('translations')
 
     def get_search_vector(self):
         fields = [
