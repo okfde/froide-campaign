@@ -2,7 +2,7 @@
   <div class="card mb-2">
     <div class="card-body">
       <h5>{{ object.title }}</h5>
-      <div class="row mt-3">
+      <div class="row mt-1">
         <div class="col">
           <p class="text-muted">{{ object.subtitle }}</p>
           <small class="text-muted">{{ object.address }}</small>
@@ -13,7 +13,7 @@
               v-for="(category) in object.categories"
               :key="category.id"
               :active="currentCategory === category.id.toString()"
-              :isButton="false">
+              @click="$emit('setCategoryFilter', category.id)">
               #{{ category.title }}
             </CampaignListTag>
           </h5>

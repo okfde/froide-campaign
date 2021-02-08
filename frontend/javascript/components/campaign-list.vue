@@ -64,7 +64,6 @@
             :key="res"
             :active="res === resolution"
             :status="res"
-            :isButton="true"
             @click="setResolutionFilter(res)"
           >
 
@@ -77,7 +76,6 @@
             :key="category.id"
             :active="currentCategory === category.id"
             @click="setCategoryFilter(category.id)"
-            :isButton="true"
           >
             #{{ category.title }}
           </CampaignListTag>
@@ -93,6 +91,7 @@
             :language="language"
             class="list-item"
             @startRequest="startRequest"
+            @setCategoryFilter="setCategoryFilter"
           />
 
           <div
