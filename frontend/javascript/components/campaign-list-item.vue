@@ -19,7 +19,7 @@
           </h5>
         </div>
       </div>
-      <div class="row mt-3">
+      <div class="row mt-1">
         <div class="col">
           <a
             v-if="object.resolution === 'normal'"
