@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-import django.contrib.postgres.fields.jsonb
 from django.db import migrations, models
 import django.db.models.deletion
 import froide_campaign.models
@@ -27,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='campaignpage',
             name='settings',
-            field=django.contrib.postgres.fields.jsonb.JSONField(default=dict),
+            field=models.JSONField(default=dict),
         ),
         migrations.AddField(
             model_name='campaignpage',

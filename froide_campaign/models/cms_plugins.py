@@ -4,7 +4,6 @@ try:
     from cms.models.pluginmodel import CMSPlugin
     from .campaign import CampaignPage, Campaign
     from .report import Questionaire
-    from django.contrib.postgres.fields import JSONField
 except ImportError:
     CMSPlugin = None
 
@@ -25,7 +24,7 @@ if CMSPlugin is not None:
             on_delete=models.CASCADE
         )
 
-        settings = JSONField(default=dict, blank=True)
+        settings = models.JSONField(default=dict, blank=True)
         request_extra_text = models.TextField(blank=True)
 
         def __str__(self):

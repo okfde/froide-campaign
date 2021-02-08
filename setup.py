@@ -36,7 +36,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'froide',
-        'jsonfield',
         'django-filter',
         'django-markdown-deux'
     ],

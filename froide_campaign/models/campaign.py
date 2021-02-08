@@ -12,7 +12,6 @@ from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.fields import JSONField
 from django.contrib.postgres.search import (SearchVectorField, SearchVector,
                                             SearchVectorExact, SearchQuery)
 
@@ -103,7 +102,7 @@ class CampaignPage(models.Model):
         on_delete=models.SET_NULL, verbose_name=_("Team")
     )
 
-    settings = JSONField(default=dict, blank=True)
+    settings = models.JSONField(default=dict, blank=True)
     embed = models.FileField(
         blank=True, upload_to=get_embed_path,
         storage=OverwriteStorage()
@@ -169,7 +168,7 @@ class Campaign(models.Model):
     public = models.BooleanField(default=False)
 
     category = models.CharField(max_length=255, blank=True)
-    tags = JSONField(blank=True, default=list)
+    tags = models.JSONField(blank=True, default=list)
 
     categories = models.ManyToManyField(
         CampaignCategory,
@@ -192,7 +191,7 @@ class Campaign(models.Model):
         choices=settings.CAMPAIGN_PROVIDERS,
         blank=True
     )
-    provider_kwargs = JSONField(default=dict, blank=True)
+    provider_kwargs = models.JSONField(default=dict, blank=True)
 
     objects = CampaignManager()
 
@@ -280,9 +279,9 @@ class InformationObject(TranslatableModel):
         blank=True,
         verbose_name=_('categories'))
 
-    tags = JSONField(blank=True, default=list)
+    tags = models.JSONField(blank=True, default=list)
 
-    context = JSONField(blank=True, default=dict)
+    context = models.JSONField(blank=True, default=dict)
 
     publicbody = models.ForeignKey(PublicBody, null=True, blank=True,
                                    on_delete=models.SET_NULL)

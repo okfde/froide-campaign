@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.db.models.deletion
-import jsonfield.fields
 
 
 class Migration(migrations.Migration):
@@ -30,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='informationobject',
             name='context',
-            field=jsonfield.fields.JSONField(blank=True),
+            field=models.JSONField(blank=True),
         ),
         migrations.AlterField(
             model_name='informationobject',
