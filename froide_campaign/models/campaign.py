@@ -315,7 +315,9 @@ class InformationObject(TranslatableModel):
     def __str__(self):
         return self.title
 
-    def get_context(self):
+    def get_context(self, language=None):
+        if language:
+            self.set_current_language(language)
         return {
             'title': self.title,
             'ident': self.ident,

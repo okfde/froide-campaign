@@ -209,15 +209,15 @@ class BaseProvider:
             'ident': ident
         })
 
-    def get_request_url(self, ident):
+    def get_request_url(self, ident, language=None):
         obj = self.get_by_ident(ident)
-        return self.get_request_url_with_object(ident, obj)
+        return self.get_request_url_with_object(ident, obj, language=language)
 
-    def get_request_url_context(self, obj):
-        return obj.get_context()
+    def get_request_url_context(self, obj, language=None):
+        return obj.get_context(language)
 
-    def get_request_url_with_object(self, ident, obj):
-        context = self.get_request_url_context(obj)
+    def get_request_url_with_object(self, ident, obj, language=None):
+        context = self.get_request_url_context(obj, language)
         publicbody = self._get_publicbody(obj)
         return self.make_request_url(ident, context, publicbody)
 
