@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 mb-5">
+  <div id="campaign-request" ref="campaignRequest" class="container mt-5 mb-5">
     <div class="row">
       <div class="col-12">
         <div v-if="fetching" class="loading">
@@ -168,6 +168,10 @@ export default {
     }
   },
   mounted () {
+    let top = this.$refs.campaignRequest.getBoundingClientRect().top
+    window.scrollTo({
+      top: -top
+    })
     if (!this.data.full) {
       this.getDetail(this.data, this.campaignId)
     }
