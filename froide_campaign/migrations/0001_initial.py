@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField()),
                 ('template', models.TextField()),
             ],
+            bases=(parler.models.TranslatableModelMixin, models.Model),
         ),
         migrations.CreateModel(
             name='InformationObject',

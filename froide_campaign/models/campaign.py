@@ -155,14 +155,19 @@ class CampaignPage(models.Model):
         return self.public
 
 
-class CampaignManager(models.Manager):
+class CampaignManager(TranslatableManager):
     def get_public(self):
         return self.filter(public=True)
 
 
-class Campaign(models.Model):
-    title = models.CharField(max_length=255)
-    slug = models.SlugField()
+class Campaign(TranslatableModel):
+    translations = TranslatedFields(
+        title=models.CharField(max_length=255),
+        slug=models.SlugField(),
+        description=models.TextField(blank=True),
+        subject_template=models.CharField(max_length=255, blank=True),
+        template=models.TextField(blank=True),
+    )
 
     public = models.BooleanField(default=False)
 
@@ -174,11 +179,6 @@ class Campaign(models.Model):
         related_name='campaigns',
         blank=True,
         verbose_name=_('categories'))
-
-    description = models.TextField(blank=True)
-
-    subject_template = models.CharField(max_length=255, blank=True)
-    template = models.TextField(blank=True)
 
     requires_foi = models.BooleanField(default=True)
     paused = models.BooleanField(default=False)
@@ -220,9 +220,12 @@ class Campaign(models.Model):
         return get_provider(self, self.provider, self.provider_kwargs)
 
 
-class InformationObjectManager(TranslatableManager, models.Manager):
+class InformationObjectManager(TranslatableManager):
 
     SEARCH_LANG = 'simple'
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('translations')
 
     def get_search_vector(self):
         fields = [
