@@ -167,7 +167,10 @@ export default {
       type: Array
     }
   },
-  mounted () {
+  mounted() {
+    const top = this.$refs.campaignRequest.offsetTop;
+    window.scrollTo({ top })
+
     if (!this.data.full) {
       this.getDetail(this.data, this.campaignId)
     }
