@@ -115,7 +115,6 @@
 </template>
 
 <script>
-import Fuse from 'fuse.js'
 import deepmerge from 'deepmerge'
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'

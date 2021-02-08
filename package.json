@@ -35,7 +35,6 @@
   "dependencies": {
     "@turf/bbox": "^6.0.1",
     "deepmerge": "^4.2.2",
-    "fuse.js": "^6.4.3",
     "leaflet": "^1.5.1",
     "leaflet.icon.glyph": "^0.2.0",
     "vue": "^2.5.16",
