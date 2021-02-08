@@ -5,6 +5,7 @@ from rest_framework.settings import api_settings
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
 
 from rest_framework import mixins
 from rest_framework import viewsets
@@ -13,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.decorators import action
 
+from froide.foirequest.models import FoiRequest
 from froide.foirequest.api_views import throttle_action
 
 from .models import (Campaign, InformationObject,
@@ -119,9 +121,18 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             Campaign.objects.get_public(),
             id=campaign_id
         )
-        if campaign:
-            return InformationObject.objects.filter(campaign=campaign)
-        return InformationObject.objects.none()
+        iobjs = InformationObject.objects.filter(
+            campaign=campaign
+        )
+        iobjs = iobjs.prefetch_related(
+            Prefetch(
+                'foirequests',
+                queryset=FoiRequest.objects.order_by('-first_message')
+            )
+        )
+        iobjs = iobjs.prefetch_related('campaign')
+        iobjs = iobjs.prefetch_related('categories')
+        return iobjs
 
     def get_geo(self, obj):
         if obj.address and not obj.geo:

@@ -60,7 +60,8 @@ def get_embed_path(instance, filename):
 
 
 class CampaignCategoryManager(TranslatableManager):
-    pass
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('translations')
 
 
 class CampaignCategory(TranslatableModel):
@@ -377,12 +378,8 @@ class InformationObject(TranslatableModel):
         provider = self.campaign.get_provider()
         return provider.get_request_url_with_object(self.ident, self)
 
-    def get_froirequest_url(self):
-        if self.get_best_foirequest():
-            return self.get_best_foirequest().get_absolute_url()
-
     def get_best_foirequest(self):
-        return self.foirequests.order_by('-first_message').first()
+        return self.foirequests.all().first()
 
     def get_resolution(self):
         success = ['successful', 'partially_successful']
