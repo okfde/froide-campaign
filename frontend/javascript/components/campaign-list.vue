@@ -279,15 +279,26 @@ export default {
 
 <style lang="scss" scoped>
 .list-item {
-  transition: all 0.3s ease;
+  transition: all 0.3s;
+}
+
+.list-enter-active {
+  transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);;
+}
+
+.list-leave-active {
+  transition-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
 }
 
 .list-enter, .list-leave-to {
+  transform: scale(0);
   opacity: 0;
+  position: relative;
 }
 
 .list-leave-active {
   position: relative;
+  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);;
 }
 
 .fleisch-form-background {
