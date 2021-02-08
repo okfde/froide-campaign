@@ -112,7 +112,7 @@ class AmenityProvider(BaseProvider):
         amenity = self.get_by_ident(ident)
         return self._get_publicbodies(amenity)
 
-    def get_request_url_context(self, obj):
+    def get_request_url_context(self, obj, language=None):
         return {
             'title': obj.name,
             'address': obj.address
@@ -127,7 +127,7 @@ class AmenityProvider(BaseProvider):
         except Amenity.DoesNotExist:
             return
 
-        context = self.get_request_url_context(amenity)
+        context = self.get_request_url_context(amenity, language=None)
 
         iobj, created = InformationObject.objects.get_or_create(
             campaign=self.campaign,

@@ -98,13 +98,15 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             Campaign.objects.get_public(),
             id=campaign_id
         )
+        language = self.request.GET.get('language', settings.LANGUAGE_CODE)
         provider = campaign.get_provider()
         ident = kwargs.pop('pk')
         obj = provider.get_by_ident(ident)
         data = provider.get_provider_item_data(obj)
         data['publicbody'] = provider.get_publicbody(ident)
         data['publicbodies'] = provider.get_publicbodies(ident)
-        data['makeRequestURL'] = provider.get_request_url(ident)
+        data['makeRequestURL'] = provider.get_request_url(ident,
+                                                          language=language)
 
         serializer = CampaignProviderRequestSerializer(
             data, context={'request': request}
