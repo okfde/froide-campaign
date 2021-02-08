@@ -101,6 +101,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
             id=campaign_id
         )
         language = self.request.GET.get('language', settings.LANGUAGE_CODE)
+        campaign.set_current_language(language)
         provider = campaign.get_provider()
         ident = kwargs.pop('pk')
         obj = provider.get_by_ident(ident)
