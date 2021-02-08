@@ -3,15 +3,12 @@
     <div class="card flex-1 w-100">
       <div class="card-body d-flex flex-column">
         <h5>{{ object.title }}</h5>
-        <div class="row mt-1">
-          <div class="col flex-grow-0">
-            <p class="text-muted d-inline-block">
-              {{ object.subtitle }}
-
-              <small>{{ object.address }}</small>
-            </p>
+        <div class="d-flex mt-1">
+          <div class="mb-3">
+            <p class="text-muted mb-0">{{ object.subtitle }}</p>
+            <small class="text-muted">{{ object.address }}</small>
           </div>
-          <div class="col text-right">
+          <div class="ml-auto text-right">
             <h5>
               <CampaignListTag
                 v-for="(category) in object.categories"

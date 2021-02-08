@@ -102,7 +102,7 @@
             :allowMultipleRequests="allowMultipleRequests"
             :language="language"
             class="list-item"
-            :class="{ 'col-md-6 px-2': settings.twoColumns }"
+            :class="[settings.twoColumns ? 'col-md-6 px-2' : 'w-100']"
             @startRequest="startRequest"
             @setCategoryFilter="setCategoryFilter"
           />
