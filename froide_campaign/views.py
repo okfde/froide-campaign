@@ -11,6 +11,7 @@ from django.http import QueryDict
 from django import forms
 
 import django_filters
+from parler.views import TranslatableSlugMixin
 
 from froide.team.forms import AssignTeamForm
 from froide.team.views import AssignTeamView
@@ -256,7 +257,7 @@ class CampaignPageUpdateEmbedView(AuthRequiredMixin, DetailView):
         return self.get(request)
 
 
-class CampaignStatistics(DetailView):
+class CampaignStatistics(TranslatableSlugMixin, DetailView):
     model = Campaign
     template_name = 'froide_campaign/campaign_statistics.html'
 
