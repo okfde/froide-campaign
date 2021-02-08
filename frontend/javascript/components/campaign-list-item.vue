@@ -1,49 +1,54 @@
 <template>
-  <div class="card mb-2">
-    <div class="card-body">
-      <h5>{{ object.title }}</h5>
-      <div class="row mt-1">
-        <div class="col">
-          <p class="text-muted">{{ object.subtitle }}</p>
-          <small class="text-muted">{{ object.address }}</small>
+  <div class="d-flex mb-3">
+    <div class="card flex-1 w-100">
+      <div class="card-body d-flex flex-column">
+        <h5>{{ object.title }}</h5>
+        <div class="row mt-1">
+          <div class="col flex-grow-0">
+            <p class="text-muted d-inline-block">
+              {{ object.subtitle }}
+
+              <small>{{ object.address }}</small>
+            </p>
+          </div>
+          <div class="col text-right">
+            <h5>
+              <CampaignListTag
+                v-for="(category) in object.categories"
+                :key="category.id"
+                :active="currentCategory === category.id.toString()"
+                @click="$emit('setCategoryFilter', category.id)">
+                #{{ category.title }}
+              </CampaignListTag>
+            </h5>
+          </div>
         </div>
-        <div class="col text-right">
-          <h5>
-            <CampaignListTag
-              v-for="(category) in object.categories"
-              :key="category.id"
-              :active="currentCategory === category.id.toString()"
-              @click="$emit('setCategoryFilter', category.id)">
-              #{{ category.title }}
-            </CampaignListTag>
-          </h5>
-        </div>
-      </div>
-      <div class="row mt-1">
-        <div class="col">
-          <a
-            v-if="object.resolution === 'normal'"
-            @click.prevent.stop="$emit('startRequest', object)"
-            class="btn btn-normal text-white"
-          >
-            {{ i18n.request }}
-          </a>
-          <div v-else>
+        <div class="row mt-auto">
+          <div class="col">
             <a
-              :href="'/a/' + object.foirequest"
-              target="_blank"
-              class="btn text-white"
-              :class="[`btn-${object.resolution}`]"
-            >
-            {{ i18n.viewRequest }}
-            </a>
-            <a
-              v-if="allowMultipleRequests"
+              v-if="object.resolution === 'normal'"
               @click.prevent.stop="$emit('startRequest', object)"
-              class="btn btn-link"
-              >
-              {{ i18n.requestAgain }}
+              class="btn btn-normal text-white"
+            >
+              {{ i18n.request }}
             </a>
+            <div v-else>
+              <a
+                :href="'/a/' + object.foirequest"
+                target="_blank"
+                class="btn text-white"
+                :class="[`btn-${object.resolution}`]"
+              >
+              {{ i18n.viewRequest }}
+              </a>
+              <a
+                v-if="allowMultipleRequests"
+                @click.prevent.stop="$emit('startRequest', object)"
+                class="btn btn-link"
+                >
+                {{ i18n.requestAgain }}
+              </a>
+            </div>
           </div>
         </div>
       </div>
