@@ -44,6 +44,8 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     resolution = serializers.SerializerMethodField()
     foirequest = serializers.SerializerMethodField()
     categories = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    subtitle = serializers.SerializerMethodField()
 
     class Meta:
         model = InformationObject
@@ -52,6 +54,14 @@ class InformationObjectSerializer(serializers.ModelSerializer):
             'request_url', 'foirequests', 'ident', 'resolution',
             'id', 'foirequest', 'tags', 'categories'
         )
+
+    def get_title(self, obj):
+        obj.set_current_language(self.context.get('language'))
+        return obj.title
+
+    def get_subtitle(self, obj):
+        obj.set_current_language(self.context.get('language'))
+        return obj.subtitle
 
     def get_categories(self, obj):
         categories = obj.categories.language(
