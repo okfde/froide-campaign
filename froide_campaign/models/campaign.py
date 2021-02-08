@@ -4,7 +4,6 @@ import json
 from django.apps import apps
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -82,7 +81,7 @@ class CampaignCategory(TranslatableModel):
         verbose_name_plural = _('categories')
 
     def __str__(self):
-      return self.title
+        return self.title
 
 
 class CampaignPage(models.Model):
@@ -363,7 +362,8 @@ class InformationObject(TranslatableModel):
 
         as_list = [cat for cat in all_cats]
 
-        text = ' '.join([titles, subtitles,
+        text = ' '.join([
+            titles, subtitles,
             self.publicbody.name if self.publicbody else ''
             ] + as_list + [str(v) for v in self.context.values()]).strip()
         return text
