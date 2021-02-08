@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 mb-5">
+  <div id="campaign-request" ref="campaignRequest" class="container mt-5 mb-5">
     <div class="row">
       <div class="col-12">
         <div v-if="fetching" class="loading">
@@ -167,10 +167,8 @@ export default {
       type: Array
     }
   },
-  mounted() {
-    const top = this.$refs.campaignRequest.offsetTop;
-    window.scrollTo({ top })
-
+  mounted () {
+    this.$refs.campaignRequest.scrollIntoView(true)
     if (!this.data.full) {
       this.getDetail(this.data, this.campaignId)
     }

@@ -1,6 +1,7 @@
 import functools
 import json
 
+from django.apps import apps
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
@@ -221,13 +222,12 @@ class Campaign(models.Model):
         return get_provider(self, self.provider, self.provider_kwargs)
 
 
-class InformationObjectManager(models.Manager):
+class InformationObjectManager(TranslatableManager, models.Manager):
 
     SEARCH_LANG = 'simple'
 
     def get_search_vector(self):
         fields = [
-            ('title', 'A'),
             ('search_text', 'A'),
         ]
         return functools.reduce(lambda a, b: a + b, [
@@ -262,14 +262,17 @@ class InformationObjectManager(models.Manager):
         return export_csv(queryset, fields)
 
 
-class InformationObject(models.Model):
+class InformationObject(TranslatableModel):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
     ident = models.CharField(max_length=255)
-    title = models.CharField(max_length=1000)
-    subtitle = models.CharField(max_length=255, blank=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
+
+    translations = TranslatedFields(
+        title=models.CharField(max_length=1000),
+        subtitle=models.CharField(max_length=255, blank=True)
+    )
 
     categories = models.ManyToManyField(
         CampaignCategory,
@@ -305,7 +308,7 @@ class InformationObject(models.Model):
     objects = InformationObjectManager()
 
     class Meta:
-        ordering = ('-ordering', 'title')
+        ordering = ('-ordering', 'id')
         verbose_name = _('Information object')
         verbose_name_plural = _('Information objects')
 
@@ -348,9 +351,22 @@ class InformationObject(models.Model):
         )
 
     def get_search_text(self):
-        text = ' '.join([ self.title, self.subtitle,
+
+        titles = ' '.join([translation.title
+                          for translation in self.translations.all()])
+        subtitles = ' '.join([translation.subtitle
+                              for translation in self.translations.all()])
+        cat_ids = self.categories.all().values_list('id', flat=True)
+        CategoryTranslation = apps.get_model('froide_campaign',
+                                             'CampaignCategoryTranslation')
+        all_cats = CategoryTranslation.objects.filter(
+            master__in=cat_ids).values_list('title', flat=True)
+
+        as_list = [cat for cat in all_cats]
+
+        text = ' '.join([titles, subtitles,
             self.publicbody.name if self.publicbody else ''
-            ] + self.tags + [str(v) for v in self.context.values()]).strip()
+            ] + as_list + [str(v) for v in self.context.values()]).strip()
         return text
 
     def make_request_url(self):
