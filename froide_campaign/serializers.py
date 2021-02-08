@@ -80,3 +80,10 @@ class InformationObjectSerializer(serializers.ModelSerializer):
 
     def get_resolution(self, obj):
         return obj.get_resolution()
+
+    def create(self, validated_data):
+        title = self.context.get('request').data.get('title')
+        iobj = InformationObject.objects.create(**validated_data)
+        iobj.title = title
+        iobj.save()
+        return iobj
