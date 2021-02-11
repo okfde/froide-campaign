@@ -296,7 +296,7 @@ export default {
   position: relative;
 }
 
-.list-leave-active {
+.list-leave-move {
   position: relative;
   transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);;
 }
