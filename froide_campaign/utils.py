@@ -6,8 +6,6 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.conf import settings
-from django.utils.text import slugify
 
 from froide.publicbody.models import PublicBody
 
