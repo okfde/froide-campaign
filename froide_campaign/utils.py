@@ -45,7 +45,6 @@ class CSVImporter(object):
             if categories:
                 cats_with_slug = [(slugify(cat), cat) for cat in categories.split(',')]
                 for cat_tuple in cats_with_slug:
-                    print(cat_tuple)
                     try:
                         cat = CampaignCategory.objects.get(
                             translations__slug=cat_tuple[0])
