@@ -29,15 +29,6 @@ class StatusFilter(filters.BaseFilterBackend):
         return queryset
 
 
-class TagFilter(filters.BaseFilterBackend):
-
-    def filter_queryset(self, request, queryset, view):
-        if request.GET.get('tag'):
-            tag = request.GET.get('tag')
-            return queryset.filter(tags__contains=tag)
-        return queryset
-
-
 class CategoryFilter(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):

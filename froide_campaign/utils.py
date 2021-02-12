@@ -2,26 +2,59 @@ import json
 import logging
 
 from django.core.files.base import ContentFile
+from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.conf import settings
 
 from froide.publicbody.models import PublicBody
+from django.contrib.sites.shortcuts import get_current_site
 
-from .models import Campaign, InformationObject
+from .models import Campaign, InformationObject, CampaignCategory
 
 logger = logging.getLogger()
 
 
 class CSVImporter(object):
-    def __init__(self):
+    def __init__(self, request):
+        self.request = request
         self.pb_cache = {}
         self.campaign_cache = {}
 
     def run(self, reader):
         for line in reader:
             self.import_csv_line(line)
+
+    def add_translations(self, iobj, line):
+        translated_fields = ['title', 'subtitle']
+        side_id = get_current_site(self.request).id
+        languages = [lang.get('code') for lang in
+                     settings.PARLER_LANGUAGES.get(side_id)]
+        for lang in languages:
+            iobj.set_current_language(lang)
+            for field in translated_fields:
+                field_name = '{}_{}'.format(field, lang)
+                if field_name in line:
+                    value = line.pop(field_name)
+                    setattr(iobj, field, value)
+        iobj.save()
+
+    def add_categories(self, iobj, line):
+        if 'categories' in line:
+            categories = line.get('categories')
+            iobj.categories.clear()
+            if categories:
+                cats_with_slug = [(slugify(cat), cat) for cat in categories.split(',')]
+                for cat_tuple in cats_with_slug:
+                    try:
+                        cat = CampaignCategory.objects.get(
+                            translations__slug=cat_tuple[0])
+                    except CampaignCategory.DoesNotExist:
+                        cat = CampaignCategory.objects.create(
+                            title=cat_tuple[1],
+                            slug=cat_tuple[0]
+                        )
+                    iobj.categories.add(cat)
 
     def import_csv_line(self, line):
         if 'campaign' in line:
@@ -80,10 +113,6 @@ class CSVImporter(object):
         if 'subtitle' in line:
             subtitle = line.pop('subtitle')
 
-        tags = []
-        if 'tags' in line:
-            tags = line.pop('tags').split(',')
-
         featured = False
         if 'featured' in line:
             featured = bool(line.pop('featured'))
@@ -103,11 +132,14 @@ class CSVImporter(object):
             iobj.title = title
             iobj.subtitle = subtitle
             iobj.context = context_json
-            iobj.tags = tags
             iobj.featured = featured
             iobj.save()
+
+            self.add_translations(iobj, line)
+            self.add_categories(iobj, line)
+
             return iobj
-        return InformationObject.objects.create(
+        iobj = InformationObject.objects.create(
             campaign=campaign,
             title=title,
             subtitle=subtitle,
@@ -116,10 +148,12 @@ class CSVImporter(object):
             ident=ident,
             ordering=ordering,
             context=context_json,
-            tags=tags,
             featured=featured,
             geo=point
         )
+        self.add_translations(iobj, line)
+        self.add_categories(iobj, line)
+        return iobj
 
 
 def make_embed(embed_file, template, context):

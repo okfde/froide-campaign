@@ -173,7 +173,6 @@ class Campaign(TranslatableModel):
     public = models.BooleanField(default=False)
 
     category = models.CharField(max_length=255, blank=True)
-    tags = models.JSONField(blank=True, default=list)
 
     categories = models.ManyToManyField(
         CampaignCategory,
@@ -281,8 +280,6 @@ class InformationObject(TranslatableModel):
         related_name='information_objects',
         blank=True,
         verbose_name=_('categories'))
-
-    tags = models.JSONField(blank=True, default=list)
 
     context = models.JSONField(blank=True, default=dict)
 

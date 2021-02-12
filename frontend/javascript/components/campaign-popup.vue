@@ -11,11 +11,11 @@
       <div class="col">
         <h5>
           <CampaignListTag
-            v-for="(tag, i) in data.tags"
+            v-for="(category, i) in data.categories"
             :key="i"
             :isButton="false"
           >
-            #{{ tag }}
+            #{{ category }}
           </CampaignListTag>
         </h5>
       </div>

@@ -21,7 +21,7 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     lng = serializers.FloatField(required=False)
     resolution = serializers.CharField(required=False)
     context = serializers.DictField(required=False)
-    tags = serializers.ListField(required=False)
+    categories = serializers.ListField(required=False)
     featured = serializers.BooleanField(required=False)
 
 
@@ -52,7 +52,7 @@ class InformationObjectSerializer(serializers.ModelSerializer):
         fields = (
             'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
             'request_url', 'foirequests', 'ident', 'resolution',
-            'id', 'foirequest', 'tags', 'categories'
+            'id', 'foirequest', 'categories'
         )
 
     def get_title(self, obj):
