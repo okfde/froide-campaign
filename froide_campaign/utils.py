@@ -8,6 +8,7 @@ from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
 
 from froide.publicbody.models import PublicBody
+from django.contrib.sites.shortcuts import get_current_site
 
 from .models import Campaign, InformationObject, CampaignCategory
 
@@ -15,7 +16,8 @@ logger = logging.getLogger()
 
 
 class CSVImporter(object):
-    def __init__(self):
+    def __init__(self, request):
+        self.request = request
         self.pb_cache = {}
         self.campaign_cache = {}
 
@@ -25,8 +27,9 @@ class CSVImporter(object):
 
     def add_translations(self, iobj, line):
         translated_fields = ['title', 'subtitle']
+        side_id = get_current_site(self.request).id
         languages = [lang.get('code') for lang in
-                     settings.PARLER_LANGUAGES.get(1)]
+                     settings.PARLER_LANGUAGES.get(side_id)]
         for lang in languages:
             iobj.set_current_language(lang)
             for field in translated_fields:

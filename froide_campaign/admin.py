@@ -118,7 +118,7 @@ class InformationObjectAdmin(TranslatableAdmin):
         if not self.has_change_permission(request):
             raise PermissionDenied
 
-        importer = CSVImporter()
+        importer = CSVImporter(request)
         csv_file = request.FILES['file']
         file = csv_file.read().decode('utf-8')
         io_string = io.StringIO(file)
