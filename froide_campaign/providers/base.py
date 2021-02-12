@@ -3,14 +3,12 @@ import html
 from collections import defaultdict
 from urllib.parse import urlencode, quote
 
-from django.core.exceptions import FieldError
 from django.urls import reverse
 from django.conf import settings
 from django.template import Context
 from django.contrib.gis.measure import D
-from django.contrib.gis.db.models.functions import Distance
 
-from froide.campaign.models import Campaign
+from froide.campaign.utils import connect_foirequest
 
 from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
@@ -180,7 +178,8 @@ class BaseProvider:
         iterable = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
             ).values_list('informationobject__ident', 'foirequest_id',
-                          'foirequest__first_message', 'foirequest__resolution')
+                          'foirequest__first_message',
+                          'foirequest__resolution')
         for iobj_ident, fr_id, first_message, resolution in iterable:
             mapping[iobj_ident].append({'id': fr_id,
                                         'first_message': first_message,
@@ -271,12 +270,7 @@ class BaseProvider:
         if iobj.foirequest is None:
             iobj.foirequest = sender
 
-        try:
-            campaign = Campaign.objects.get(ident=self.campaign.slug)
-            sender.campaign = campaign
-            sender.save()
-        except Campaign.DoesNotExist:
-            pass
-
         iobj.foirequests.add(sender)
         iobj.save()
+
+        connect_foirequest(sender, self.campaign.slug)

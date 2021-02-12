@@ -11,7 +11,7 @@ from django_amenities.models import Amenity
 from froide.publicbody.models import PublicBody
 from froide.georegion.models import GeoRegion
 
-from froide.campaign.models import Campaign
+from froide.campaign.utils import connect_foirequest
 
 from ..models import InformationObject
 
@@ -149,11 +149,6 @@ class AmenityProvider(BaseProvider):
             iobj.publicbody = sender.public_body
             iobj.save()
 
-        try:
-            campaign = Campaign.objects.get(ident=self.campaign.slug)
-            sender.campaign = campaign
-            sender.save()
-        except Campaign.DoesNotExist:
-            pass
+        connect_foirequest(sender, self.campaign.slug)
 
         iobj.foirequests.add(sender)
