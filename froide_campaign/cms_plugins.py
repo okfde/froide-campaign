@@ -150,24 +150,24 @@ class CampaignQuestionairePlugin(CMSPluginBase):
                 for question in instance.questionaire.question_set.all()]
 
     def get_answers(self, iobj):
-        if iobj.report_set.all():
-            report = iobj.report_set.all().first()
-            answers = report.answer_set.all()
-            answer_list = []
-            for answer in answers:
-                question = answer.question
-                answer_dict = {
-                    'questionId': question.id,
-                    'question': question.text,
-                    'options': question.options.split(','),
-                    'required': question.is_required,
-                    'answer': answer.text,
-                    'helptext': question.help_text,
-                    'error': ''
-                }
-                answer_list.append(answer_dict)
-            return report.id, answer_list
-        return None, []
+        reports = iobj.reports.all()
+        if not reports:
+            return None, []
+        answers = reports[0].answer_set.all()
+        answer_list = []
+        for answer in answers:
+            question = answer.question
+            answer_dict = {
+                'questionId': question.id,
+                'question': question.text,
+                'options': question.options.split(','),
+                'required': question.is_required,
+                'answer': answer.text,
+                'helptext': question.help_text,
+                'error': ''
+            }
+            answer_list.append(answer_dict)
+        return reports[0].id, answer_list
 
     def get_iobjs_list(self, instance, iobjs):
         provider = BaseProvider(campaign=instance.questionaire.campaign)
@@ -186,8 +186,13 @@ class CampaignQuestionairePlugin(CMSPluginBase):
     def get_list_context(self, context, instance):
         campaign = instance.questionaire.campaign
         iobjs_success = campaign.informationobject_set.filter(
-            report__isnull=True,
-            foirequests__resolution=Resolution.SUCCESSFUL)
+            reports=None,
+            foirequests__resolution=Resolution.SUCCESSFUL
+        ).select_related('publicbody')
+        iobjs_success = iobjs_success.prefetch_related(
+            'reports',
+            'categories', 'categories__translations'
+        )
         data = self.get_iobjs_list(instance, iobjs_success)
         context.update({
             'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
@@ -198,6 +203,9 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         campaign = instance.questionaire.campaign
         iobjs = campaign.informationobject_set.filter(
             foirequests__resolution=Resolution.SUCCESSFUL
+        ).select_related('publicbody')
+        iobjs = iobjs.prefetch_related(
+            'categories', 'categories__translations'
         )
         try:
             foi_request = FoiRequest.objects.get(id=request_id)
