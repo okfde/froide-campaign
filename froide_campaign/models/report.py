@@ -28,8 +28,11 @@ class Question(models.Model):
 class Report(models.Model):
     questionaire = models.ForeignKey(Questionaire,
                                      on_delete=models.CASCADE)
-    informationsobject = models.ForeignKey(InformationObject,
-                                           on_delete=models.CASCADE)
+    informationsobject = models.ForeignKey(
+        InformationObject,
+        related_name='reports',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         return '{} | {}'.format(self.questionaire.title,

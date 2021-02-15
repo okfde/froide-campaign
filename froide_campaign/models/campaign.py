@@ -266,7 +266,7 @@ class InformationObjectManager(TranslatableManager):
 class InformationObject(TranslatableModel):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
-    ident = models.CharField(max_length=255)
+    ident = models.CharField(max_length=255, db_index=True)
     slug = models.SlugField(max_length=255)
     ordering = models.CharField(max_length=255, blank=True)
 
