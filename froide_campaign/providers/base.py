@@ -137,8 +137,8 @@ class BaseProvider:
             'foirequests': [],
             'resolution': 'normal',
             'context': obj.context,
-            'categories': obj.categories.values_list('translations__title',
-                                                     flat=True),
+            # obj.categories + translations prefetched
+            'categories': list([c.title for c in obj.categories.all()]),
             'featured': obj.featured
         }
 
