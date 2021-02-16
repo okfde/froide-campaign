@@ -1,7 +1,6 @@
 import json
 import logging
 
-from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.templatetags.static import static
 from django.utils.translation import gettext_lazy as _
