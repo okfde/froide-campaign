@@ -238,7 +238,7 @@ class CampaignReportAdmin(admin.ModelAdmin):
                 if iobject.geo:
                     zipcode = self.get_zipcode(iobject.geo)
                 infooject_details = [
-                    iobject.translations_title,
+                    iobject.title,
                     foirequest.get_absolute_domain_short_url(),
                     foirequest.messages[0].timestamp.date(),
                     zipcode
