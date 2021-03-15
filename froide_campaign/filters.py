@@ -92,3 +92,14 @@ class CustomSearchFilter(filters.SearchFilter):
         if self.must_call_distinct(queryset, search_fields):
             queryset = distinct(queryset, base)
         return queryset
+
+
+class RandomOrderFilter(filters.BaseFilterBackend):
+
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get('order'):
+            order = request.GET.get('order')
+            if order == 'random':
+                return queryset.order_by('?')
+
+        return queryset

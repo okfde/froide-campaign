@@ -225,7 +225,16 @@ export default {
       this.showRequestForm = null
     },
     getUrlWithParams (url) {
-      return url + `&search=${this.search}&status=${this.resolution}&category=${this.currentCategory}`
+      let params = [
+        ['search', this.search],
+        ['status', this.resolution],
+        ['category', this.currentCategory],
+      ]
+      if (this.settings.order) {
+        params.push(['order', this.settings.order])
+      }
+      let query = params.map(p => `${p[0]}=${encodeURIComponent(p[1])}`).join('&')
+      return url + `${url}&${query}`
     },
     setResolutionFilter(name) {
       if (this.resolution === name) {

@@ -26,8 +26,10 @@ from .serializers import CampaignProviderRequestSerializer
 from .geocode import run_geocode
 
 from .providers.base import BaseProvider
-from .filters import (CustomSearchFilter, StatusFilter, CategoryFilter,
-                      FeaturedFilter)
+from .filters import (
+    CustomSearchFilter, StatusFilter, CategoryFilter,
+    FeaturedFilter, RandomOrderFilter
+)
 
 
 def get_lat_lng(request):
@@ -66,8 +68,10 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-    filter_backends = [CustomSearchFilter, StatusFilter, CategoryFilter,
-                       FeaturedFilter]
+    filter_backends = [
+        CustomSearchFilter, StatusFilter, CategoryFilter,
+        FeaturedFilter, RandomOrderFilter
+    ]
     search_fields = ['translations__title', 'translations__subtitle']
 
     def get_serializer_context(self):
