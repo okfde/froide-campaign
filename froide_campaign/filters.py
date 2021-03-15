@@ -34,7 +34,10 @@ class CategoryFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         if request.GET.get('category'):
             category = request.GET.get('category')
-            return queryset.filter(categories__id=category)
+            try:
+                return queryset.filter(categories__id=category)
+            except ValueError:
+                pass
         return queryset
 
 
@@ -42,10 +45,10 @@ class FeaturedFilter(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         if request.GET.get('featured'):
-            featured = request.GET.get('featured')
             try:
+                featured = bool(int(request.GET.get('featured')))
                 return queryset.filter(featured=featured)
-            except ValidationError:
+            except ValueError:
                 pass
         return queryset
 
