@@ -13,7 +13,7 @@
               <CampaignListTag
                 v-for="(category) in object.categories"
                 :key="category.id"
-                :active="currentCategory === category.id.toString()"
+                :active="currentCategory === category.id"
                 @click="$emit('setCategoryFilter', category.id)">
                 #{{ category.title }}
               </CampaignListTag>
@@ -60,7 +60,7 @@ import i18n from '../../i18n/campaign-list.json';
 export default {
   props: {
     object: Object,
-    currentCategory: String,
+    currentCategory: Number,
     language: String,
     allowMultipleRequests: Boolean
   },

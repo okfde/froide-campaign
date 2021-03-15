@@ -30,6 +30,7 @@
       <div
         v-if="!this.settings.input_field"
         class="container mx-auto"
+        ref="searchTop"
         :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
       >
         <h5>
@@ -97,9 +98,9 @@
         >
           <CampaignListItem
             v-for="object in objects"
-            :key="object.id"
+            :key="object.ident"
             :object="object"
-            :currentCategory="currentCategory.toString()"
+            :currentCategory="currentCategory"
             :allowMultipleRequests="allowMultipleRequests"
             :language="language"
             class="list-item"
@@ -110,15 +111,24 @@
 
           <div
             class="text-center my-5 py-5 w-100"
-            v-if="hasSearched && objects.length === 0"
+            v-if="!loading && hasSearched && objects.length === 0"
             key="noResults"
           >
             <p class="text-secondary" v-html="i18n.noResults" />
           </div>
+          <div
+            class="text-center my-5 py-5 w-100"
+            v-if="loading"
+            key="loading"
+          >
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
         </transition-group>
         <div
           class="row justify-content-center mb-5"
-          v-if="this.meta.next"
+          v-if="!loading && (nextUrl || lastSearchWasRandom)"
         >
             <button @click="fetch" class="btn btn-light">{{ i18n.loadMore }}</button>
         </div>
@@ -130,10 +140,12 @@
 
 <script>
 import deepmerge from 'deepmerge'
+import debounce from 'lodash.debounce'
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'
 import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
+import Room from "froide/frontend/javascript/lib/websocket.ts"
 
 export default {
   name: 'campaign-list',
@@ -163,22 +175,45 @@ export default {
       alreadyRequested: {},
       user: this.userInfo,
       hasSearched: false,
+      loading: false,
       search: '',
       objects: [],
       baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}&language=${this.language}`,
-      nextUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}&language=${this.language}`,
+      nextUrl: '',
       meta: [],
-      currentCategory: '',
+      currentCategory: null,
       resolution: null,
       resolutions: ['normal', 'pending', 'successful', 'refused'],
       showRequestForm: null,
       publicbody: {},
       publicbodies: [],
+      room: null,
+      lastSearch: null
     }
   },
   mounted() {
     if (!this.settings.show_list_after_search) {
+      this.nextUrl = this.getUrlWithParams(this.baseUrl)
       this.fetch()
+    }
+    if (this.settings.live) {
+      try {
+        this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
+        this.room.connect()
+          .on('request_made', (event) => {
+            if (this.objects.length === 0) {
+              return
+            }
+            this.objects = this.objects.map(o => {
+              if (o.ident === event.data.ident) {
+                return event.data
+              }
+              return o
+            })
+          })
+      } catch (e) {
+        console.error(e)
+      }
     }
   },
   computed: {
@@ -193,6 +228,20 @@ export default {
     },
     maxRequestsPerUser () {
       return this.settings.maxRequestsPerUser || 0
+    },
+    searchParameters () {
+      let defaults = [
+        ['search', this.search],
+        ['status', this.resolution],
+        ['category', this.currentCategory],
+      ]
+      return defaults.filter(d => !!d[1])
+    },
+    hasSearchParameters () {
+      return this.searchParameters.length > 0
+    },
+    lastSearchWasRandom () {
+      return this.lastSearch.indexOf('order=random') !== -1
     }
   },
   methods: {
@@ -230,16 +279,12 @@ export default {
       this.showRequestForm = null
     },
     getUrlWithParams (url) {
-      let params = [
-        ['search', this.search],
-        ['status', this.resolution],
-        ['category', this.currentCategory],
-      ]
-      if (this.settings.order) {
-        params.push(['order', this.settings.order])
+      let query = this.searchParameters
+      if (query.length === 0 && this.settings.order) {
+        query = [['order', this.settings.order]]
       }
-      let query = params.map(p => `${p[0]}=${encodeURIComponent(p[1])}`).join('&')
-      return url + `${url}&${query}`
+      let queryString = query.map(p => `${p[0]}=${encodeURIComponent(p[1])}`).join('&')
+      return `${url}&${queryString}`
     },
     setResolutionFilter(name) {
       if (this.resolution === name) {
@@ -251,41 +296,59 @@ export default {
     },
     setCategoryFilter(category) {
       if (this.currentCategory == category) {
-        this.currentCategory = ''
+        this.currentCategory = null
       } else {
         this.currentCategory = category
       }
       this.updateData()
     },
-    searchObjects() {
-      setTimeout(() => {
-        this.updateData()
-      }, 200)
-    },
-    updateData() {
-      window
-        .fetch(
-          this.getUrlWithParams(this.baseUrl)
-        )
+    searchObjects: debounce(function () {
+      this.updateData()
+    }, 400),
+    updateData (url = null) {
+      if (url === null) {
+        url = this.getUrlWithParams(this.baseUrl)
+      }
+      if (this.lastSearch === url && !this.lastSearchWasRandom) {
+        return
+      }
+      if (url.indexOf('offset=') === -1) {
+        // we are not paging
+        this.objects = []
+      }
+      if (this.abortController) {
+        this.abortController.abort()
+      }
+      this.abortController = new AbortController();
+      this.lastSearch = url
+      this.loading = true
+      window.fetch(url, {signal: this.abortController.signal})
         .then(response => response.json())
         .then(data => {
+          this.loading = false
           this.meta = data.meta
-          this.nextUrl = data.meta.next
-          this.objects = data.objects
+          if (this.lastSearchWasRandom) {
+            this.nextUrl = null
+            this.objects = data.objects
+          } else if (this.lastSearch.indexOf('offset=') !== -1) {
+            this.nextUrl = data.meta.next
+            this.objects.push(...data.objects)
+          } else {
+            this.objects = data.objects
+            this.nextUrl = data.meta.next
+          }
           this.hasSearched = true
-      })
+          this.abortController = null
+      }).catch(e => {
+        console.warn(`Fetch 1 error: ${e.message}`);
+      });
     },
     fetch() {
-      window
-        .fetch(
-          this.getUrlWithParams(this.nextUrl)
-        )
-        .then(response => response.json())
-        .then(data => {
-          this.meta = data.meta
-          this.nextUrl = data.meta.next
-          this.objects.push(...data.objects)
-        })
+      if (this.nextUrl === null) {
+        this.hasSearched = false
+        this.$refs.searchTop.scrollIntoView()
+      }
+      return this.updateData(this.nextUrl)
     }
   }
 }
