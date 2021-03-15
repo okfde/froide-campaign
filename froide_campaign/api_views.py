@@ -110,7 +110,9 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         data['publicbodies'] = provider.get_publicbodies(ident)
         data['makeRequestURL'] = provider.get_request_url(ident,
                                                           language=language)
-
+        data['userRequestCount'] = provider.get_user_request_count(
+            request.user
+        )
         serializer = CampaignProviderRequestSerializer(
             data, context={'request': request}
         )

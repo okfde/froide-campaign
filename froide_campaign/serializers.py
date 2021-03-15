@@ -34,6 +34,7 @@ class CampaignProviderRequestSerializer(serializers.Serializer):
     publicbody = PublicBodySerializer(required=False)
     publicbodies = PublicBodySerializer(many=True, required=False)
     makeRequestURL = serializers.CharField(required=False)
+    userRequestCount = serializers.IntegerField(required=False)
 
 
 class InformationObjectSerializer(serializers.ModelSerializer):

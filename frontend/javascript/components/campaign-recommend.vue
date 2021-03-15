@@ -1,0 +1,132 @@
+<template>
+  <div>
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-9">
+        <h1 class="text-center">
+          {{ i18n.holdOn }}, {{ userName }}!
+        </h1>
+
+        <p class="lead">
+          <template v-if="requestCount == 1">
+            {{ i18n.alreadyMadeOneRequest }}
+          </template>
+          <template v-else>
+            {{ i18n.alreadyMadeSomeRequest }}
+          </template>
+        </p>
+
+        <p>
+          {{ i18n.requestLimitExplanation}}
+        </p>
+
+        <h3>{{ i18n.getSupport }}</h3>
+        <p>
+          {{ i18n.tellFriends }}
+        </p>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+
+      <div class="col mt-3 text-center">
+          <a :href="smsLink" class="btn btn-primary">
+          <span class="fa fa-comments-o" aria-hidden="true"></span>
+          &nbsp;{{ i18n.viaSms }}
+          </a>
+      </div>
+
+      <div class="col mt-3 text-center">
+        <a :href="whatsAppLink" class="btn btn-success">
+            <span class="fa fa-whatsapp" aria-hidden="true"></span>
+            &nbsp;{{ i18n.viaWhatsapp }}
+        </a>
+      </div>
+
+      <div class="col mt-3 text-center">
+        <a :href="mailLink" class="btn btn-secondary">
+        <span class="fa fa-envelope" aria-hidden="true"></span>
+        &nbsp;{{ i18n.viaMail }}
+        </a>
+      </div>
+
+    </div>
+
+    <p class="text-center mt-5 mb-3">
+      {{ i18n.socialMedia }}
+    </p>
+
+    <hr/>
+
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8">
+        <p class="text-center">
+          <button class="btn btn-secondary" @click="$emit('close')">
+            {{ i18n.backToOverview }}
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+import campaign_i18n from '../../i18n/campaign-request.json'
+
+const isMobile = {
+    Android: function() {
+        return /Android/i.test(navigator.userAgent);
+    },
+    iOS: function() {
+        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    },
+}
+
+export default {
+  name: 'campaign-recommend',
+  props: {
+    requestCount: {
+      type: Number
+    },
+    user: {
+      type: Object
+    },
+  },
+  computed: {
+    i18n () {
+      let language = document.documentElement.lang
+      return campaign_i18n[language]
+    },
+    userName () {
+      return `${this.user.first_name} ${this.user.last_name}`
+    },
+    socialUrl () {
+      let url = document.location.href
+      if (url.indexOf('?') !== -1) {
+        return url + '&social=1'
+      }
+      return url + '?social=1'
+    },
+    socialText () {
+      return `${this.i18n.socialText}\n\n${this.socialUrl}`
+    },
+    smsLink () {
+      if (isMobile.Android) {
+        return `sms://?body=${encodeURIComponent(this.socialText)}`
+      }
+      return `sms://&body=${encodeURIComponent(this.socialText)}`
+    },
+    whatsAppLink () {
+      return `whatsapp://send?text=${encodeURIComponent(this.socialText)}`
+    },
+    mailLink () {
+      let subject = encodeURIComponent(this.i18n.socialSubject)
+      return `mailto:?Subject=${subject}&Body=${encodeURIComponent(this.socialText)}`
+    }
+  },
+  methods: {
+    close () {
+      this.$emit('close')
+    }
+  }
+}
+</script>

@@ -5,8 +5,14 @@
         <div v-if="fetching" class="loading">
           <campaign-loader></campaign-loader>
         </div>
+        <campaign-recommend
+          v-else-if="showMaxRequestWarning"
+          :user="userInfo"
+          :request-count="userRequestCount"
+          @close="$emit('close')"
+        />
         <template v-else>
-            <button class="btn btn-sm btn-light" @click="$emit('close')"> < {{ messages.back }}</button>
+            <button class="btn btn-sm btn-light" @click="$emit('close')"> &lt; {{ messages.back }}</button>
           <div class="row justify-content-md-end mt-5">
             <campaign-choose-publicbody v-if="!fetching && publicbodiesOptions.length > 1"
             :publicbodies="publicbodiesOptions"
@@ -99,6 +105,7 @@ import {selectBestLaw} from 'froide/frontend/javascript/lib/law-select'
 import campaign_i18n from '../../i18n/campaign-request.json'
 
 import CampaignLoader from './campaign-loader'
+import CampaignRecommend from './campaign-recommend'
 import CampaignDetailMixin from '../lib/detailmixin'
 import CampaignItemMixin from '../lib/mixin.js'
 import {postData} from '../lib/utils.js'
@@ -113,7 +120,8 @@ export default {
     CampaignLoader,
     UserTerms,
     UserRegistration,
-    CampaignChoosePublicbody
+    CampaignChoosePublicbody,
+    CampaignRecommend
   },
   props: {
     buttonText: {
@@ -165,6 +173,10 @@ export default {
     },
     publicbodiesOptions: {
       type: Array
+    },
+    maxRequestsPerUser: {
+      type: Number,
+      default: 0
     }
   },
   mounted () {
@@ -183,7 +195,6 @@ export default {
 
     return {
       fetching: !this.data.full,
-      closedWarning: false,
       submitting: false,
       addressHelpText: text,
       userHasSubscription: this.hasSubscription,
@@ -195,8 +206,10 @@ export default {
     csrfToken () {
       return this.$root.csrfToken
     },
-    showWarning () {
-      return this.userInfo && this.data.userRequestCount >= MAX_REQUEST_COUNT && !this.closedWarning
+    showMaxRequestWarning () {
+      return this.maxRequestsPerUser > 0 &&
+      this.userInfo &&
+      this.data.userRequestCount >= this.maxRequestsPerUser
     },
     userRequestCount () {
       return this.data.userRequestCount

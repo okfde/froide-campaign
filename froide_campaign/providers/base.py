@@ -256,6 +256,13 @@ class BaseProvider:
         query = urlencode(query, quote_via=quote)
         return '%s%s?%s' % (settings.SITE_URL, url, query)
 
+    def get_user_request_count(self, user):
+        if not user.is_authenticated:
+            return 0
+        return InformationObject.objects.filter(
+            campaign=self.campaign, foirequests__user=user
+        ).count()
+
     def connect_request(self, ident, sender):
         try:
             iobj = self.get_by_ident(ident)

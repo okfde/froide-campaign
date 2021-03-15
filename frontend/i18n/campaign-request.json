@@ -4,13 +4,39 @@
       "sendRequest": "Send request",
       "newsletterText": "Please send me Information about this campaign via email.",
       "addressInfo": "Your address will not be displayed publicly.",
-      "warningVIG": "It may happen that the competent authority forwards your name and address to the establishment when asked."
+      "warningVIG": "It may happen that the competent authority forwards your name and address to the establishment when asked.",
+      "holdOn": "Hold on",
+      "alreadyMadeOneRequest": "You have already made a request in this campaign!",
+      "alreadyMadeSomeRequest": "You have already made some requests in this campaign!",
+      "requestLimitExplanation": "We want many people to support our campaign so in can be more effective.",
+      "getSupport": "Get support!",
+      "tellFriends": "Tell friends and family about this campaign!",
+      "viaSms": "via SMS",
+      "viaWhatsapp": "Send with Whatsapp",
+      "viaMail": "send via email",
+      "socialSubject": "Help me out and take part!",
+      "socialText": "Hey, I'm taking part in this online campaign. Could you help out and join in?",
+      "socialMedia": "Or share this campaign on social media!",
+      "backToOverview": "Back to overview"
     },
     "de": {
         "back": "Zurück",
         "sendRequest": "Anfrage abschicken",
         "newsletterText": "Bitte senden Sie mir Informationen zu dieser Kampagne per E-mail",
         "addressInfo": "Ihre Adresse wird nicht öffentlich angezeigt.",
-        "warningVIG": "Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet."
+        "warningVIG": "Es kann passieren, dass die zuständige Behörde auf Nachfrage des Betriebs Ihren Namen und Ihre Anschrift an den Betrieb weiterleitet.",
+        "holdOn": "Einen Moment",
+        "alreadyMadeOneRequest": "Sie haben schon eine Anfrage in dieser Kampagne gestellt!",
+        "alreadyMadeSomeRequest": "Sie haben schon einige Anfragen in dieser Kampagne gestellt!",
+        "requestLimitExplanation": "Wir wollen, dass viele Personen an dieser Kampagne teilnehmen können, damit sie effektiv wirkt.",
+        "getSupport": "Holen Sie sich Unterstützung!",
+        "tellFriends": "Teilen Sie diese Seite mit Freunden und Familie!",
+        "viaSms": "per Textnachricht",
+        "viaWhatsapp": "Mit Whatsapp versenden",
+        "viaMail": "per E-Mail versenden",
+        "socialSubject": "Hilf mir und nimm teil!",
+        "socialText": "Hey, ich nehme an dieser Online-Kampagne teil. Könntest du mir helfen und auch mitmachen?",
+        "socialMedia": "Oder teile diese Kampagne in den sozialen Medien!",
+        "backToOverview": "Zurück zur Übersicht"
     }
   }

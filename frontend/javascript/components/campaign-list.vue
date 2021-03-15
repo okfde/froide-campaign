@@ -17,6 +17,7 @@
       :publicbody="publicbody"
       :publicbodies="[publicbody]"
       :publicbodiesOptions="publicbodies"
+      :maxRequestsPerUser="maxRequestsPerUser"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
@@ -190,6 +191,9 @@ export default {
     hideNewsletterCheckbox () {
       return (this.settings.hide_newsletter_checkbox) ? this.settings.hide_newsletter_checkbox : true
     },
+    maxRequestsPerUser () {
+      return this.settings.maxRequestsPerUser || 0
+    }
   },
   methods: {
     userUpdated (user) {
@@ -203,6 +207,7 @@ export default {
           f.publicbody = data.publicbody
           f.publicbodies = data.publicbodies.results
           f.makeRequestURL = data.makeRequestURL
+          f.userRequestCount = data.userRequestCount
           f.full = true
           return f
         }
