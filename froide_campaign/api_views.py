@@ -95,11 +95,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         obj.save()
 
     def retrieve(self, request, *args, **kwargs):
-        campaign_id = request.GET.get('campaign')
-        campaign = get_object_or_404(
-            Campaign.objects.get_public(),
-            id=campaign_id
-        )
+        campaign = self.get_campaign()
         language = self.request.GET.get('language', settings.LANGUAGE_CODE)
         campaign.set_current_language(language)
         provider = campaign.get_provider()
@@ -116,13 +112,16 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         )
         return Response(serializer.data)
 
-    def get_queryset(self):
+    def get_campaign(self):
         campaign_id = self.request.GET.get('campaign')
         if self.request.user.is_staff:
             qs = Campaign.objects.all()
         else:
             qs = Campaign.objects.get_public()
-        campaign = get_object_or_404(qs, id=campaign_id)
+        return get_object_or_404(qs, id=campaign_id)
+
+    def get_queryset(self):
+        campaign = self.get_campaign()
         iobjs = InformationObject.objects.filter(
             campaign=campaign
         )
@@ -207,11 +206,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
 
     @action(detail=False, methods=['get'])
     def random(self, request):
-        campaign_id = request.GET.get('campaign')
-        campaign = get_object_or_404(
-            Campaign.objects.get_public(),
-            id=campaign_id
-        )
+        campaign = self.get_campaign()
 
         provider = campaign.get_provider()
 
@@ -225,11 +220,7 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
 
     @action(detail=False, methods=['get'])
     def search(self, request):
-        campaign_id = request.GET.get('campaign')
-        campaign = get_object_or_404(
-            Campaign.objects.get_public(),
-            id=campaign_id
-        )
+        campaign = self.get_campaign()
 
         provider = campaign.get_provider()
 
