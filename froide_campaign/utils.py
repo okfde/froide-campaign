@@ -44,7 +44,10 @@ class CSVImporter(object):
             categories = line.get('categories')
             iobj.categories.clear()
             if categories:
-                cats_with_slug = [(slugify(cat), cat) for cat in categories.split(',')]
+                cats_with_slug = [
+                    (slugify(cat), cat)
+                    for cat in categories.split(',')
+                ]
                 for cat_tuple in cats_with_slug:
                     try:
                         cat = CampaignCategory.objects.get(

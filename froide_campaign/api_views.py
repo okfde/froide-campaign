@@ -118,10 +118,11 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
 
     def get_queryset(self):
         campaign_id = self.request.GET.get('campaign')
-        campaign = get_object_or_404(
-            Campaign.objects.get_public(),
-            id=campaign_id
-        )
+        if self.request.user.is_staff:
+            qs = Campaign.objects.all()
+        else:
+            qs = Campaign.objects.get_public()
+        campaign = get_object_or_404(qs, id=campaign_id)
         iobjs = InformationObject.objects.filter(
             campaign=campaign
         )

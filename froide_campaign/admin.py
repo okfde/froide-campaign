@@ -39,7 +39,8 @@ class CampaignAdmin(TranslatableAdmin):
     )
 
     def get_prepopulated_fields(self, request, obj=None):
-        # can't use `prepopulated_fields = ..` because it breaks the admin validation
+        # can't use `prepopulated_fields = ..`
+        # because it breaks the admin validation
         # for translated fields. This is the official django-parler workaround.
         return {
             'slug': ('title',)
@@ -228,8 +229,8 @@ class CampaignReportAdmin(admin.ModelAdmin):
             response['Content-Disposition'] = content
             writer = csv.writer(response)
 
-            header = ['Name', 'URL', 'Datum', 'PLZ'] + [question.text
-                                        for question in questions]
+            header = ['Name', 'URL', 'Datum', 'PLZ'] + [
+                question.text for question in questions]
             writer.writerow(header)
             for report in queryset:
                 iobject = report.informationsobject
