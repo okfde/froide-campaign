@@ -130,7 +130,14 @@
           class="row justify-content-center mb-5"
           v-if="!loading && (nextUrl || lastSearchWasRandom)"
         >
-            <button @click="fetch" class="btn btn-light">{{ i18n.loadMore }}</button>
+            <button @click="fetch" class="btn btn-light">
+              <template v-if="nextUrl">
+                {{ i18n.loadMore }}
+              </template>
+              <template v-else>
+                {{ i18n.loadRandom }}
+              </template>
+            </button>
         </div>
 
       </div>
@@ -241,7 +248,7 @@ export default {
       return this.searchParameters.length > 0
     },
     lastSearchWasRandom () {
-      return this.lastSearch.indexOf('order=random') !== -1
+      return this.lastSearch && this.lastSearch.indexOf('order=random') !== -1
     }
   },
   methods: {
