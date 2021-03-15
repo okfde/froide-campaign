@@ -107,3 +107,5 @@ class PublicBodyProvider(BaseProvider):
         )
 
         iobj.foirequests.add(sender)
+
+        return iobj

@@ -1,3 +1,7 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+from .consumers import PRESENCE_ROOM
 from .models import Campaign
 
 
@@ -24,4 +28,15 @@ def connect_info_object(sender, **kwargs):
         return
 
     provider = campaign.get_provider()
-    provider.connect_request(ident, sender)
+    iobj = provider.connect_request(ident, sender)
+    broadcast_request_made(provider, iobj)
+
+
+def broadcast_request_made(provider, iobj):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        PRESENCE_ROOM.format(provider.campaign.id), {
+            "type": "request_made",
+            "data": provider.get_detail_data(iobj)
+        }
+    )

@@ -152,3 +152,5 @@ class AmenityProvider(BaseProvider):
         connect_foirequest(sender, self.campaign.slug)
 
         iobj.foirequests.add(sender)
+
+        return iobj

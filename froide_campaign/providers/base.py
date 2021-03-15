@@ -75,6 +75,14 @@ class BaseProvider:
         serializer = CampaignProviderItemSerializer(data)
         return serializer.data
 
+    def get_detail_data(self, iobj):
+        mapping = self.get_foirequests_mapping([iobj])
+        data = self.get_provider_item_data(
+            iobj, foirequests=mapping, detail=True
+        )
+        serializer = CampaignProviderItemSerializer(data)
+        return serializer.data
+
     def filter(self, iobjs, **filter_kwargs):
         if filter_kwargs.get('q'):
             iobjs = InformationObject.objects.search(
@@ -138,7 +146,9 @@ class BaseProvider:
             'resolution': 'normal',
             'context': obj.context,
             # obj.categories + translations prefetched
-            'categories': list([c.title for c in obj.categories.all()]),
+            'categories': [
+                {'id': c.id, 'title': c.title}
+                for c in obj.categories.all()],
             'featured': obj.featured
         }
 
@@ -153,7 +163,6 @@ class BaseProvider:
         return data
 
     def _get_foirequest_info(self, frs):
-        frs.sort(key=lambda item: item['first_message'], reverse=True)
         fr_id, res = frs[0].get('id'), frs[0].get('resolution')
 
         success_strings = ['successful', 'partially_successful']
@@ -176,14 +185,17 @@ class BaseProvider:
         )
         mapping = defaultdict(list)
 
-        iterable = InformationObject.foirequests.through.objects.filter(
+        iterable = (
+            InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
-            ).values_list('informationobject__ident', 'foirequest_id',
-                          'foirequest__first_message',
-                          'foirequest__resolution')
-        for iobj_ident, fr_id, first_message, resolution in iterable:
+            ).order_by('-foirequest__first_message')
+            .values_list(
+                'informationobject__ident', 'foirequest_id',
+                'foirequest__resolution'
+            )
+        )
+        for iobj_ident, fr_id, resolution in iterable:
             mapping[iobj_ident].append({'id': fr_id,
-                                        'first_message': first_message,
                                         'resolution': resolution})
 
         return mapping
@@ -282,3 +294,5 @@ class BaseProvider:
         iobj.save()
 
         connect_foirequest(sender, self.campaign.slug)
+
+        return iobj
