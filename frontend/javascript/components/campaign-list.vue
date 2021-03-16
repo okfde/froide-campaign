@@ -330,6 +330,7 @@ export default {
       if (url.indexOf('offset=') === -1) {
         // we are not paging
         this.objects = []
+        this.$refs.searchTop.scrollIntoView()
       }
       if (this.abortController) {
         this.abortController.abort()
@@ -361,7 +362,6 @@ export default {
     fetch() {
       if (this.nextUrl === null) {
         this.hasSearched = false
-        this.$refs.searchTop.scrollIntoView()
       }
       return this.updateData(this.nextUrl)
     }
