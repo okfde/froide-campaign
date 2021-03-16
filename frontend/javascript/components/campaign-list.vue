@@ -327,7 +327,7 @@ export default {
       if (this.lastSearch === url && !this.lastSearchWasRandom) {
         return
       }
-      if (url.indexOf('offset=') === -1) {
+      if (url.indexOf('offset=') === -1 && this.objects.length > 0) {
         // we are not paging
         this.objects = []
         this.$refs.searchTop.scrollIntoView()
