@@ -2,8 +2,11 @@
   <div>
     <div class="row justify-content-center mt-5">
       <div class="col-md-9">
-        <h1 class="text-center">
+        <h1 v-if="user" class="text-center">
           {{ i18n.holdOn }}, {{ userName }}!
+        </h1>
+        <h1 v-else class="text-center">
+          {{ i18n.holdOn }}!
         </h1>
 
         <p class="lead">
@@ -54,6 +57,17 @@
       {{ i18n.socialMedia }}
     </p>
 
+    <div class="text-center">
+      <a class="btn btn-info sharing__link -twitter" rel="noopener" target="_blank" :href="twitterLink">
+        <i class="fa fa-twitter"></i>
+        Twitter
+      </a>
+      <a class="btn btn-primary sharing__link -facebook" rel="noopener" target="_blank" :href="facebookLink">
+        <i class="fa fa-facebook"></i>
+        Facebook
+      </a>
+    </div>
+
     <hr/>
 
     <div class="row justify-content-center mt-5">
@@ -73,12 +87,8 @@
 import campaign_i18n from '../../i18n/campaign-request.json'
 
 const isMobile = {
-    Android: function() {
-        return /Android/i.test(navigator.userAgent);
-    },
-    iOS: function() {
-        return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    },
+    Android: /Android/i.test(navigator.userAgent),
+    Apple: /Macintosh|iPhone|iPad|iPod/i.test(navigator.userAgent),
 }
 
 export default {
@@ -97,7 +107,9 @@ export default {
       return campaign_i18n[language]
     },
     userName () {
-      return `${this.user.first_name} ${this.user.last_name}`
+      if (this.user) {
+        return `${this.user.first_name} ${this.user.last_name}`
+      }
     },
     socialUrl () {
       let url = document.location.href
@@ -110,10 +122,7 @@ export default {
       return `${this.i18n.socialText}\n\n${this.socialUrl}`
     },
     smsLink () {
-      if (isMobile.Android) {
-        return `sms://?body=${encodeURIComponent(this.socialText)}`
-      }
-      return `sms://&body=${encodeURIComponent(this.socialText)}`
+      return `sms:?&body=${encodeURIComponent(this.socialText)}`
     },
     whatsAppLink () {
       return `whatsapp://send?text=${encodeURIComponent(this.socialText)}`
@@ -121,6 +130,12 @@ export default {
     mailLink () {
       let subject = encodeURIComponent(this.i18n.socialSubject)
       return `mailto:?Subject=${subject}&Body=${encodeURIComponent(this.socialText)}`
+    },
+    twitterLink () {
+      return `https://twitter.com/share?text=${encodeURIComponent(this.socialText)}&amp;url=${encodeURIComponent(this.socialUrl)}&amp;via=fragdenstaat`
+    },
+    facebookLink () {
+      return `https://www.facebook.com/sharer.php?u=${encodeURIComponent(this.socialUrl)}`
     }
   },
   methods: {

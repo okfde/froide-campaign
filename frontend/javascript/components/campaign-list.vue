@@ -17,6 +17,7 @@
       :publicbody="publicbody"
       :publicbodies="[publicbody]"
       :publicbodiesOptions="publicbodies"
+      :localRequestCount="localRequestCount"
       :maxRequestsPerUser="maxRequestsPerUser"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
@@ -249,6 +250,13 @@ export default {
     },
     lastSearchWasRandom () {
       return this.lastSearch && this.lastSearch.indexOf('order=random') !== -1
+    },
+    localRequestCount () {
+      let count = 0
+      for (let x in this.alreadyRequested) {
+        count += 1
+      }
+      return count
     }
   },
   methods: {

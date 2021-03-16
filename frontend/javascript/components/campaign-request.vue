@@ -177,7 +177,11 @@ export default {
     maxRequestsPerUser: {
       type: Number,
       default: 0
-    }
+    },
+    localRequestCount: {
+      type: Number,
+      default: 0
+    },
   },
   mounted () {
     this.$refs.campaignRequest.scrollIntoView(true)
@@ -208,11 +212,15 @@ export default {
     },
     showMaxRequestWarning () {
       return this.maxRequestsPerUser > 0 &&
-      this.userInfo &&
-      this.data.userRequestCount >= this.maxRequestsPerUser
+      (this.userInfo &&
+        this.data.userRequestCount >= this.maxRequestsPerUser) ||
+      (!this.userInfo && this.localRequestCount >= this.maxRequestsPerUser)
     },
     userRequestCount () {
-      return this.data.userRequestCount
+      if (this.userInfo) {
+        return this.data.userRequestCount
+      }
+      return this.localRequestCount
     },
     params () {
       let params = {}
