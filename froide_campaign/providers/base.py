@@ -257,6 +257,9 @@ class BaseProvider:
         if self.kwargs.get('law_type'):
             query['law_type'] = self.kwargs['law_type'].encode()
 
+        if self.kwargs.get('redirect_url'):
+            query['redirect_url'] = self.kwargs['redirect_url'].encode()
+
         hide_features = [
             'hide_public', 'hide_full_text', 'hide_similar',
             'hide_draft', 'hide_editing'
