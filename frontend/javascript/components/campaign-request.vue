@@ -181,7 +181,7 @@ export default {
     localRequestCount: {
       type: Number,
       default: 0
-    },
+    }
   },
   mounted () {
     this.$refs.campaignRequest.scrollIntoView(true)
@@ -211,10 +211,12 @@ export default {
       return this.$root.csrfToken
     },
     showMaxRequestWarning () {
-      return this.maxRequestsPerUser > 0 &&
-      (this.userInfo &&
-        this.data.userRequestCount >= this.maxRequestsPerUser) ||
-      (!this.userInfo && this.localRequestCount >= this.maxRequestsPerUser)
+      return this.maxRequestsPerUser > 0 && (
+        (this.userInfo &&
+          this.data.userRequestCount >= this.maxRequestsPerUser) ||
+        (!this.userInfo &&
+          this.localRequestCount >= this.maxRequestsPerUser)
+      )
     },
     userRequestCount () {
       if (this.userInfo) {
