@@ -18,7 +18,7 @@
                 :key="i"
                 :isButton="false"
               >
-                #{{ category }}
+                #{{ category.title }}
               </CampaignListTag>
             </h5>
           </div>
