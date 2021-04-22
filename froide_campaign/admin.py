@@ -212,6 +212,13 @@ class CampaignReportAdmin(admin.ModelAdmin):
             return zip_code.first().description
         return ''
 
+    def get_state(self, point):
+        states = GeoRegion.objects.filter(kind='state')
+        state = states.filter(geom__bboverlaps=point)
+        if state:
+            return state.first().name
+        return ''
+
     def export_csv(self, request, queryset):
         questionaire_ids = queryset.values_list('questionaire_id', flat=True)
         if len(set(questionaire_ids)) > 1:
@@ -229,7 +236,7 @@ class CampaignReportAdmin(admin.ModelAdmin):
             response['Content-Disposition'] = content
             writer = csv.writer(response)
 
-            header = ['Name', 'URL', 'Datum', 'PLZ'] + [
+            header = ['Name', 'URL', 'Datum', 'PLZ', 'Bundesland'] + [
                 question.text for question in questions]
             writer.writerow(header)
             for report in queryset:
@@ -238,11 +245,13 @@ class CampaignReportAdmin(admin.ModelAdmin):
                 foirequest = iobject.get_best_foirequest()
                 if iobject.geo:
                     zipcode = self.get_zipcode(iobject.geo)
+                    state = self.get_state(iobject.geo)
                 infooject_details = [
                     iobject.title,
                     foirequest.get_absolute_domain_short_url(),
                     foirequest.messages[0].timestamp.date(),
-                    zipcode
+                    zipcode,
+                    state
                 ]
                 answer_texts = []
                 for question in questions:
