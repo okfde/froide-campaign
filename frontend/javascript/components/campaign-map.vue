@@ -521,11 +521,11 @@ export default {
     },
     detailFetched (data) {
       this.publicbody = data.publicbody
-      this.publicbodies = data.publicbodies.results
+      this.publicbodies = data.publicbodies.objects
       this.locations = this.locations.map((f) => {
         if (f.ident === data.ident) {
           f.publicbody = data.publicbody
-          f.publicbodies = data.publicbodies.results
+          f.publicbodies = data.publicbodies.objects
           f.makeRequestURL = data.makeRequestURL
           f.full = true
           return f

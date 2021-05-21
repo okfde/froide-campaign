@@ -265,11 +265,11 @@ export default {
     },
     detailFetched (data) {
       this.publicbody = data.publicbody
-      this.publicbodies = data.publicbodies.results
+      this.publicbodies = data.publicbodies.objects
       this.objects = this.objects.map((f) => {
         if (f.ident === data.ident) {
           f.publicbody = data.publicbody
-          f.publicbodies = data.publicbodies.results
+          f.publicbodies = data.publicbodies.objects
           f.makeRequestURL = data.makeRequestURL
           f.userRequestCount = data.userRequestCount
           f.full = true
