@@ -23,7 +23,7 @@
         <div class="row mt-auto">
           <div class="col">
             <a
-              v-if="object.resolution === 'normal'"
+              v-if="hasNoRequest"
               @click.prevent.stop="$emit('startRequest', object)"
               class="btn btn-normal text-white"
             >
@@ -47,6 +47,13 @@
               </a>
             </div>
           </div>
+          <div v-if="object.follow" class="col">
+            <campaign-follow
+              :follow="object.follow"
+              @followed="$emit('followed', $event)"
+              @unfollowed="$emit('unfollowed')"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -55,6 +62,7 @@
 
 <script>
 import CampaignListTag from './campaign-list-tag';
+import CampaignFollow from './campaign-follow.vue'
 import i18n from '../../i18n/campaign-list.json';
 
 export default {
@@ -64,10 +72,13 @@ export default {
     language: String,
     allowMultipleRequests: Boolean
   },
-  components: { CampaignListTag },
+  components: { CampaignListTag, CampaignFollow },
   computed: {
     i18n() {
       return i18n[this.language];
+    },
+    hasNoRequest () {
+      return this.object.resolution === 'normal'
     }
   }
 };

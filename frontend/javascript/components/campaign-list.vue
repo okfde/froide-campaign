@@ -108,6 +108,8 @@
             :class="[settings.twoColumns ? 'col-md-6 px-2' : 'w-100']"
             @startRequest="startRequest"
             @setCategoryFilter="setCategoryFilter"
+            @followed="followedRequest(object, $event)"
+            @unfollowed="object.follow.follows = false"
           />
 
           <div
@@ -149,6 +151,8 @@
 <script>
 import deepmerge from 'deepmerge'
 import debounce from 'lodash.debounce'
+import Vue from 'vue'
+
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'
 import i18n from '../../i18n/campaign-list.json'
@@ -355,6 +359,7 @@ export default {
           }
           this.hasSearched = true
           this.abortController = null
+          this.getFollowers()
       }).catch(e => {
         console.warn(`Fetch 1 error: ${e.message}`);
       });
@@ -364,6 +369,35 @@ export default {
         this.hasSearched = false
       }
       return this.updateData(this.nextUrl)
+    },
+    getFollowers () {
+      let requestIds = this.objects.map(m => m.foirequest).filter(x => !!x)
+      let requests = requestIds.join(',')
+      window.fetch(`/api/v1/following/?request=${requests}`)
+        .then((response) => {
+          return response.json()
+        }).then((data) => {
+          let requestMapping = new Map()
+          this.objects.forEach((o, i) => {
+            if (o.foirequest) {
+              requestMapping.set(o.foirequest, i)
+            }
+          })
+          data.objects.forEach((followObj) => {
+            let parts = followObj.request.split('/')
+            let requestId = parseInt(parts[parts.length - 2])
+
+            let objIndex = requestMapping.get(requestId)
+            let obj = this.objects[objIndex]
+            if (obj) {
+              Vue.set(obj, 'follow', followObj)
+            }
+          })
+        })
+    },
+    followedRequest (data, resourceUri) {
+      data.follow.follows = true
+      data.follow.resource_uri = resourceUri
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "en": {
+    "unfollow": "Unfollow",
+    "followed": "Followed",
+    "follow_q": "Follow?"
+  },
+  "de": {
+    "unfollow": "Entfolgen",
+    "followed": "Gefolgt",
+    "follow_q": "Folgen?"
+  }
+}
