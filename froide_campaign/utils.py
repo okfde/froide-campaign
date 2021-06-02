@@ -78,7 +78,10 @@ class CSVImporter(object):
         slug = slug[:255]
 
         lookup = {}
-        if line.get('ident'):
+        if line.get('id'):
+            lookup = {'id': int(line.pop('id'))}
+            ident = line.pop('ident')
+        elif line.get('ident'):
             ident = line.pop('ident')
             lookup = {'ident': ident}
         else:
