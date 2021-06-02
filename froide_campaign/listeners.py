@@ -17,6 +17,9 @@ def connect_info_object(sender, **kwargs):
     except (ValueError, IndexError):
         return
 
+    if not ident:
+        return
+
     try:
         campaign_pk = int(campaign)
     except ValueError:
