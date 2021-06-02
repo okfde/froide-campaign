@@ -120,8 +120,8 @@ class CSVImporter(object):
         if 'featured' in line:
             featured = bool(line.pop('featured'))
 
-        if 'context' in line:
-            context = line.pop('context')
+        if 'context_as_json' in line:
+            context = line.pop('context_as_json')
             context_json = json.loads(context)
         else:
             context_json = line
