@@ -29,12 +29,11 @@
       </div>
     </div>
     <div class="row justify-content-center">
-
-      <div class="col mt-3 text-center">
-          <a :href="smsLink" class="btn btn-primary">
-          <span class="fa fa-comments-o" aria-hidden="true"></span>
-          &nbsp;{{ i18n.viaSms }}
-          </a>
+      <div v-if="canShare" class="col mt-3 text-center">
+        <button class="btn btn-primary" @click="share">
+          <span class="fa fa-share-square-o" aria-hidden="true"></span>
+          &nbsp;{{ i18n.shareNow }}
+        </button>
       </div>
 
       <div class="col mt-3 text-center">
@@ -118,6 +117,9 @@ export default {
       }
       return url + '?social=1'
     },
+    canShare () {
+      return !!navigator.canShare
+    },
     socialText () {
       return `${this.i18n.socialText}\n\n${this.socialUrl}`
     },
@@ -139,6 +141,13 @@ export default {
     }
   },
   methods: {
+    share () {
+      navigator.share({
+        title: this.i18n.socialSubject,
+        text: this.i18n.socialText,
+        url: this.socialUrl
+      })
+    },
     close () {
       this.$emit('close')
     }
