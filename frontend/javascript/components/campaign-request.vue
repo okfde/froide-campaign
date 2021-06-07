@@ -28,7 +28,7 @@
           </template> -->
           <form method="post" @submit="formSubmit" :action="config.url.makeRequest" target="_blank">
             <input type="hidden" name="csrfmiddlewaretoken" :value="csrfToken"/>
-            <input type="hidden" name="redirect_url" v-model="params.redirect"/>
+            <input type="hidden" name="redirect_url" v-model="params.redirect_url"/>
             <input type="hidden" name="reference" v-model="params.ref"/>
             <input type="hidden" name="public" value="1"/>
             <input type="hidden" v-for="k in hideParams" :key="k" :name="k" value="1"/>
