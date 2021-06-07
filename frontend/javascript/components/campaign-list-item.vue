@@ -5,7 +5,9 @@
         <h5>{{ object.title }}</h5>
         <div class="d-flex mt-1">
           <div class="mb-3">
-            <p class="text-muted mb-0">{{ object.subtitle }}</p>
+            <p class="text-muted mb-0">
+              {{ object.subtitle }}
+            </p>
             <small class="text-muted">{{ object.address }}</small>
           </div>
           <div class="ml-auto text-right">
@@ -14,7 +16,8 @@
                 v-for="(category) in object.categories"
                 :key="category.id"
                 :active="currentCategory === category.id"
-                @click="$emit('setCategoryFilter', category.id)">
+                @click="$emit('setCategoryFilter', category.id)"
+              >
                 #{{ category.title }}
               </CampaignListTag>
             </h5>
@@ -24,8 +27,9 @@
           <div class="col">
             <a
               v-if="hasNoRequest"
-              @click.prevent.stop="$emit('startRequest', object)"
+              :href="object.makeRequestURL"
               class="btn btn-normal text-white"
+              @click.prevent.stop="$emit('startRequest', object)"
             >
               {{ i18n.request }}
             </a>
@@ -36,18 +40,22 @@
                 class="btn text-white"
                 :class="[`btn-${object.resolution}`]"
               >
-              {{ i18n.viewRequest }}
+                {{ i18n.viewRequest }}
               </a>
               <a
                 v-if="allowMultipleRequests"
-                @click.prevent.stop="$emit('startRequest', object)"
+                :href="object.makeRequestURL"
                 class="btn btn-link"
-                >
+                @click.prevent.stop="$emit('startRequest', object)"
+              >
                 {{ i18n.requestAgain }}
               </a>
             </div>
           </div>
-          <div v-if="object.follow" class="col">
+          <div
+            v-if="object.follow"
+            class="col"
+          >
             <campaign-follow
               :follow="object.follow"
               @followed="$emit('followed', $event)"
@@ -66,13 +74,13 @@ import CampaignFollow from './campaign-follow.vue'
 import i18n from '../../i18n/campaign-list.json';
 
 export default {
+  components: { CampaignListTag, CampaignFollow },
   props: {
     object: Object,
     currentCategory: Number,
     language: String,
     allowMultipleRequests: Boolean
   },
-  components: { CampaignListTag, CampaignFollow },
   computed: {
     i18n() {
       return i18n[this.language];
