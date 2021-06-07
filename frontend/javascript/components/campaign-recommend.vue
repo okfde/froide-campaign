@@ -2,10 +2,16 @@
   <div>
     <div class="row justify-content-center mt-5">
       <div class="col-md-9">
-        <h1 v-if="user" class="text-center">
+        <h1
+          v-if="user"
+          class="text-center"
+        >
           {{ i18n.holdOn }}, {{ userName }}!
         </h1>
-        <h1 v-else class="text-center">
+        <h1
+          v-else
+          class="text-center"
+        >
           {{ i18n.holdOn }}!
         </h1>
 
@@ -19,7 +25,7 @@
         </p>
 
         <p>
-          {{ i18n.requestLimitExplanation}}
+          {{ i18n.requestLimitExplanation }}
         </p>
 
         <h3>{{ i18n.getSupport }}</h3>
@@ -29,27 +35,47 @@
       </div>
     </div>
     <div class="row justify-content-center">
-      <div v-if="canShare" class="col mt-3 text-center">
-        <button class="btn btn-primary" @click="share">
-          <span class="fa fa-share-square-o" aria-hidden="true"></span>
+      <div
+        v-if="canShare"
+        class="col-md-4 mt-3 text-center"
+      >
+        <button
+          class="btn btn-primary"
+          @click="share"
+        >
+          <span
+            class="fa fa-share-square-o"
+            aria-hidden="true"
+          />
           &nbsp;{{ i18n.shareNow }}
         </button>
       </div>
 
-      <div class="col mt-3 text-center">
-        <a :href="whatsAppLink" class="btn btn-success">
-            <span class="fa fa-whatsapp" aria-hidden="true"></span>
-            &nbsp;{{ i18n.viaWhatsapp }}
+      <div class="col-md-4 mt-3 text-center">
+        <a
+          :href="whatsAppLink"
+          class="btn btn-success"
+        >
+          <span
+            class="fa fa-whatsapp"
+            aria-hidden="true"
+          />
+          &nbsp;{{ i18n.viaWhatsapp }}
         </a>
       </div>
 
-      <div class="col mt-3 text-center">
-        <a :href="mailLink" class="btn btn-secondary">
-        <span class="fa fa-envelope" aria-hidden="true"></span>
-        &nbsp;{{ i18n.viaMail }}
+      <div class="col-md-4 mt-3 text-center">
+        <a
+          :href="mailLink"
+          class="btn btn-secondary"
+        >
+          <span
+            class="fa fa-envelope"
+            aria-hidden="true"
+          />
+          &nbsp;{{ i18n.viaMail }}
         </a>
       </div>
-
     </div>
 
     <p class="text-center mt-5 mb-3">
@@ -57,22 +83,35 @@
     </p>
 
     <div class="text-center">
-      <a class="btn btn-info sharing__link -twitter" rel="noopener" target="_blank" :href="twitterLink">
-        <i class="fa fa-twitter"></i>
+      <a
+        class="btn btn-info sharing__link -twitter"
+        rel="noopener"
+        target="_blank"
+        :href="twitterLink"
+      >
+        <i class="fa fa-twitter" />
         Twitter
       </a>
-      <a class="btn btn-primary sharing__link -facebook" rel="noopener" target="_blank" :href="facebookLink">
-        <i class="fa fa-facebook"></i>
+      <a
+        class="btn btn-primary sharing__link -facebook"
+        rel="noopener"
+        target="_blank"
+        :href="facebookLink"
+      >
+        <i class="fa fa-facebook" />
         Facebook
       </a>
     </div>
 
-    <hr/>
+    <hr>
 
     <div class="row justify-content-center mt-5">
       <div class="col-md-8">
         <p class="text-center">
-          <button class="btn btn-secondary" @click="$emit('close')">
+          <button
+            class="btn btn-secondary"
+            @click="$emit('close')"
+          >
             {{ i18n.backToOverview }}
           </button>
         </p>
@@ -85,19 +124,16 @@
 
 import campaign_i18n from '../../i18n/campaign-request.json'
 
-const isMobile = {
-    Android: /Android/i.test(navigator.userAgent),
-    Apple: /Macintosh|iPhone|iPad|iPod/i.test(navigator.userAgent),
-}
-
 export default {
-  name: 'campaign-recommend',
+  name: 'CampaignRecommend',
   props: {
     requestCount: {
-      type: Number
+      type: Number,
+      required: true
     },
     user: {
-      type: Object
+      type: Object,
+      required: true
     },
   },
   computed: {
@@ -109,6 +145,7 @@ export default {
       if (this.user) {
         return `${this.user.first_name} ${this.user.last_name}`
       }
+      return ''
     },
     socialUrl () {
       let url = document.location.href
