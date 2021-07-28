@@ -430,7 +430,7 @@ export default {
 .fleisch-form-background {
   padding: 2rem 0;
   margin-bottom: 1rem;
-  background-image: url('/static/campaign/img/fleisch-backdrop.jpg');
+  background-image: url('../../img/fleisch-backdrop.jpg');
   background-size: cover;
 }
 
