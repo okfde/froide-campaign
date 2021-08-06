@@ -221,9 +221,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         request = context.get('request')
         context = super().render(context, instance, placeholder)
-        config = {
-            'viewerUrl': static('filingcabinet/viewer/web/viewer.html')
-        }
+        config = {}
         context.update({
             'questionaire': instance.questionaire.id,
             'description': instance.questionaire.description,

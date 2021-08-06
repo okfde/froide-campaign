@@ -86,7 +86,8 @@ export default {
       return date.join('.')
     },
     pdfViewerUrl () {
-      return `${this.config.viewerUrl}?file=${encodeURIComponent(this.attachment.file_url)}`
+      // embed PDF file directly into iframe
+      return this.attachment.file_url
     },
     attachmentRedactionUrl () {
         return `/anfrage/${this.request.slug}/redact/${this.attachment.id}/`
