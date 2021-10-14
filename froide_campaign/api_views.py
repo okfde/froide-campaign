@@ -221,8 +221,10 @@ class InformationObjectViewSet(mixins.CreateModelMixin,
         }
 
         data = provider.search(**filters)
-        random_data = random.choices(data, k=self.RANDOM_COUNT)
-        return Response(random_data)
+        if data:
+            random_data = random.choices(data, k=self.RANDOM_COUNT)
+            return Response(random_data)
+        return Response(data)
 
     @action(detail=False, methods=['get'])
     def search(self, request):
