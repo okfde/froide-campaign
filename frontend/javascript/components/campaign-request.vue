@@ -1,9 +1,16 @@
 <template>
-  <div id="campaign-request" ref="campaignRequest" class="container mt-5 mb-5">
+  <div
+    id="campaign-request"
+    ref="campaignRequest"
+    class="container mt-5 mb-5"
+  >
     <div class="row">
       <div class="col-12">
-        <div v-if="fetching" class="loading">
-          <campaign-loader></campaign-loader>
+        <div
+          v-if="fetching"
+          class="loading"
+        >
+          <campaign-loader />
         </div>
         <campaign-recommend
           v-else-if="showMaxRequestWarning"
@@ -12,13 +19,19 @@
           @close="$emit('close')"
         />
         <template v-else>
-            <button class="btn btn-sm btn-light" @click="$emit('close')"> &lt; {{ messages.back }}</button>
+          <button
+            class="btn btn-sm btn-light"
+            @click="$emit('close')"
+          >
+            &lt; {{ messages.back }}
+          </button>
           <div class="row justify-content-md-end mt-5">
-            <campaign-choose-publicbody v-if="!fetching && publicbodiesOptions.length > 1"
-            :publicbodies="publicbodiesOptions"
-            :publicbody="publicbody"
-            @publicBodyChanged="updatePublicBody"
-            ></campaign-choose-publicbody>
+            <campaign-choose-publicbody
+              v-if="!fetching && publicbodiesOptions.length > 1"
+              :publicbodies="publicbodiesOptions"
+              :publicbody="publicbody"
+              @publicBodyChanged="updatePublicBody"
+            />
           </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
@@ -26,13 +39,41 @@
               zurück
             </button>
           </template> -->
-          <form method="post" @submit="formSubmit" :action="config.url.makeRequest" target="_blank">
-            <input type="hidden" name="csrfmiddlewaretoken" :value="csrfToken"/>
-            <input type="hidden" name="redirect_url" v-model="params.redirect_url"/>
-            <input type="hidden" name="reference" v-model="params.ref"/>
-            <input type="hidden" name="public" value="1"/>
-            <input type="hidden" v-for="k in hideParams" :key="k" :name="k" value="1"/>
-            <request-form v-if="!fetching"
+          <form
+            method="post"
+            :action="config.url.makeRequest"
+            target="_blank"
+            @submit="formSubmit"
+          >
+            <input
+              type="hidden"
+              name="csrfmiddlewaretoken"
+              :value="csrfToken"
+            >
+            <input
+              v-model="params.redirect_url"
+              type="hidden"
+              name="redirect_url"
+            >
+            <input
+              v-model="params.ref"
+              type="hidden"
+              name="reference"
+            >
+            <input
+              type="hidden"
+              name="public"
+              value="1"
+            >
+            <input
+              v-for="k in hideParams"
+              :key="k"
+              type="hidden"
+              :name="k"
+              value="1"
+            >
+            <request-form
+              v-if="!fetching"
               :publicbodies="[publicbody]"
               :request-form="requestForm"
               :user="userInfo"
@@ -40,14 +81,14 @@
               :user-form="userForm"
               :initial-subject="subject"
               :initial-body="body"
-              :show-draft="false"
-              :hide-publicbody-chooser="true"
-              :hide-full-text="true"
-              :hide-editing="true"
+              :show-draft="!hideParams.includes('hide_draft')"
+              :hide-publicbody-chooser="hideParams.includes('hide_publicbody')"
+              :hide-full-text="hideParams.includes('hide_full_text')"
+              :hide-editing="hideParams.includes('hide_editing')"
               :law-type="lawType"
               :use-pseudonym="false"
               :config="config"
-            ></request-form>
+            />
             <user-registration
               :form="userForm"
               :config="config"
@@ -55,37 +96,68 @@
               :default-law="defaultLaw"
               :address-help-text="addressHelpText"
               :address-required="true"
-            ></user-registration>
-            <user-terms v-if="!userInfo"
+            />
+            <user-terms
+              v-if="!userInfo"
               :form="userForm"
-            ></user-terms>
+            />
             <div class="row">
               <div class="col-md-12">
                 <div class="card mb-3">
                   <div class="card-body">
-                    <div v-if="!hideNewsletterCheckbox" class="form-group row">
+                    <div
+                      v-if="!hideNewsletterCheckbox"
+                      class="form-group row"
+                    >
                       <div class="col-lg-9">
                         <div class="form-check">
                           <label class="form-check-label">
-                            <input type="checkbox" name="subscribe" id="id_subscribe" class="form-check-input" :value="userHasSubscription" v-model="userHasSubscription">
-                            <span v-if="this.subscribeText">{{ this.subscribeText }}</span>
+                            <input
+                              id="id_subscribe"
+                              v-model="userHasSubscription"
+                              type="checkbox"
+                              name="subscribe"
+                              class="form-check-input"
+                              :value="userHasSubscription"
+                            >
+                            <span v-if="subscribeText">{{ subscribeText }}</span>
                             <span v-else>Bitte senden Sie mir Informationen zu dieser Kampagne per E-mail</span>
                           </label>
                         </div>
                       </div>
                     </div>
-                    <p v-if="this.extraText" v-html="this.extraText" class="mb-0"></p>
+                    <p
+                      v-if="extraText"
+                      class="mb-0"
+                      v-html="extraText"
+                    />
                   </div>
                 </div>
               </div>
             </div>
             <div class="text-right">
-              <button v-if="buttonText" type="submit" class="btn btn-lg btn-success" :disabled="submitting">
-                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-                {{ this.buttonText }}
+              <button
+                v-if="buttonText"
+                type="submit"
+                class="btn btn-lg btn-success"
+                :disabled="submitting"
+              >
+                <i
+                  class="fa fa-angle-double-right"
+                  aria-hidden="true"
+                />
+                {{ buttonText }}
               </button>
-              <button v-else type="submit" class="btn btn-lg btn-success" :disabled="submitting">
-                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+              <button
+                v-else
+                type="submit"
+                class="btn btn-lg btn-success"
+                :disabled="submitting"
+              >
+                <i
+                  class="fa fa-angle-double-right"
+                  aria-hidden="true"
+                />
                 {{ messages.sendRequest }}
               </button>
             </div>
@@ -110,11 +182,8 @@ import CampaignDetailMixin from '../lib/detailmixin'
 import CampaignItemMixin from '../lib/mixin.js'
 import {postData} from '../lib/utils.js'
 
-const MAX_REQUEST_COUNT = 3
-
 export default {
-  name: 'campaign-request',
-  mixins: [CampaignDetailMixin, CampaignItemMixin],
+  name: 'CampaignRequest',
   components: {
     RequestForm,
     CampaignLoader,
@@ -123,6 +192,7 @@ export default {
     CampaignChoosePublicbody,
     CampaignRecommend
   },
+  mixins: [CampaignDetailMixin, CampaignItemMixin],
   props: {
     buttonText: {
       type: String
@@ -181,12 +251,6 @@ export default {
     localRequestCount: {
       type: Number,
       default: 0
-    }
-  },
-  mounted () {
-    this.$refs.campaignRequest.scrollIntoView(true)
-    if (!this.data.full) {
-      this.getDetail(this.data, this.campaignId)
     }
   },
   data () {
@@ -252,6 +316,12 @@ export default {
     },
     defaultLaw () {
       return selectBestLaw(this.publicbody.laws, this.lawType)
+    }
+  },
+  mounted () {
+    this.$refs.campaignRequest.scrollIntoView(true)
+    if (!this.data.full) {
+      this.getDetail(this.data, this.campaignId)
     }
   },
   methods: {
