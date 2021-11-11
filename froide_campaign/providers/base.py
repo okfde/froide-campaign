@@ -210,7 +210,10 @@ class BaseProvider:
         return self._get_publicbody(obj)
 
     def get_publicbodies(self, ident):
-        return [self.get_publicbody(ident)]
+        pb = self.get_publicbody(ident)
+        if pb:
+            return [pb]
+        return []
 
     def _get_publicbody(self, obj):
         return obj.publicbody
