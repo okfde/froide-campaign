@@ -101,10 +101,13 @@ class CSVImporter(object):
             pb_id = line.pop('publicbody_id')
             if pb_id:
                 if pb_id not in self.pb_cache:
-                    self.pb_cache[pb_id] = PublicBody.objects.get(
-                        id=pb_id
-                    )
-                pb = self.pb_cache[pb_id]
+                    try:
+                        self.pb_cache[pb_id] = PublicBody.objects.get(
+                            id=pb_id
+                        )
+                        pb = self.pb_cache[pb_id]
+                    except PublicBody.DoesNotExist:
+                        pass
         ordering = line.pop('ordering', '')
         point = None
         if 'lat' in line and 'lng' in line:
