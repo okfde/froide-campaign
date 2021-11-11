@@ -264,11 +264,16 @@ class BaseProvider:
             query['redirect_url'] = self.kwargs['redirect_url'].encode()
 
         hide_features = [
-            'hide_public', 'hide_full_text', 'hide_similar',
-            'hide_draft', 'hide_editing'
+            'public', 'full_text', 'similar',
+            'draft', 'editing'
         ]
         if publicbody is not None:
-            hide_features.append('hide_publicbody')
+            hide_features.append('publicbody')
+
+        hide_features = [
+            'hide_{}'.format(x) for x in hide_features
+            if not self.kwargs.get('show_{}'.format(x))
+        ]
 
         query.update({f: b'1' for f in hide_features})
         query = urlencode(query, quote_via=quote)
