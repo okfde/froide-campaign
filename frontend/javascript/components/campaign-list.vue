@@ -19,6 +19,7 @@
       :publicbodiesOptions="publicbodies"
       :localRequestCount="localRequestCount"
       :maxRequestsPerUser="maxRequestsPerUser"
+      :addressRequired="settings.addressRequired"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"

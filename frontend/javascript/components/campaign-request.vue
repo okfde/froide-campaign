@@ -95,7 +95,7 @@
               :user="userInfo"
               :default-law="defaultLaw"
               :address-help-text="addressHelpText"
-              :address-required="true"
+              :address-required="addressRequired"
             />
             <user-terms
               v-if="!userInfo"
@@ -253,6 +253,10 @@ export default {
     localRequestCount: {
       type: Number,
       default: 0
+    },
+    addressRequired: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
