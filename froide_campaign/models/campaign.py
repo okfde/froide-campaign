@@ -298,7 +298,7 @@ class InformationObject(TranslatableModel):
     documents = models.ManyToManyField(FoiAttachment, blank=True)
 
     search_text = models.TextField(blank=True)
-    search_vector = SearchVectorField(default='')
+    search_vector = SearchVectorField(default='', editable=False)
 
     address = models.TextField(_("Address"), blank=True)
     geo = gis_models.PointField(null=True, blank=True, geography=True)
