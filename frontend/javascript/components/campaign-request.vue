@@ -340,26 +340,8 @@ export default {
     formSubmit () {
       this.submitting = true
       window.setTimeout(() => {
-        let email
-        let inputs = document.getElementsByTagName('input')
-
-        for(let i = 0; i < inputs.length; i++) {
-          if(inputs[i].name == 'user_email') {
-            email = inputs[i].value
-          }
-        }
-        postData('/api/v1/campaigninformationobject/subscribe/', {
-          subscribe: this.userHasSubscription,
-          campaign: this.campaignId,
-          email: email
-        }, this.$root.csrfToken).then((data) => {
-          if (data.error) {
-            console.warn(data.message)
-            this.error = true
-          }
-          this.$emit('requestmade', this.data)
-          this.$emit('close')
-        })
+        this.$emit('requestmade', this.data)
+        this.$emit('close')
       }, 300)
     }
   }
