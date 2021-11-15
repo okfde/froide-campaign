@@ -88,12 +88,7 @@ class CampaignPlugin(CMSPluginBase):
     def get_map_config(self, request, instance):
         city = self.get_city_from_request(request)
         campaign_id = instance.campaign.id
-        law_type = None
 
-        try:
-            law_type = instance.campaign.provider_kwargs.get('law_type')
-        except AttributeError:
-            pass
         add_location_allowed = instance.campaign.get_provider().CREATE_ALLOWED
         plugin_settings = instance.settings
         request_extra_text = instance.request_extra_text
@@ -107,7 +102,7 @@ class CampaignPlugin(CMSPluginBase):
         plugin_settings.update({
             'city': city or {},
             'campaignId': campaign_id,
-            'lawType': law_type,
+            'lawType': instance.campaign.provider_kwargs.get('lawType'),
             'addLocationAllowed': add_location_allowed,
             'requestExtraText': request_extra_text,
             'hasSubscription': has_subscription

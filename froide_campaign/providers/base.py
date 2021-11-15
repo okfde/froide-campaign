@@ -257,8 +257,8 @@ class BaseProvider:
             'body': body,
             'ref': ref
         }
-        if self.kwargs.get('law_type'):
-            query['law_type'] = self.kwargs['law_type'].encode()
+        if self.kwargs.get('lawType'):
+            query['law_type'] = self.kwargs['lawType'].encode()
 
         if self.kwargs.get('redirect_url'):
             query['redirect_url'] = self.kwargs['redirect_url'].encode()
