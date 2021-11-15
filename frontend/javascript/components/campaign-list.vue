@@ -1,65 +1,78 @@
 <template>
   <div :class="{ 'mx-n3': settings.twoColumns }">
-    <campaign-request v-if="showRequestForm"
+    <campaign-request
+      v-if="showRequestForm"
       :config="requestConfig"
-      :buttonText="config.button_text"
+      :button-text="config.button_text"
       :request-form="requestForm"
       :user-info="user"
       :user-form="userForm"
       :data="showRequestForm"
       :current-url="''"
-      :campaignId="config.campaignId"
-      :lawType="config.lawType"
-      :extraText="config.requestExtraText"
-      :hideNewsletterCheckbox="hideNewsletterCheckbox"
-      :subscribeText="config.subscribe_text"
-      :hasSubscription="config.hasSubscription"
+      :campaign-id="config.campaignId"
+      :law-type="config.lawType"
+      :extra-text="config.requestExtraText"
+      :hide-newsletter-checkbox="hideNewsletterCheckbox"
+      :subscribe-text="config.subscribe_text"
+      :has-subscription="config.hasSubscription"
       :publicbody="publicbody"
       :publicbodies="[publicbody]"
-      :publicbodiesOptions="publicbodies"
-      :localRequestCount="localRequestCount"
-      :maxRequestsPerUser="maxRequestsPerUser"
-      :addressRequired="settings.addressRequired"
-      :privateRequests="config.privateRequests"
+      :publicbodies-options="publicbodies"
+      :local-request-count="localRequestCount"
+      :max-requests-per-user="maxRequestsPerUser"
+      :address-required="settings.addressRequired"
+      :private-requests="config.privateRequests"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"
       @tokenupdated="tokenUpdated"
       @close="requestFormClosed"
-    ></campaign-request>
+    />
 
     <div v-show="!showRequestForm">
       <div
-        v-if="!this.settings.input_field"
-        class="container mx-auto"
+        v-if="!settings.input_field"
         ref="searchTop"
+        class="container mx-auto"
         :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
       >
         <h5>
           Filter
         </h5>
         <input
-          type="search"
           v-model="search"
-          @keyup="searchObjects"
+          type="search"
           :placeholder="i18n.search"
           class="form-control mb-3"
-        />
+          @keyup="searchObjects"
+        >
       </div>
 
-      <div class="fleisch-form-background" v-if="this.settings.input_field == 'topf-secret-fleisch'">
+      <div
+        v-if="settings.input_field == 'topf-secret-fleisch'"
+        class="fleisch-form-background"
+      >
         <div class="container">
           <div class="col-md-5 mx-auto">
             <div
               class="fleisch-form-container embed-responsive embed-responsive-21by9"
             >
               <div class="fleisch-form shadow">
-                <p class="h4 font-weight-bolder">DE</p>
+                <p class="h4 font-weight-bolder">
+                  DE
+                </p>
                 <div class="input-group">
-                  <input v-model="search" @keyup="searchObjects" placeholder="BY 1234" class="form-control text-center h4"/>
+                  <input
+                    v-model="search"
+                    placeholder="BY 1234"
+                    class="form-control text-center h4"
+                    @keyup="searchObjects"
+                  >
                 </div>
-                <p class="h4 font-weight-bolder">EG</p>
+                <p class="h4 font-weight-bolder">
+                  EG
+                </p>
               </div>
             </div>
           </div>
@@ -70,7 +83,7 @@
         class="container mx-auto mb-3"
         :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
       >
-        <div v-if="!this.settings.hide_status_filter">
+        <div v-if="!settings.hide_status_filter">
           <CampaignListTag
             v-for="res in resolutions"
             :key="res"
@@ -78,11 +91,10 @@
             :status="res"
             @click="setResolutionFilter(res)"
           >
-
             {{ i18n.resolutions[res] }}
           </CampaignListTag>
         </div>
-        <div v-if="!this.settings.hide_tag_filters">
+        <div v-if="!settings.hide_tag_filters">
           <CampaignListTag
             v-for="category in config.categories"
             :key="category.id"
@@ -103,8 +115,8 @@
             v-for="object in objects"
             :key="object.ident"
             :object="object"
-            :currentCategory="currentCategory"
-            :allowMultipleRequests="allowMultipleRequests"
+            :current-category="currentCategory"
+            :allow-multiple-requests="allowMultipleRequests"
             :language="language"
             class="list-item"
             :class="[settings.twoColumns ? 'col-md-6 px-2' : 'w-100']"
@@ -115,36 +127,44 @@
           />
 
           <div
-            class="text-center my-5 py-5 w-100"
             v-if="!loading && hasSearched && objects.length === 0"
             key="noResults"
+            class="text-center my-5 py-5 w-100"
           >
-            <p class="text-secondary" v-html="i18n.noResults" />
+            <p
+              class="text-secondary"
+              v-html="i18n.noResults"
+            />
           </div>
           <div
-            class="text-center my-5 py-5 w-100"
             v-if="loading"
             key="loading"
+            class="text-center my-5 py-5 w-100"
           >
-            <div class="spinner-border" role="status">
+            <div
+              class="spinner-border"
+              role="status"
+            >
               <span class="sr-only">Loading...</span>
             </div>
           </div>
         </transition-group>
         <div
-          class="row justify-content-center mb-5"
           v-if="!loading && (nextUrl || lastSearchWasRandom)"
+          class="row justify-content-center mb-5"
         >
-            <button @click="fetch" class="btn btn-light">
-              <template v-if="nextUrl">
-                {{ i18n.loadMore }}
-              </template>
-              <template v-else>
-                {{ i18n.loadRandom }}
-              </template>
-            </button>
+          <button
+            class="btn btn-light"
+            @click="fetch"
+          >
+            <template v-if="nextUrl">
+              {{ i18n.loadMore }}
+            </template>
+            <template v-else>
+              {{ i18n.loadRandom }}
+            </template>
+          </button>
         </div>
-
       </div>
     </div>
   </div>
@@ -162,13 +182,25 @@ import CampaignRequest from './campaign-request'
 import Room from "froide/frontend/javascript/lib/websocket.ts"
 
 export default {
-  name: 'campaign-list',
+  name: 'CampaignList',
   components: { CampaignListTag, CampaignListItem, CampaignRequest },
   props: {
-    config: Object,
-    settings: Object,
-    requestConfig: Object,
-    requestForm: Object,
+    config: {
+      type: Object,
+      required: true
+    },
+    settings: {
+      type: Object,
+      required: true
+    },
+    requestConfig: {
+      type: Object,
+      required: true
+    },
+    requestForm: {
+      type: Object,
+      required: true
+    },
     userInfo: {
       type: Object,
       default: null
@@ -186,7 +218,7 @@ export default {
     this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
     return {
       allowMultipleRequests: this.settings.allow_multiple_requests ? this.settings.allow_multiple_requests: false,
-      alreadyRequested: {},
+      alreadyRequested: new Set(),
       user: this.userInfo,
       hasSearched: false,
       loading: false,
@@ -203,31 +235,6 @@ export default {
       publicbodies: [],
       room: null,
       lastSearch: null
-    }
-  },
-  mounted() {
-    if (!this.settings.show_list_after_search) {
-      this.nextUrl = this.getUrlWithParams(this.baseUrl)
-      this.fetch()
-    }
-    if (this.settings.live) {
-      try {
-        this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
-        this.room.connect()
-          .on('request_made', (event) => {
-            if (this.objects.length === 0) {
-              return
-            }
-            this.objects = this.objects.map(o => {
-              if (o.ident === event.data.ident) {
-                return event.data
-              }
-              return o
-            })
-          })
-      } catch (e) {
-        console.error(e)
-      }
     }
   },
   computed: {
@@ -258,11 +265,33 @@ export default {
       return this.lastSearch && this.lastSearch.indexOf('order=random') !== -1
     },
     localRequestCount () {
-      let count = 0
-      for (let x in this.alreadyRequested) {
-        count += 1
+      return this.alreadyRequested.size
+    }
+  },
+  mounted() {
+    if (!this.settings.show_list_after_search) {
+      this.nextUrl = this.getUrlWithParams(this.baseUrl)
+      this.fetch()
+    }
+    if (this.settings.live) {
+      try {
+        this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
+        this.room.connect()
+          .on('request_made', (event) => {
+            if (this.objects.length === 0) {
+              return
+            }
+            this.objects = this.objects.map(o => {
+              if (o.ident === event.data.ident) {
+                return event.data
+              }
+              return o
+            })
+          })
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e)
       }
-      return count
     }
   },
   methods: {
@@ -285,7 +314,7 @@ export default {
       })
     },
     requestMade (data) {
-      this.alreadyRequested[data.id] = true
+      this.alreadyRequested.add(data.id)
     },
     updatePublicBody (publicbody) {
       this.publicbody = publicbody
@@ -363,6 +392,7 @@ export default {
           this.abortController = null
           this.getFollowers()
       }).catch(e => {
+        // eslint-disable-next-line no-console
         console.warn(`Fetch 1 error: ${e.message}`);
       });
     },
