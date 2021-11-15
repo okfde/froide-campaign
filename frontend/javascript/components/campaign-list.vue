@@ -20,6 +20,7 @@
       :localRequestCount="localRequestCount"
       :maxRequestsPerUser="maxRequestsPerUser"
       :addressRequired="settings.addressRequired"
+      :privateRequests="config.privateRequests"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"

@@ -61,6 +61,7 @@
               name="reference"
             >
             <input
+              v-if="!privateRequests"
               type="hidden"
               name="public"
               value="1"
@@ -256,6 +257,10 @@ export default {
     addressRequired: {
       type: Boolean,
       default: true
+    },
+    privateRequests: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
