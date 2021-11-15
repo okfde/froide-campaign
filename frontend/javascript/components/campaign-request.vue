@@ -182,7 +182,6 @@ import CampaignLoader from './campaign-loader'
 import CampaignRecommend from './campaign-recommend'
 import CampaignDetailMixin from '../lib/detailmixin'
 import CampaignItemMixin from '../lib/mixin.js'
-import {postData} from '../lib/utils.js'
 
 export default {
   name: 'CampaignRequest',
