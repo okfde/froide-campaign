@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from rest_framework import filters
 from rest_framework.compat import distinct
 
+from .models import InformationObject
+
 
 class StatusFilter(filters.BaseFilterBackend):
 
@@ -67,6 +69,15 @@ class CustomSearchFilter(filters.SearchFilter):
         return params.split()
 
     def filter_queryset(self, request, queryset, view):
+        search_fields = self.get_search_fields(view, request)
+        search_terms = self.get_search_terms(request)
+
+        if not search_fields or not search_terms:
+            return queryset
+
+        return InformationObject.objects.search(queryset, ' '.join(search_terms))
+
+    def _orm_filter_queryset(self, request, queryset, view):
         search_fields = self.get_search_fields(view, request)
         search_terms = self.get_search_terms(request)
 
