@@ -73,7 +73,7 @@
             </div>
           </div>
           <div
-            v-if="object.follow"
+            v-if="object.follow && object.follow.can_follow !== false"
             class="col"
           >
             <campaign-follow
