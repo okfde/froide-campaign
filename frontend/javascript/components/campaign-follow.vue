@@ -47,7 +47,7 @@ export default {
       return i18n[document.documentElement.lang];
     },
     canFollow () {
-      return !this.unknown && this.follow.canFollow !== false
+      return !this.unknown && this.follow.can_follow !== false
     },
     follows () {
       return !this.unknown && this.follow.follows === true
