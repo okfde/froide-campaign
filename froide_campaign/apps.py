@@ -13,7 +13,7 @@ class FroideCampaignConfig(AppConfig):
         from .listeners import connect_info_object
 
         from froide.foirequest.models import FoiRequest
-        FoiRequest.request_created.connect(connect_info_object)
+        FoiRequest.request_sent.connect(connect_info_object)
 
         from froide.account.menu import menu_registry, MenuItem
         from froide.account.export import registry
