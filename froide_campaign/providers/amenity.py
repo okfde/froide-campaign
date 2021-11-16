@@ -119,9 +119,6 @@ class AmenityProvider(BaseProvider):
         }
 
     def connect_request(self, ident, sender):
-        if not sender.public:
-            return
-
         try:
             amenity = self.get_by_ident(ident)
         except Amenity.DoesNotExist:

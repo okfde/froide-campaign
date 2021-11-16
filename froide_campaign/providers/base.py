@@ -295,9 +295,6 @@ class BaseProvider:
         if iobj.publicbody != sender.public_body:
             return
 
-        if not sender.public:
-            return
-
         if iobj.foirequest is None:
             iobj.foirequest = sender
 

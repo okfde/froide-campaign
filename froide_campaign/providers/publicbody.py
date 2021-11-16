@@ -84,9 +84,6 @@ class PublicBodyProvider(BaseProvider):
         return self.make_request_url(ident, context, obj)
 
     def connect_request(self, ident, sender):
-        if not sender.public:
-            return
-
         try:
             pb = self.get_by_ident(ident)
         except PublicBody.DoesNotExist:
