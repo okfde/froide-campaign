@@ -1,5 +1,6 @@
 import functools
 import json
+import re
 
 from django.apps import apps
 from django.conf import settings
@@ -11,8 +12,9 @@ from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.search import (SearchVectorField, SearchVector,
-                                            SearchVectorExact, SearchQuery)
+from django.contrib.postgres.search import (
+    SearchVectorField, SearchVector, SearchQuery
+)
 
 from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslatableManager
@@ -25,34 +27,7 @@ from froide.helper.csv_utils import export_csv
 from froide_campaign.storage import OverwriteStorage
 
 
-class SearchVectorStartsWith(SearchVectorExact):
-    """This lookup scans for full text index entries that BEGIN with
-    a given phrase, like:
-    will get translated to
-        ts_query('Foobar:* & Baz:* & Quux:*')
-    """
-    lookup_name = 'startswith'
-
-    def process_rhs(self, qn, connection):
-        if not hasattr(self.rhs, 'resolve_expression'):
-            config = getattr(self.lhs, 'config', None)
-            self.rhs = SearchQuery(self.rhs, config=config)
-        rhs, rhs_params = super(SearchVectorExact, self).process_rhs(
-            qn, connection
-        )
-        rhs = '(to_tsquery(%s::regconfig, %s))'
-        parts = (s.replace("'", '') for s in rhs_params[1].split())
-        rhs_params[1] = ' & '.join("'%s':*" % s for s in parts if s)
-        return rhs, rhs_params
-
-    def as_sql(self, qn, connection):
-        lhs, lhs_params = self.process_lhs(qn, connection)
-        rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
-        return '%s @@ %s' % (lhs, rhs), params
-
-
-SearchVectorField.register_lookup(SearchVectorStartsWith)
+WORD_RE = re.compile(r"^\w+$", re.IGNORECASE)
 
 
 def get_embed_path(instance, filename):
@@ -245,9 +220,18 @@ class InformationObjectManager(TranslatableManager):
         InformationObject.objects.update(search_vector=search_vector)
 
     def search(self, qs, query):
-        if query:
-            query_search = SearchQuery(query, config=self.SEARCH_LANG)
-            qs = qs.filter(search_vector=query_search)
+        if not query:
+            return qs
+        search_queries = []
+        for q in query.split():
+            if WORD_RE.match(q):
+                sq = SearchQuery("{}:*".format(q), search_type="raw", config=self.SEARCH_LANG)
+            else:
+                sq = SearchQuery(q, search_type="plain", config=self.SEARCH_LANG)
+            search_queries.append(sq)
+
+        query_search = functools.reduce(lambda a, b: a & b, search_queries)
+        qs = qs.filter(search_vector=query_search)
         return qs
 
     def export_csv(self, queryset):
