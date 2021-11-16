@@ -7,6 +7,8 @@
       "refused": "Request refused"
     },
     "request": "Request",
+    "requestReserved": "Request in progress...",
+    "requestNotPublic": "Request not public",
     "requestAgain": "Request again",
     "viewRequest": "View request",
     "search": "Search...",
@@ -22,6 +24,8 @@
       "refused": "Anfrage abgelehnt"
     },
     "request": "Anfragen",
+    "requestReserved": "Anfrage wird gestellt...",
+    "requestNotPublic": "Anfrage nicht öffentlich",
     "requestAgain": "Erneut anfragen",
     "viewRequest": "Anfrage ansehen",
     "search": "Suchen...",

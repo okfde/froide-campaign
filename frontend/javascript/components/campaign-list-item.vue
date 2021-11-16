@@ -31,14 +31,28 @@
         </div>
         <div class="row mt-auto">
           <div class="col">
+            <button
+              v-if="isReserved"
+              class="btn btn-disabled"
+              disabled
+            >
+              {{ i18n.requestReserved }}
+            </button>
             <a
-              v-if="hasNoRequest"
-              :href="object.makeRequestURL"
+              v-else-if="hasNoRequest"
+              :href="object.request_url"
               class="btn btn-normal text-white"
               @click.prevent.stop="$emit('startRequest', object)"
             >
               {{ i18n.request }}
             </a>
+            <button
+              v-else-if="!object.public"
+              class="btn btn-disabled"
+              disabled
+            >
+              {{ i18n.requestNotPublic }}
+            </button>
             <div v-else>
               <a
                 :href="'/a/' + object.foirequest"
@@ -50,7 +64,7 @@
               </a>
               <a
                 v-if="allowMultipleRequests"
-                :href="object.makeRequestURL"
+                :href="object.request_url"
                 class="btn btn-link"
                 @click.prevent.stop="$emit('startRequest', object)"
               >
@@ -85,7 +99,15 @@ export default {
     object: Object,
     currentCategory: Number,
     language: String,
-    allowMultipleRequests: Boolean
+    allowMultipleRequests: Boolean,
+    reservations: {
+      type: Map,
+      default: null
+    },
+    clientId: {
+      type: String,
+      default: null
+    }
   },
   computed: {
     i18n() {
@@ -93,6 +115,13 @@ export default {
     },
     hasNoRequest () {
       return this.object.resolution === 'normal'
+    },
+    isReserved () {
+      if (!this.reservations) {
+        return false
+      }
+      const someClientId = this.reservations.get("" + this.object.id)
+      return !!(someClientId && someClientId !== this.clientId)
     }
   }
 };
