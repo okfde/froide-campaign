@@ -32,7 +32,8 @@ def connect_info_object(sender, **kwargs):
 
     provider = campaign.get_provider()
     iobj = provider.connect_request(ident, sender)
-    broadcast_request_made(provider, iobj)
+    if iobj:
+        broadcast_request_made(provider, iobj)
 
 
 def broadcast_request_made(provider, iobj):
