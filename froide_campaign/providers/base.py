@@ -9,6 +9,7 @@ from django.template import Context
 from django.contrib.gis.measure import D
 
 from froide.campaign.utils import connect_foirequest
+from froide.foirequest.models import FoiRequest
 
 from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
@@ -153,30 +154,33 @@ class BaseProvider:
         }
 
         if foirequests and foirequests[obj.ident]:
-            fr, res = self._get_foirequest_info(foirequests[obj.ident])
+            fr, res, public = self._get_foirequest_info(foirequests[obj.ident])
             data.update({
                 'foirequest': fr,
                 'foirequests': foirequests[obj.ident],
-                'resolution': res
+                'resolution': res,
+                'public': public
             })
 
         return data
 
     def _get_foirequest_info(self, frs):
         fr_id, res = frs[0].get('id'), frs[0].get('resolution')
+        public = frs[0].get('public', False)
 
         success_strings = ['successful', 'partially_successful']
         withdrawn_strings = ['user_withdrew_costs', 'user_withdrew']
 
+        resolution = 'pending'
         if res:
             if res in success_strings:
-                return fr_id, 'successful'
+                resolution = 'successful'
             if res == 'refused':
-                return fr_id, 'refused'
+                resolution = 'refused'
             if res in withdrawn_strings:
-                return fr_id, 'user_withdrew'
+                resolution = 'user_withdrew'
 
-        return fr_id, 'pending'
+        return fr_id, resolution, public
 
     def get_foirequests_mapping(self, qs):
         ident_list = self.get_ident_list(qs)
@@ -191,12 +195,15 @@ class BaseProvider:
             ).order_by('-foirequest__first_message')
             .values_list(
                 'informationobject__ident', 'foirequest_id',
-                'foirequest__resolution'
+                'foirequest__resolution', 'foirequest__visibility'
             )
         )
-        for iobj_ident, fr_id, resolution in iterable:
-            mapping[iobj_ident].append({'id': fr_id,
-                                        'resolution': resolution})
+        for iobj_ident, fr_id, resolution, visibility in iterable:
+            mapping[iobj_ident].append({
+                'id': fr_id,
+                'resolution': resolution,
+                'public': visibility == FoiRequest.VISIBILITY.VISIBLE_TO_PUBLIC
+            })
 
         return mapping
 
