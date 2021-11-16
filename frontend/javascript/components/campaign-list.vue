@@ -118,6 +118,8 @@
             :current-category="currentCategory"
             :allow-multiple-requests="allowMultipleRequests"
             :language="language"
+            :reservations="reservations"
+            :client-id="clientId"
             class="list-item"
             :class="[settings.twoColumns ? 'col-md-6 px-2' : 'w-100']"
             @startRequest="startRequest"
@@ -181,6 +183,12 @@ import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
 import Room from "froide/frontend/javascript/lib/websocket.ts"
 
+function uuidv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
 export default {
   name: 'CampaignList',
   components: { CampaignListTag, CampaignListItem, CampaignRequest },
@@ -219,6 +227,7 @@ export default {
     return {
       allowMultipleRequests: this.settings.allow_multiple_requests ? this.settings.allow_multiple_requests: false,
       alreadyRequested: new Set(),
+      reservations: new Map(),
       user: this.userInfo,
       hasSearched: false,
       loading: false,
@@ -268,11 +277,29 @@ export default {
       return this.alreadyRequested.size
     }
   },
+  created() {
+    this.clientId = null
+    try {
+      const key = 'campaign_temp_client_id'
+      const clientId = window.localStorage.getItem(key);
+      if (!clientId) {
+        this.clientId = uuidv4()
+        localStorage.setItem(key, this.clientId);
+      } else {
+        this.clientId = clientId
+      }
+    } catch {
+      // eslint-disable-next-line no-console
+      console.error("Could not access localstorage")
+    }
+
+  },
   mounted() {
     if (!this.settings.show_list_after_search) {
       this.nextUrl = this.getUrlWithParams(this.baseUrl)
       this.fetch()
     }
+    this.reservationTimeout = null
     if (this.settings.live) {
       try {
         this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
@@ -287,6 +314,21 @@ export default {
               }
               return o
             })
+          })
+          .on('reservations', (event) => {
+            if (this.objects.length === 0) {
+              return
+            }
+            this.reservations = new Map()
+            event.reservations.forEach(keyValue => this.reservations.set(keyValue[0], keyValue[1]))
+            if (this.reservationTimeout) {
+              window.clearTimeout(this.reservationTimeout)
+            }
+            this.reservationTimeout = window.setTimeout(() => {
+              this.room.send({
+                "type": "request_reservations"
+              })
+            }, (event.timeout || 5 * 60) * 1000)
           })
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -323,9 +365,33 @@ export default {
       this.$root.csrfToken = token
     },
     startRequest (data) {
+      if (this.clientId) {
+        this.room.send({
+          "type": "reserve",
+          "obj_id": "" + data.id,
+          "client_id": this.clientId
+        })
+      }
       this.showRequestForm = data
     },
     requestFormClosed () {
+      if (this.clientId) {
+        if (this.alreadyRequested.has(this.showRequestForm.id)) {
+          // Request has been sent, reserve item again
+          // until request has come through
+          this.room.send({
+            "type": "reserve",
+            "obj_id": "" + this.showRequestForm.id,
+            "client_id": this.clientId
+          })
+        } else {
+          this.room.send({
+            "type": "unreserve",
+            "obj_id": "" + this.showRequestForm.id,
+            "client_id": this.clientId
+          })
+        }
+      }
       this.showRequestForm = null
     },
     getUrlWithParams (url) {
@@ -404,6 +470,9 @@ export default {
     },
     getFollowers () {
       let requestIds = this.objects.map(m => m.foirequest).filter(x => !!x)
+      if (requestIds.length === 0) {
+        return
+      }
       let requests = requestIds.join(',')
       window.fetch(`/api/v1/following/?request=${requests}`)
         .then((response) => {
