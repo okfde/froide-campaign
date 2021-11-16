@@ -8,6 +8,8 @@ from .models import Campaign
 def connect_info_object(sender, **kwargs):
     reference = kwargs.get('reference')
     if not reference:
+        reference = sender.reference
+    if not reference:
         return
     if not reference.startswith('campaign:'):
         return
