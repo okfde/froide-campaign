@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-19 18:13+0100\n"
-"PO-Revision-Date: 2020-03-19 18:14+0100\n"
+"POT-Creation-Date: 2021-11-17 13:54+0100\n"
+"PO-Revision-Date: 2021-11-17 13:56+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,29 +16,37 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2\n"
+"X-Generator: Poedit 2.3\n"
 
-#: admin.py:33
+#: admin.py:62
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:34
+#: admin.py:63
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:35
+#: admin.py:64
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:55
+#: admin.py:65
+msgid "Has geo"
+msgstr "Hat geographischen Punkt"
+
+#: admin.py:96
+msgid "requests"
+msgstr "Anfragen"
+
+#: admin.py:111 admin.py:265
 msgid "Export to CSV"
 msgstr "Export nach CSV"
 
-#: admin.py:80
+#: admin.py:141
 msgid "Mark requests as successfully resolved"
 msgstr "Markiere Anfrage als erfolgreich abgeschlossen"
 
-#: admin.py:97
+#: admin.py:158
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
@@ -50,51 +58,112 @@ msgstr "Froide Kampagnen-App"
 msgid "My campaigns"
 msgstr "Meine Kampagnen"
 
-#: cms_plugins.py:11 models.py:154
+#: cms_plugins.py:37 cms_plugins.py:57 cms_plugins.py:130 cms_plugins.py:237
+#: cms_plugins.py:280 models/campaign.py:173
 msgid "Campaign"
 msgstr "Kampagne"
 
-#: cms_plugins.py:12
+#: cms_plugins.py:38
 msgid "Campaign Requests"
 msgstr "Kampagnen-Anfragen"
 
-#: models.py:74
+#: cms_plugins.py:58
+msgid "Campaign Map"
+msgstr "Kampagnenkarte"
+
+#: cms_plugins.py:131
+msgid "Campaign Questionaire"
+msgstr "Kampagnenfragebogen"
+
+#: cms_plugins.py:238
+msgid "Campaign List"
+msgstr "Kampagnenliste"
+
+#: cms_plugins.py:281
+msgid "Campaign Progress"
+msgstr "Kampagnenfortschritt"
+
+#: models/campaign.py:45
+msgid "title"
+msgstr ""
+
+#: models/campaign.py:47
+msgid "slug"
+msgstr ""
+
+#: models/campaign.py:48
+msgid "Used to build the category's URL."
+msgstr ""
+
+#: models/campaign.py:50
+msgid "description"
+msgstr ""
+
+#: models/campaign.py:56
+msgid "category"
+msgstr ""
+
+#: models/campaign.py:57 models/campaign.py:156 models/campaign.py:266
+msgid "categories"
+msgstr ""
+
+#: models/campaign.py:73 models/report.py:81
 msgid "User"
 msgstr "Nutzer"
 
-#: models.py:78
+#: models/campaign.py:77
 msgid "Team"
 msgstr "Team"
 
-#: models.py:90
+#: models/campaign.py:89
 msgid "Campaign page"
 msgstr "Kampagnenseite"
 
-#: models.py:91
+#: models/campaign.py:90
 msgid "Campaign pages"
 msgstr "Kampagnenseiten"
 
-#: models.py:93
+#: models/campaign.py:92
 msgid "Can use campaigns"
 msgstr "Ihre Kampagnen"
 
-#: models.py:155
+#: models/campaign.py:174
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models.py:241
+#: models/campaign.py:287
+msgid "Address"
+msgstr ""
+
+#: models/campaign.py:295
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models.py:242
+#: models/campaign.py:296
 msgid "Information objects"
 msgstr "Informationsobjekte"
+
+#: models/report.py:24
+msgid "Text"
+msgstr ""
+
+#: models/report.py:25
+msgid "Choices"
+msgstr ""
+
+#: models/report.py:26
+msgid "Integer"
+msgstr ""
+
+#: models/report.py:39
+msgid "Position"
+msgstr ""
 
 #: templates/admin/froide_campaign/informationobject/change_list.html:10
 msgid "Upload information objects as CSV"
 msgstr "Informationsobjekte als CSV hochladen"
 
-#: templates/froide_campaign/_info_object.html:16 views.py:51
+#: templates/froide_campaign/_info_object.html:16 views.py:70
 msgid "Information already public"
 msgstr "Information schon öffentlich"
 
@@ -114,6 +183,10 @@ msgstr "Anfragen!"
 #: templates/froide_campaign/_info_object_no_foi.html:6
 msgid "Search online"
 msgstr "Dokument suchen"
+
+#: templates/froide_campaign/_questionaire.html:14
+msgid "Save"
+msgstr "Speichern"
 
 #: templates/froide_campaign/campaign.html:27
 #: templates/froide_campaign/campaign.html:28
@@ -203,21 +276,36 @@ msgstr "Ihre Kampagnen"
 msgid "Change"
 msgstr "Ändern"
 
+#: templates/froide_campaign/plugins/campaign_progress.html:4
+msgid "Requests received"
+msgstr "Anfragen erhalten"
+
 #: templates/froide_campaign/plugins/campaign_requests.html:18
 msgid "Go to request"
 msgstr "Zur Anfrage"
 
-#: views.py:48
+#: views.py:67
 msgid "No request yet"
 msgstr "Noch keine Anfrage"
 
-#: views.py:49
+#: views.py:68
 msgid "Pending request"
 msgstr "Anfrage läuft"
 
-#: views.py:50
+#: views.py:69
 msgid "Resolved request"
 msgstr "Anfrage abgeschlossen"
+
+#: views.py:334
+msgid "Thank you, your answers were saved!"
+msgstr "Vielen Dank, Ihre Antworten wurden gespeichert!"
+
+#: views.py:339
+msgid "Please fix the errors in the form!"
+msgstr "Bitte korrigieren Sie die Fehler im Formular!"
+
+#~ msgid "Submit"
+#~ msgstr "Abschicken"
 
 #~ msgid "All"
 #~ msgstr "Alle"
