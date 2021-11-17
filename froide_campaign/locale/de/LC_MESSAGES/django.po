@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-17 13:54+0100\n"
-"PO-Revision-Date: 2021-11-17 13:56+0100\n"
+"POT-Creation-Date: 2021-11-17 20:03+0100\n"
+"PO-Revision-Date: 2021-11-17 20:11+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -18,35 +18,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 2.3\n"
 
-#: admin.py:62
+#: admin.py:77
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:63
+#: admin.py:78
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:64
+#: admin.py:79
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:65
+#: admin.py:80
 msgid "Has geo"
 msgstr "Hat geographischen Punkt"
 
-#: admin.py:96
+#: admin.py:108
 msgid "requests"
 msgstr "Anfragen"
 
-#: admin.py:111 admin.py:265
+#: admin.py:126 admin.py:275
 msgid "Export to CSV"
 msgstr "Export nach CSV"
 
-#: admin.py:141
+#: admin.py:157
 msgid "Mark requests as successfully resolved"
 msgstr "Markiere Anfrage als erfolgreich abgeschlossen"
 
-#: admin.py:158
+#: admin.py:174
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
@@ -83,6 +83,22 @@ msgstr "Kampagnenliste"
 msgid "Campaign Progress"
 msgstr "Kampagnenfortschritt"
 
+#: forms.py:17
+msgid "Yes, this is a new submission."
+msgstr "Ja, ich möchte einen neue Eintrag anlegen."
+
+#: forms.py:18
+msgid "No, update my last submission."
+msgstr "Nein, ich möchte meinen letzten Eintrag anpassen."
+
+#: forms.py:23
+msgid "Is this a new submission?"
+msgstr "Wollen Sie einen neuen Eintrag anlegen?"
+
+#: forms.py:24
+msgid "You have to decide."
+msgstr "Sie müssen sich entscheiden."
+
 #: models/campaign.py:45
 msgid "title"
 msgstr ""
@@ -107,7 +123,7 @@ msgstr ""
 msgid "categories"
 msgstr ""
 
-#: models/campaign.py:73 models/report.py:81
+#: models/campaign.py:73 models/report.py:82
 msgid "User"
 msgstr "Nutzer"
 
@@ -143,19 +159,19 @@ msgstr "Informationsobjekt"
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
-#: models/report.py:24
+#: models/report.py:25
 msgid "Text"
 msgstr ""
 
-#: models/report.py:25
+#: models/report.py:26
 msgid "Choices"
 msgstr ""
 
-#: models/report.py:26
+#: models/report.py:27
 msgid "Integer"
 msgstr ""
 
-#: models/report.py:39
+#: models/report.py:40
 msgid "Position"
 msgstr ""
 
@@ -184,7 +200,26 @@ msgstr "Anfragen!"
 msgid "Search online"
 msgstr "Dokument suchen"
 
-#: templates/froide_campaign/_questionaire.html:14
+#: templates/froide_campaign/_questionaire.html:13
+#, python-format
+msgid ""
+"\n"
+"      You already made a submission.\n"
+"      "
+msgid_plural ""
+"\n"
+"      You already made %(report_count)s submissions.\n"
+"      "
+msgstr[0] ""
+"\n"
+"      Sie haben schon einen Eintrag angelegt.\n"
+"      "
+msgstr[1] ""
+"\n"
+"      Sie haben schon %(report_count)s Einträge angelegt.\n"
+"      "
+
+#: templates/froide_campaign/_questionaire.html:23
 msgid "Save"
 msgstr "Speichern"
 
