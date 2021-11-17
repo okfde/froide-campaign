@@ -10,7 +10,7 @@
   <div>{{ questionaire.description|markdown }}</div>
   {% if report_count %}
     <p>
-      {% blocktranslate with report_count=report_count count report_count %}
+      {% blocktranslate count report_count=report_count %}
       You already made a submission.
       {% plural %}
       You already made {{ report_count }} submissions.
