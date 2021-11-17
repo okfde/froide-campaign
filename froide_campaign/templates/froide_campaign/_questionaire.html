@@ -8,6 +8,15 @@
   {% csrf_token %}
   <h3>{{ questionaire.title }}</h3>
   <div>{{ questionaire.description|markdown }}</div>
+  {% if report_count %}
+    <p>
+      {% blocktranslate with report_count=report_count count report_count %}
+      You already made a submission.
+      {% plural %}
+      You already made {{ report_count }} submissions.
+      {% endblocktranslate %}
+    </p>
+  {% endif %}
   {% render_form form %}
   <p class="text-right">
     <button class="btn btn-primary" type="submit">

@@ -14,6 +14,7 @@ class Questionaire(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    multiple_reports = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -89,7 +90,7 @@ class Report(models.Model):
 
     class Meta:
         get_latest_by = "timestamp"
-        ordering = ["-timestamp"]
+        ordering = ("-timestamp",)
 
     def __str__(self):
         return "{} | {}".format(self.questionaire.title, self.informationsobject.title)

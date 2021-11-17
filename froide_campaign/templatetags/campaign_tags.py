@@ -87,11 +87,12 @@ def render_campaign_questionaire(foirequest):
     if not questionaire:
         return None
 
-    report = Report.objects.filter(
-        questionaire=questionaire, foirequest=foirequest
-    ).first()
+    reports = list(
+        Report.objects.filter(questionaire=questionaire, foirequest=foirequest)
+    )
     initial_data = {}
-    if report:
+    if reports:
+        report = reports[-1]
         initial_data = {
             "field_{}".format(a.question_id): a.text for a in report.answer_set.all()
         }
@@ -101,6 +102,7 @@ def render_campaign_questionaire(foirequest):
     return {
         "questionaire": questionaire,
         "foirequest": foirequest,
+        "report_count": len(reports),
         "iobj": iobj,
         "form": form,
     }
