@@ -39,7 +39,7 @@ class Question(models.Model):
     position = models.SmallIntegerField(_("Position"), blank=True, default=0)
 
     class Meta:
-        ordering = ["questionaire", "position", "id"]
+        ordering = ["position", "id"]
 
     def __str__(self):
         return self.text
