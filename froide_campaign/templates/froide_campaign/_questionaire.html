@@ -1,0 +1,17 @@
+{% load i18n %}
+
+{% load markup %}
+{% load form_helper %}
+
+
+<form method="post" action="{% url 'campaign-add_campaign_report' questionaire_id=questionaire.id iobj_id=iobj.id foirequest_id=foirequest.id %}">
+  {% csrf_token %}
+  <h3>{{ questionaire.title }}</h3>
+  <div>{{ questionaire.description|markdown }}</div>
+  {% render_form form %}
+  <p class="text-right">
+    <button class="btn btn-primary" type="submit">
+      {% translate "Save" %}
+    </button>
+  </p>
+</form>
