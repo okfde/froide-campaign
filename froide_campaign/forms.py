@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.translation import gettext_lazy as _
 
 from .models import Report, Answer
 
@@ -10,20 +9,6 @@ class QuestionaireForm(forms.Form):
 
         super().__init__(*args, **kwargs)
 
-        if self.questionaire.multiple_reports:
-            self.fields["add_new"] = forms.TypedChoiceField(
-                widget=forms.RadioSelect(attrs={"class": "list-unstyled"}),
-                choices=(
-                    (1, _("Yes, this is a new submission.")),
-                    (0, _("No, update my last submission.")),
-                ),
-                coerce=lambda x: bool(int(x)),
-                required=True,
-                initial=1,
-                label=_("Is this a new submission?"),
-                error_messages={"required": _("You have to decide.")},
-            )
-
         for question in self.questionaire.questions.all():
             self.fields[self._fieldname(question)] = question.make_field()
 
@@ -31,7 +16,7 @@ class QuestionaireForm(forms.Form):
         return "field_{}".format(question.id)
 
     def save(self, user, iobj, foirequest):
-        add_new = self.cleaned_data.get("add_new", True)
+        add_new = self.questionaire.multiple_reports
         if add_new:
             report = Report.objects.create(
                 questionaire=self.questionaire,

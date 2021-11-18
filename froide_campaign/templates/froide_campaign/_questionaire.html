@@ -20,7 +20,11 @@
   {% render_form form %}
   <p class="text-right">
     <button class="btn btn-primary" type="submit">
-      {% translate "Save" %}
+      {% if questionaire.multiple_reports %}
+        {% translate "Add entry" %}
+      {% else %}
+        {% translate "Save" %}
+      {% endif %}
     </button>
   </p>
 </form>
