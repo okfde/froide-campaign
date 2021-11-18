@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-17 20:03+0100\n"
-"PO-Revision-Date: 2021-11-17 20:11+0100\n"
+"POT-Creation-Date: 2021-11-18 09:06+0100\n"
+"PO-Revision-Date: 2021-11-18 09:06+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -82,22 +82,6 @@ msgstr "Kampagnenliste"
 #: cms_plugins.py:281
 msgid "Campaign Progress"
 msgstr "Kampagnenfortschritt"
-
-#: forms.py:17
-msgid "Yes, this is a new submission."
-msgstr "Ja, ich möchte einen neue Eintrag anlegen."
-
-#: forms.py:18
-msgid "No, update my last submission."
-msgstr "Nein, ich möchte meinen letzten Eintrag anpassen."
-
-#: forms.py:23
-msgid "Is this a new submission?"
-msgstr "Wollen Sie einen neuen Eintrag anlegen?"
-
-#: forms.py:24
-msgid "You have to decide."
-msgstr "Sie müssen sich entscheiden."
 
 #: models/campaign.py:45
 msgid "title"
@@ -219,7 +203,11 @@ msgstr[1] ""
 "      Sie haben schon %(report_count)s Einträge angelegt.\n"
 "      "
 
-#: templates/froide_campaign/_questionaire.html:23
+#: templates/froide_campaign/_questionaire.html:24
+msgid "Add entry"
+msgstr "Eintrag hinzufügen"
+
+#: templates/froide_campaign/_questionaire.html:26
 msgid "Save"
 msgstr "Speichern"
 
@@ -338,6 +326,18 @@ msgstr "Vielen Dank, Ihre Antworten wurden gespeichert!"
 #: views.py:339
 msgid "Please fix the errors in the form!"
 msgstr "Bitte korrigieren Sie die Fehler im Formular!"
+
+#~ msgid "Yes, this is a new submission."
+#~ msgstr "Ja, ich möchte einen neue Eintrag anlegen."
+
+#~ msgid "No, update my last submission."
+#~ msgstr "Nein, ich möchte meinen letzten Eintrag anpassen."
+
+#~ msgid "Is this a new submission?"
+#~ msgstr "Wollen Sie einen neuen Eintrag anlegen?"
+
+#~ msgid "You have to decide."
+#~ msgstr "Sie müssen sich entscheiden."
 
 #~ msgid "Submit"
 #~ msgstr "Abschicken"
