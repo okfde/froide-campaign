@@ -140,7 +140,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
                  'required': question.is_required,
                  'helptext': question.help_text
                  }
-                for question in instance.questionaire.question_set.all()]
+                for question in instance.questionaire.questions.all()]
 
     def get_answers(self, iobj):
         reports = iobj.reports.all()

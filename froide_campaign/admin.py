@@ -235,7 +235,7 @@ class CampaignReportAdmin(admin.ModelAdmin):
         else:
             q_id = questionaire_ids[0]
             questionaire = Questionaire.objects.get(id=q_id)
-            questions = questionaire.question_set.all()
+            questions = questionaire.questions.all()
 
             content = 'attachment; filename="{}_{}.csv"'.format(
                 questionaire.title, timezone.now()
