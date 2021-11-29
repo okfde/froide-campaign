@@ -20,7 +20,7 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
     resolution = serializers.CharField(required=False)
-    public = serializers.CharField(default=True)
+    public = serializers.BooleanField(default=True)
     context = serializers.DictField(required=False)
     categories = serializers.ListField(required=False)
     featured = serializers.BooleanField(required=False)
