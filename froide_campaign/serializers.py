@@ -56,7 +56,7 @@ class InformationObjectSerializer(serializers.ModelSerializer):
         fields = (
             'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
             'request_url', 'foirequests', 'ident', 'resolution',
-            'id', 'foirequest', 'categories'
+            'id', 'foirequest', 'public', 'categories'
         )
 
     def get_title(self, obj):
