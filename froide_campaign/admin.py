@@ -207,7 +207,7 @@ class AnswerInline(admin.TabularInline):
 
 
 class CampaignReportAdmin(admin.ModelAdmin):
-    raw_id_fields = ("informationsobject",)
+    raw_id_fields = ("informationsobject", "user", "foirequest")
     list_filter = ("questionaire",)
     inlines = [AnswerInline]
 
