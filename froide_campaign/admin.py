@@ -232,45 +232,47 @@ class CampaignReportAdmin(admin.ModelAdmin):
         if len(set(questionaire_ids)) > 1:
             msg = "You can only export reports from the same questionaire"
             self.message_user(request, msg, level=messages.ERROR)
-        else:
-            q_id = questionaire_ids[0]
-            questionaire = Questionaire.objects.get(id=q_id)
-            questions = questionaire.questions.all()
+            return
 
-            content = 'attachment; filename="{}_{}.csv"'.format(
-                questionaire.title, timezone.now()
-            )
+        q_id = questionaire_ids[0]
+        questionaire = Questionaire.objects.get(id=q_id)
+        questions = questionaire.questions.all()
 
-            response = HttpResponse(content_type="text/csv")
-            response["Content-Disposition"] = content
-            writer = csv.writer(response)
+        content = 'attachment; filename="{}_{}.csv"'.format(
+            questionaire.title, timezone.now()
+        )
 
-            header = ["Name", "URL", "Datum", "PLZ", "Bundesland"] + [
-                question.text for question in questions
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = content
+        writer = csv.writer(response)
+
+        header = ["Name", "URL", "Datum", "PLZ", "Bundesland"] + [
+            question.text for question in questions
+        ]
+        writer.writerow(header)
+        for report in queryset:
+            iobject = report.informationsobject
+            zipcode = ""
+            state = ""
+            foirequest = iobject.get_best_foirequest()
+            if iobject.geo:
+                zipcode = self.get_zipcode(iobject.geo)
+                state = self.get_state(iobject.geo)
+            infooject_details = [
+                iobject.title,
+                foirequest.get_absolute_domain_short_url(),
+                foirequest.messages[0].timestamp.date(),
+                zipcode,
+                state,
             ]
-            writer.writerow(header)
-            for report in queryset:
-                iobject = report.informationsobject
-                zipcode = ""
-                foirequest = iobject.get_best_foirequest()
-                if iobject.geo:
-                    zipcode = self.get_zipcode(iobject.geo)
-                    state = self.get_state(iobject.geo)
-                infooject_details = [
-                    iobject.title,
-                    foirequest.get_absolute_domain_short_url(),
-                    foirequest.messages[0].timestamp.date(),
-                    zipcode,
-                    state,
-                ]
-                answer_texts = []
-                for question in questions:
-                    answers = report.answer_set.all()
-                    text = answers.get(question=question).text
-                    answer_texts.append(text)
-                row = infooject_details + answer_texts
-                writer.writerow(row)
-            return response
+            answer_texts = []
+            for question in questions:
+                answers = report.answer_set.all()
+                text = answers.get(question=question).text
+                answer_texts.append(text)
+            row = infooject_details + answer_texts
+            writer.writerow(row)
+        return response
 
     export_csv.short_description = _("Export to CSV")
 
