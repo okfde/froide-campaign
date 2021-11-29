@@ -47,7 +47,7 @@
               {{ i18n.request }}
             </a>
             <button
-              v-else-if="!object.public"
+              v-else-if="object.public === undefined ? false : !object.public"
               class="btn btn-disabled"
               disabled
             >
