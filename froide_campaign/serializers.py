@@ -36,6 +36,7 @@ class CampaignProviderRequestSerializer(serializers.Serializer):
     publicbodies = PublicBodySerializer(many=True, required=False)
     makeRequestURL = serializers.CharField(required=False)
     userRequestCount = serializers.IntegerField(required=False)
+    public = serializers.BooleanField(default=True)
 
 
 class InformationObjectSerializer(serializers.ModelSerializer):
@@ -45,6 +46,7 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     request_url = serializers.SerializerMethodField()
     resolution = serializers.SerializerMethodField()
     foirequest = serializers.SerializerMethodField()
+    public = serializers.SerializerMethodField()
     categories = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     subtitle = serializers.SerializerMethodField()
@@ -79,6 +81,9 @@ class InformationObjectSerializer(serializers.ModelSerializer):
         foirequest = obj.get_best_foirequest()
         if foirequest:
             return foirequest.id
+
+    def get_public(self, obj):
+        return obj.get_public()
 
     def get_resolution(self, obj):
         return obj.get_resolution()

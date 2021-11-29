@@ -362,6 +362,12 @@ class InformationObject(TranslatableModel):
     def get_best_foirequest(self):
         return self.foirequests.all().first()
 
+    def get_public(self):
+        foirequest = self.get_best_foirequest()
+        if foirequest:
+            return foirequest.visibility == FoiRequest.VISIBILITY.VISIBLE_TO_PUBLIC
+        return True
+
     def get_resolution(self):
         success = ['successful', 'partially_successful']
         withdrawn = ['user_withdrew_costs', 'user_withdrew']
