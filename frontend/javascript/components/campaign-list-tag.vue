@@ -3,7 +3,6 @@
     class="flex badge badge-pill badge-light mb-1 mr-1"
     :class="[{ 'badge-dark': active }, status && 'filter-badge-' + status]"
     v-on="$listeners"
-    type="button"
     aria-role="button"
   >
     <slot />
@@ -28,6 +27,7 @@ $refused: #dc3545;
 .badge {
   font-size: 0.8rem;
   font-weight: normal;
+  cursor: pointer;
 }
 
 .filter-badge {
