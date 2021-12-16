@@ -66,6 +66,7 @@ class Question(models.Model):
         except ValueError:
             max_length = 255
         if max_length == 0:
+            max_length = 5000
             widget = forms.Textarea(attrs={"class": "form-control"})
         else:
             widget = forms.TextInput(attrs={"class": "form-control"})
