@@ -316,7 +316,7 @@ class CampaignProgressPlugin(CMSPluginBase):
 
     def get_perc(self, amount, total):
         if amount and amount > 0 and total > 0:
-            perc = round(int(amount / total * 100), 100)
+            perc = min(int(amount / total * 100), 100)
             return perc
         else:
             return 0
@@ -328,7 +328,7 @@ class CampaignProgressPlugin(CMSPluginBase):
         success = self.get_success(instance)
         context['amount'] = self.german_number_display(requests)
         context['percentage'] = self.get_perc(requests - success, total)
-        if requests + success == total:
+        if requests == total:
             # fill progress bar when it should be
             # to avoid rounding errors
             context["percentage_success"] = 100 - context["percentage"]
