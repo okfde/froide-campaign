@@ -19,10 +19,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$normal: #007bff;
-$pending: #ffc107;
-$successful: #28a745;
-$refused: #dc3545;
+
+@import "~froide/frontend/styles/variables.scss";
+
+$normal: $secondary;
+$pending: $primary;
+$successful: $success;
+$refused: $danger;
 
 .badge {
   font-size: 0.8rem;
