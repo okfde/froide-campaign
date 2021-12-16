@@ -61,12 +61,20 @@ class Question(models.Model):
                 help_text=self.help_text,
                 widget=forms.NumberInput(attrs={"class": "form-control"}),
             )
+        try:
+            max_length = int(self.options)
+        except ValueError:
+            max_length = 255
+        if max_length == 0:
+            widget = forms.Textarea(attrs={"class": "form-control"})
+        else:
+            widget = forms.TextInput(attrs={"class": "form-control"})
         return forms.CharField(
             label=self.text,
-            max_length=255,
+            max_length=max_length,
             required=self.is_required,
             help_text=self.help_text,
-            widget=forms.TextInput(attrs={"class": "form-control"}),
+            widget=widget,
         )
 
 
