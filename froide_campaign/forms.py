@@ -35,6 +35,8 @@ class QuestionaireForm(forms.Form):
             )
         for question in self.questionaire.questions.all():
             value = self.cleaned_data[self._fieldname(question)]
+            if value is None:
+                value = ""
             if add_new:
                 Answer.objects.create(report=report, question=question, text=str(value))
             else:
