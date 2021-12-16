@@ -97,7 +97,7 @@ class Report(models.Model):
 
 
 class Answer(models.Model):
-    text = models.CharField(max_length=255)
+    text = models.TextField(blank=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
 
