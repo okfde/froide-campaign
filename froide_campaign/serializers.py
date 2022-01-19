@@ -6,6 +6,7 @@ from .models import InformationObject
 
 
 class CampaignProviderItemSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     ident = serializers.CharField()
     title = serializers.CharField()
     subtitle = serializers.CharField(required=False)
