@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0024_auto_20200824_1614'),
+        ("froide_campaign", "0024_auto_20200824_1614"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaigncmsplugin',
-            name='settings',
-            field=models.JSONField(blank=True, default=dict)
+            model_name="campaigncmsplugin",
+            name="settings",
+            field=models.JSONField(blank=True, default=dict),
         )
     ]

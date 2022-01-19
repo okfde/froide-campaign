@@ -6,14 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foirequest', '0047_auto_20200823_1300'),
-        ('froide_campaign', '0021_campaigncmsplugin'),
+        ("foirequest", "0047_auto_20200823_1300"),
+        ("froide_campaign", "0021_campaigncmsplugin"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='informationobject',
-            name='foirequests',
-            field=models.ManyToManyField(blank=True, related_name='information_objects', to='foirequest.FoiRequest'),
+            model_name="informationobject",
+            name="foirequests",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="information_objects",
+                to="foirequest.FoiRequest",
+            ),
         ),
     ]

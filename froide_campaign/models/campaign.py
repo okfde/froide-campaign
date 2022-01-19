@@ -12,9 +12,7 @@ from django.template import Template, Context
 from django.utils.http import urlquote
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.search import (
-    SearchVectorField, SearchVector, SearchQuery
-)
+from django.contrib.postgres.search import SearchVectorField, SearchVector, SearchQuery
 
 from parler.models import TranslatableModel, TranslatedFields
 from parler.managers import TranslatableManager
@@ -31,30 +29,31 @@ WORD_RE = re.compile(r"^\w+$", re.IGNORECASE)
 
 
 def get_embed_path(instance, filename):
-    return 'campaign/page/embed/{0}/index.html'.format(instance.slug)
+    return "campaign/page/embed/{0}/index.html".format(instance.slug)
 
 
 class CampaignCategoryManager(TranslatableManager):
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('translations')
+        return super().get_queryset().prefetch_related("translations")
 
 
 class CampaignCategory(TranslatableModel):
     translations = TranslatedFields(
-        title=models.CharField(
-            _('title'), max_length=255),
+        title=models.CharField(_("title"), max_length=255),
         slug=models.SlugField(
-            _('slug'), unique=False, max_length=255,
-            help_text=_("Used to build the category's URL.")),
-        description=models.TextField(
-            _('description'), blank=True)
+            _("slug"),
+            unique=False,
+            max_length=255,
+            help_text=_("Used to build the category's URL."),
+        ),
+        description=models.TextField(_("description"), blank=True),
     )
 
     objects = CampaignCategoryManager()
 
     class Meta:
-        verbose_name = _('category')
-        verbose_name_plural = _('categories')
+        verbose_name = _("category")
+        verbose_name_plural = _("categories")
 
     def __str__(self):
         return self.title
@@ -68,40 +67,35 @@ class CampaignPage(models.Model):
     public = models.BooleanField(default=False)
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, null=True,
+        settings.AUTH_USER_MODEL,
+        null=True,
         on_delete=models.SET_NULL,
-        verbose_name=_("User")
+        verbose_name=_("User"),
     )
     team = models.ForeignKey(
-        Team, null=True, blank=True,
-        on_delete=models.SET_NULL, verbose_name=_("Team")
+        Team, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("Team")
     )
 
     settings = models.JSONField(default=dict, blank=True)
     embed = models.FileField(
-        blank=True, upload_to=get_embed_path,
-        storage=OverwriteStorage()
+        blank=True, upload_to=get_embed_path, storage=OverwriteStorage()
     )
 
-    campaigns = models.ManyToManyField('Campaign')
+    campaigns = models.ManyToManyField("Campaign")
 
     class Meta:
-        verbose_name = _('Campaign page')
-        verbose_name_plural = _('Campaign pages')
-        permissions = (
-            ("can_use_campaigns", _("Can use campaigns")),
-        )
+        verbose_name = _("Campaign page")
+        verbose_name_plural = _("Campaign pages")
+        permissions = (("can_use_campaigns", _("Can use campaigns")),)
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('campaign-page', kwargs={'slug': self.slug})
+        return reverse("campaign-page", kwargs={"slug": self.slug})
 
     def get_absolute_domain_embed_url(self):
-        return settings.SITE_URL + reverse('campaign-embed', kwargs={
-            'slug': self.slug
-        })
+        return settings.SITE_URL + reverse("campaign-embed", kwargs={"slug": self.slug})
 
     def get_edit_iframe(self, url=None):
         if url is None:
@@ -111,14 +105,14 @@ class CampaignPage(models.Model):
             'id="froide-campaign-{}" style="width:100%;border:0" '
             'frameborder="0"></iframe>',
             url,
-            str(self.id)
+            str(self.id),
         )
 
     def get_embed_iframe(self):
         if not self.embed:
-            return ''
+            return ""
         url = self.embed.url
-        if not url.startswith('http'):
+        if not url.startswith("http"):
             url = settings.SITE_URL + url
         return self.get_edit_iframe(url)
 
@@ -151,9 +145,10 @@ class Campaign(TranslatableModel):
 
     categories = models.ManyToManyField(
         CampaignCategory,
-        related_name='campaigns',
+        related_name="campaigns",
         blank=True,
-        verbose_name=_('categories'))
+        verbose_name=_("categories"),
+    )
 
     requires_foi = models.BooleanField(default=True)
     paused = models.BooleanField(default=False)
@@ -161,17 +156,15 @@ class Campaign(TranslatableModel):
     search_url = models.CharField(max_length=1024, blank=True)
 
     provider = models.CharField(
-        max_length=40,
-        choices=settings.CAMPAIGN_PROVIDERS,
-        blank=True
+        max_length=40, choices=settings.CAMPAIGN_PROVIDERS, blank=True
     )
     provider_kwargs = models.JSONField(default=dict, blank=True)
 
     objects = CampaignManager()
 
     class Meta:
-        verbose_name = _('Campaign')
-        verbose_name_plural = _('Campaigns')
+        verbose_name = _("Campaign")
+        verbose_name_plural = _("Campaigns")
 
     def __str__(self):
         return self.title
@@ -179,12 +172,12 @@ class Campaign(TranslatableModel):
     def get_description_template(self):
         if self.description:
             return Template(self.description)
-        return Template('{{ title }}')
+        return Template("{{ title }}")
 
     def get_subject_template(self):
         if self.subject_template:
             return Template(self.subject_template)
-        return Template('{{ title }}')
+        return Template("{{ title }}")
 
     def get_template(self):
         return Template(self.template)
@@ -197,18 +190,19 @@ class Campaign(TranslatableModel):
 
 class InformationObjectManager(TranslatableManager):
 
-    SEARCH_LANG = 'simple'
+    SEARCH_LANG = "simple"
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('translations')
+        return super().get_queryset().prefetch_related("translations")
 
     def get_search_vector(self):
         fields = [
-            ('search_text', 'A'),
+            ("search_text", "A"),
         ]
-        return functools.reduce(lambda a, b: a + b, [
-            SearchVector(
-                f, weight=w, config=self.SEARCH_LANG) for f, w in fields])
+        return functools.reduce(
+            lambda a, b: a + b,
+            [SearchVector(f, weight=w, config=self.SEARCH_LANG) for f, w in fields],
+        )
 
     def update_search_index(self, qs=None):
         if qs is None:
@@ -225,7 +219,9 @@ class InformationObjectManager(TranslatableManager):
         search_queries = []
         for q in query.split():
             if WORD_RE.match(q):
-                sq = SearchQuery("{}:*".format(q), search_type="raw", config=self.SEARCH_LANG)
+                sq = SearchQuery(
+                    "{}:*".format(q), search_type="raw", config=self.SEARCH_LANG
+                )
             else:
                 sq = SearchQuery(q, search_type="plain", config=self.SEARCH_LANG)
             search_queries.append(sq)
@@ -236,12 +232,20 @@ class InformationObjectManager(TranslatableManager):
 
     def export_csv(self, queryset):
         fields = [
-            "id", "campaign_id", "ident", "title",
-            "slug", "publicbody_id", "foirequest_id",
-            "foirequest__status", "foirequest__resolution",
-            "foirequest__first_message", "resolved", "context_as_json",
-            ('lat', lambda o: o.get_latitude()),
-            ('lng', lambda o: o.get_longitude()),
+            "id",
+            "campaign_id",
+            "ident",
+            "title",
+            "slug",
+            "publicbody_id",
+            "foirequest_id",
+            "foirequest__status",
+            "foirequest__resolution",
+            "foirequest__first_message",
+            "resolved",
+            "context_as_json",
+            ("lat", lambda o: o.get_latitude()),
+            ("lng", lambda o: o.get_longitude()),
         ]
 
         return export_csv(queryset, fields)
@@ -256,23 +260,26 @@ class InformationObject(TranslatableModel):
 
     translations = TranslatedFields(
         title=models.CharField(max_length=1000),
-        subtitle=models.CharField(max_length=255, blank=True)
+        subtitle=models.CharField(max_length=255, blank=True),
     )
 
     categories = models.ManyToManyField(
         CampaignCategory,
-        related_name='information_objects',
+        related_name="information_objects",
         blank=True,
-        verbose_name=_('categories'))
+        verbose_name=_("categories"),
+    )
 
     context = models.JSONField(blank=True, default=dict)
 
-    publicbody = models.ForeignKey(PublicBody, null=True, blank=True,
-                                   on_delete=models.SET_NULL)
-    foirequest = models.ForeignKey(FoiRequest, null=True, blank=True,
-                                   on_delete=models.SET_NULL)
+    publicbody = models.ForeignKey(
+        PublicBody, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    foirequest = models.ForeignKey(
+        FoiRequest, null=True, blank=True, on_delete=models.SET_NULL
+    )
     foirequests = models.ManyToManyField(
-        FoiRequest, blank=True, related_name='information_objects'
+        FoiRequest, blank=True, related_name="information_objects"
     )
 
     resolved = models.BooleanField(default=False)
@@ -282,7 +289,7 @@ class InformationObject(TranslatableModel):
     documents = models.ManyToManyField(FoiAttachment, blank=True)
 
     search_text = models.TextField(blank=True)
-    search_vector = SearchVectorField(default='', editable=False)
+    search_vector = SearchVectorField(default="", editable=False)
 
     address = models.TextField(_("Address"), blank=True)
     geo = gis_models.PointField(null=True, blank=True, geography=True)
@@ -291,9 +298,9 @@ class InformationObject(TranslatableModel):
     objects = InformationObjectManager()
 
     class Meta:
-        ordering = ('-ordering', 'id')
-        verbose_name = _('Information object')
-        verbose_name_plural = _('Information objects')
+        ordering = ("-ordering", "id")
+        verbose_name = _("Information object")
+        verbose_name_plural = _("Information objects")
 
     def __str__(self):
         return self.title
@@ -302,10 +309,10 @@ class InformationObject(TranslatableModel):
         if language:
             self.set_current_language(language)
         return {
-            'title': self.title,
-            'ident': self.ident,
-            'context': self.context,
-            'publicbody': self.publicbody
+            "title": self.title,
+            "ident": self.ident,
+            "context": self.context,
+            "publicbody": self.publicbody,
         }
 
     @property
@@ -331,28 +338,32 @@ class InformationObject(TranslatableModel):
 
     def get_search_url(self):
         return self.campaign.search_url.format(
-            title=urlquote(self.title),
-            ident=urlquote(self.ident)
+            title=urlquote(self.title), ident=urlquote(self.ident)
         )
 
     def get_search_text(self):
 
-        titles = ' '.join([translation.title
-                          for translation in self.translations.all()])
-        subtitles = ' '.join([translation.subtitle
-                              for translation in self.translations.all()])
-        cat_ids = self.categories.all().values_list('id', flat=True)
-        CategoryTranslation = apps.get_model('froide_campaign',
-                                             'CampaignCategoryTranslation')
-        all_cats = CategoryTranslation.objects.filter(
-            master__in=cat_ids).values_list('title', flat=True)
+        titles = " ".join(
+            [translation.title for translation in self.translations.all()]
+        )
+        subtitles = " ".join(
+            [translation.subtitle for translation in self.translations.all()]
+        )
+        cat_ids = self.categories.all().values_list("id", flat=True)
+        CategoryTranslation = apps.get_model(
+            "froide_campaign", "CampaignCategoryTranslation"
+        )
+        all_cats = CategoryTranslation.objects.filter(master__in=cat_ids).values_list(
+            "title", flat=True
+        )
 
         as_list = [cat for cat in all_cats]
 
-        text = ' '.join([
-            titles, subtitles,
-            self.publicbody.name if self.publicbody else ''
-            ] + as_list + [str(v) for v in self.context.values()]).strip()
+        text = " ".join(
+            [titles, subtitles, self.publicbody.name if self.publicbody else ""]
+            + as_list
+            + [str(v) for v in self.context.values()]
+        ).strip()
         return text
 
     def make_request_url(self):
@@ -369,19 +380,19 @@ class InformationObject(TranslatableModel):
         return True
 
     def get_resolution(self):
-        success = ['successful', 'partially_successful']
-        withdrawn = ['user_withdrew_costs', 'user_withdrew']
+        success = ["successful", "partially_successful"]
+        withdrawn = ["user_withdrew_costs", "user_withdrew"]
 
         foirequest = self.get_best_foirequest()
         if foirequest:
             if foirequest.resolution in success:
-                return 'successful'
-            if foirequest.resolution == 'refused':
-                return 'refused'
+                return "successful"
+            if foirequest.resolution == "refused":
+                return "refused"
             if foirequest.resolution in withdrawn:
-                return 'withdrawn'
-            return 'pending'
-        return 'normal'
+                return "withdrawn"
+            return "pending"
+        return "normal"
 
 
 class CampaignSubscription(models.Model):

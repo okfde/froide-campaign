@@ -13,9 +13,9 @@ class PublicBodyProvider(BaseProvider):
         qs = PublicBody.objects.all()
         filters = {}
         tree_filter = (
-            ('categories', Category),
-            ('classification', Classification),
-            ('regions', GeoRegion)
+            ("categories", Category),
+            ("classification", Classification),
+            ("regions", GeoRegion),
         )
 
         for key, model in tree_filter:
@@ -25,58 +25,54 @@ class PublicBodyProvider(BaseProvider):
                 obj = model.objects.get(id=self.kwargs[key])
             except model.DoesNotExist:
                 continue
-            filters[key + '__in'] = model.get_tree(obj)
+            filters[key + "__in"] = model.get_tree(obj)
 
-        attr_filters = (
-            'jurisdiction_id',
-        )
+        attr_filters = ("jurisdiction_id",)
         for key, model in attr_filters:
             if key not in self.kwargs:
                 continue
             filters[key] = self.kwargs[key]
 
-        return qs.filter(
-            **filters
-        )
+        return qs.filter(**filters)
 
     def filter(self, qs, **filter_kwargs):
-        if filter_kwargs.get('q'):
-            qs = qs.filter(name__contains=filter_kwargs['q'])
+        if filter_kwargs.get("q"):
+            qs = qs.filter(name__contains=filter_kwargs["q"])
         return qs
 
     def get_ident_list(self, qs):
-        return [
-            obj.id for obj in qs
-        ]
+        return [obj.id for obj in qs]
 
     def get_by_ident(self, ident):
         return self.get_queryset().get(id=ident)
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         d = {
-            'ident': obj.id,
-            'request_url': self.get_request_url_redirect(obj.id),
-            'title': obj.name,
-            'description': '',
-            'lat': obj.geo.y if obj.geo else None,
-            'lng': obj.geo.x if obj.geo else None,
-            'foirequest': None,
-            'foirequests': [],
+            "ident": obj.id,
+            "request_url": self.get_request_url_redirect(obj.id),
+            "title": obj.name,
+            "description": "",
+            "lat": obj.geo.y if obj.geo else None,
+            "lng": obj.geo.x if obj.geo else None,
+            "foirequest": None,
+            "foirequests": [],
         }
 
         if foirequests:
-            d.update({
-                'foirequest': first(foirequests[str(obj.id)]),
-                'foirequests': foirequests[str(obj.id)]
-            })
+            d.update(
+                {
+                    "foirequest": first(foirequests[str(obj.id)]),
+                    "foirequests": foirequests[str(obj.id)],
+                }
+            )
         return d
 
     def get_request_url_context(self, obj):
         return {
-            'title': obj.name,
-            'address': obj.address,
-            'contact': obj.contact,
-            'publicbody': obj
+            "title": obj.name,
+            "address": obj.address,
+            "contact": obj.contact,
+            "publicbody": obj,
         }
 
     def get_request_url_with_object(self, ident, obj):
@@ -95,12 +91,12 @@ class PublicBodyProvider(BaseProvider):
             campaign=self.campaign,
             ident=ident,
             defaults=dict(
-                title=context['title'],
-                slug=slugify(context['title']),
+                title=context["title"],
+                slug=slugify(context["title"]),
                 publicbody=sender.public_body,
                 geo=pb.geo,
-                foirequest=sender
-            )
+                foirequest=sender,
+            ),
         )
 
         iobj.foirequests.add(sender)

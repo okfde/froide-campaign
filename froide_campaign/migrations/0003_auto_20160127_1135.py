@@ -7,17 +7,17 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0002_auto_20160123_1454'),
+        ("froide_campaign", "0002_auto_20160123_1454"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='informationobject',
-            options={'ordering': ('-ordering',)},
+            name="informationobject",
+            options={"ordering": ("-ordering",)},
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='description',
+            model_name="campaign",
+            name="description",
             field=models.TextField(blank=True),
         ),
     ]

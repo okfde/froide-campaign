@@ -10,17 +10,25 @@ import froide_campaign.storage
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0016_auto_20180125_1603'),
+        ("froide_campaign", "0016_auto_20180125_1603"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='campaignpage',
-            options={'permissions': (('can_use_campaigns', 'Can use campaigns'),), 'verbose_name': 'Campaign page', 'verbose_name_plural': 'Campaign pages'},
+            name="campaignpage",
+            options={
+                "permissions": (("can_use_campaigns", "Can use campaigns"),),
+                "verbose_name": "Campaign page",
+                "verbose_name_plural": "Campaign pages",
+            },
         ),
         migrations.AlterField(
-            model_name='campaignpage',
-            name='embed',
-            field=models.FileField(blank=True, storage=froide_campaign.storage.OverwriteStorage(), upload_to=froide_campaign.models.get_embed_path),
+            model_name="campaignpage",
+            name="embed",
+            field=models.FileField(
+                blank=True,
+                storage=froide_campaign.storage.OverwriteStorage(),
+                upload_to=froide_campaign.models.get_embed_path,
+            ),
         ),
     ]

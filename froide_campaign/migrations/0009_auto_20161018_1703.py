@@ -15,7 +15,7 @@ def forwards_func(apps, schema_editor):
             title=campaign.title,
             slug=campaign.slug,
             description=campaign.description,
-            public=campaign.public
+            public=campaign.public,
         )
         page.campaigns.add(campaign)
 
@@ -27,7 +27,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0008_campaignpage'),
+        ("froide_campaign", "0008_campaignpage"),
     ]
 
     operations = [

@@ -8,23 +8,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0011_auto_20161018_1918'),
+        ("froide_campaign", "0011_auto_20161018_1918"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='informationobject',
-            name='resolution_link',
+            model_name="informationobject",
+            name="resolution_link",
             field=models.CharField(blank=True, max_length=255),
         ),
         migrations.AddField(
-            model_name='informationobject',
-            name='resolution_text',
+            model_name="informationobject",
+            name="resolution_text",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='informationobject',
-            name='resolved',
+            model_name="informationobject",
+            name="resolved",
             field=models.BooleanField(default=False),
         ),
     ]

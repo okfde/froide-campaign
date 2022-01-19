@@ -11,12 +11,12 @@ class Command(BaseCommand):
     help = "Loads a campaign's objects"
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+        parser.add_argument("filename", type=str)
 
     def handle(self, *args, **options):
         translation.activate(settings.LANGUAGE_CODE)
 
-        filename = options['filename']
+        filename = options["filename"]
 
         importer = CSVImporter()
         with open(filename) as f:

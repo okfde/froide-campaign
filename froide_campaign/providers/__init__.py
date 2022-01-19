@@ -8,7 +8,7 @@ PROVIDER_CLASS_CACHE = {}
 
 
 def get_provider_class(dotted):
-    module, klass = dotted.rsplit('.', 1)
+    module, klass = dotted.rsplit(".", 1)
     module = importlib.import_module(module)
     return getattr(module, klass)
 

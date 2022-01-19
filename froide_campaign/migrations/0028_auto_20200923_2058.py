@@ -8,16 +8,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0027_auto_20200921_1007'),
+        ("froide_campaign", "0027_auto_20200921_1007"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CampaignSubscription',
+            name="CampaignSubscription",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.EmailField(max_length=254)),
-                ('campaign', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='froide_campaign.Campaign')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                (
+                    "campaign",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="froide_campaign.Campaign",
+                    ),
+                ),
             ],
         ),
     ]

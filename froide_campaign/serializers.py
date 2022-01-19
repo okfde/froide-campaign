@@ -14,9 +14,7 @@ class CampaignProviderItemSerializer(serializers.Serializer):
     publicbody_name = serializers.CharField(required=False)
     description = serializers.CharField()
     foirequest = serializers.IntegerField(min_value=0, required=False)
-    foirequests = serializers.ListField(
-        child=serializers.DictField(required=False)
-    )
+    foirequests = serializers.ListField(child=serializers.DictField(required=False))
     lat = serializers.FloatField(required=False)
     lng = serializers.FloatField(required=False)
     resolution = serializers.CharField(required=False)
@@ -40,8 +38,8 @@ class CampaignProviderRequestSerializer(serializers.Serializer):
 
 
 class InformationObjectSerializer(serializers.ModelSerializer):
-    lat = serializers.FloatField(source='get_latitude', required=False)
-    lng = serializers.FloatField(source='get_longitude', required=False)
+    lat = serializers.FloatField(source="get_latitude", required=False)
+    lng = serializers.FloatField(source="get_longitude", required=False)
     ident = serializers.CharField(required=False)
     request_url = serializers.SerializerMethodField()
     resolution = serializers.SerializerMethodField()
@@ -54,24 +52,33 @@ class InformationObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = InformationObject
         fields = (
-            'title', 'subtitle', 'address', 'campaign', 'lat', 'lng',
-            'request_url', 'foirequests', 'ident', 'resolution',
-            'id', 'foirequest', 'public', 'categories'
+            "title",
+            "subtitle",
+            "address",
+            "campaign",
+            "lat",
+            "lng",
+            "request_url",
+            "foirequests",
+            "ident",
+            "resolution",
+            "id",
+            "foirequest",
+            "public",
+            "categories",
         )
 
     def get_title(self, obj):
-        obj.set_current_language(self.context.get('language'))
+        obj.set_current_language(self.context.get("language"))
         return obj.title
 
     def get_subtitle(self, obj):
-        obj.set_current_language(self.context.get('language'))
+        obj.set_current_language(self.context.get("language"))
         return obj.subtitle
 
     def get_categories(self, obj):
-        categories = obj.categories.language(
-            self.context.get('language'))
-        return [{'id': cat.id, 'title': cat.title}
-                for cat in categories]
+        categories = obj.categories.language(self.context.get("language"))
+        return [{"id": cat.id, "title": cat.title} for cat in categories]
 
     def get_request_url(self, obj):
         provider = obj.campaign.get_provider()
@@ -89,7 +96,7 @@ class InformationObjectSerializer(serializers.ModelSerializer):
         return obj.get_resolution()
 
     def create(self, validated_data):
-        title = self.context.get('request').data.get('title')
+        title = self.context.get("request").data.get("title")
         iobj = InformationObject.objects.create(**validated_data)
         iobj.title = title
         iobj.save()

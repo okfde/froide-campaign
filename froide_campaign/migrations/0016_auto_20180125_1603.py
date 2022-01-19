@@ -12,30 +12,45 @@ import froide_campaign.storage
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('team', '0002_auto_20180111_1347'),
+        ("team", "0002_auto_20180111_1347"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('froide_campaign', '0015_campaign_paused'),
+        ("froide_campaign", "0015_campaign_paused"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaignpage',
-            name='embed',
-            field=models.FileField(blank=True, storage=froide_campaign.storage.OverwriteStorage, upload_to=froide_campaign.models.get_embed_path),
+            model_name="campaignpage",
+            name="embed",
+            field=models.FileField(
+                blank=True,
+                storage=froide_campaign.storage.OverwriteStorage,
+                upload_to=froide_campaign.models.get_embed_path,
+            ),
         ),
         migrations.AddField(
-            model_name='campaignpage',
-            name='settings',
+            model_name="campaignpage",
+            name="settings",
             field=models.JSONField(default=dict),
         ),
         migrations.AddField(
-            model_name='campaignpage',
-            name='team',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='team.Team', verbose_name='Team'),
+            model_name="campaignpage",
+            name="team",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="team.Team",
+                verbose_name="Team",
+            ),
         ),
         migrations.AddField(
-            model_name='campaignpage',
-            name='user',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="campaignpage",
+            name="user",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
     ]

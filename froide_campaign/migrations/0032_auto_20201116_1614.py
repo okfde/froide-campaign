@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0031_auto_20201102_1809'),
+        ("froide_campaign", "0031_auto_20201102_1809"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaign',
-            name='tags',
+            model_name="campaign",
+            name="tags",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.AddField(
-            model_name='informationobject',
-            name='tags',
+            model_name="informationobject",
+            name="tags",
             field=models.JSONField(blank=True, default=list),
-        )
+        ),
     ]

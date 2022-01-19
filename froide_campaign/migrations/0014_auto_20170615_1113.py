@@ -9,18 +9,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0013_auto_20170615_1104'),
+        ("froide_campaign", "0013_auto_20170615_1104"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='informationobject',
-            name='search_text',
+            model_name="informationobject",
+            name="search_text",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='informationobject',
-            name='search_vector',
-            field=django.contrib.postgres.search.SearchVectorField(default=''),
+            model_name="informationobject",
+            name="search_vector",
+            field=django.contrib.postgres.search.SearchVectorField(default=""),
         ),
     ]

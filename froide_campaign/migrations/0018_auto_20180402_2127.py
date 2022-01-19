@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0017_auto_20180201_1941'),
+        ("froide_campaign", "0017_auto_20180201_1941"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='campaignpage',
-            name='settings',
+            model_name="campaignpage",
+            name="settings",
             field=models.JSONField(blank=True, default=dict),
         ),
     ]

@@ -8,23 +8,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0007_campaign_subject_template'),
+        ("froide_campaign", "0007_campaign_subject_template"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CampaignPage',
+            name="CampaignPage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255)),
-                ('slug', models.SlugField()),
-                ('description', models.TextField(blank=True)),
-                ('public', models.BooleanField(default=False)),
-                ('campaigns', models.ManyToManyField(to='froide_campaign.Campaign')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255)),
+                ("slug", models.SlugField()),
+                ("description", models.TextField(blank=True)),
+                ("public", models.BooleanField(default=False)),
+                ("campaigns", models.ManyToManyField(to="froide_campaign.Campaign")),
             ],
             options={
-                'verbose_name': 'Campaign page',
-                'verbose_name_plural': 'Campaign pages',
+                "verbose_name": "Campaign page",
+                "verbose_name_plural": "Campaign pages",
             },
         ),
     ]

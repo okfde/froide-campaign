@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0010_campaign_category'),
+        ("froide_campaign", "0010_campaign_category"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='informationobject',
-            name='slug',
+            model_name="informationobject",
+            name="slug",
             field=models.SlugField(max_length=255),
         ),
     ]

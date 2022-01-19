@@ -9,30 +9,47 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foirequest', '0053_alter_foimessage_email_headers'),
+        ("foirequest", "0053_alter_foimessage_email_headers"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('froide_campaign', '0046_auto_20211117_1134'),
+        ("froide_campaign", "0046_auto_20211117_1134"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='report',
-            name='foirequest',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='foirequest.foirequest'),
+            model_name="report",
+            name="foirequest",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="foirequest.foirequest",
+            ),
         ),
         migrations.AlterField(
-            model_name='question',
-            name='questionaire',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='froide_campaign.questionaire'),
+            model_name="question",
+            name="questionaire",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="questions",
+                to="froide_campaign.questionaire",
+            ),
         ),
         migrations.AlterField(
-            model_name='report',
-            name='timestamp',
-            field=models.DateTimeField(blank=True, default=django.utils.timezone.now, null=True),
+            model_name="report",
+            name="timestamp",
+            field=models.DateTimeField(
+                blank=True, default=django.utils.timezone.now, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='report',
-            name='user',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="report",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
     ]

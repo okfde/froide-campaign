@@ -8,21 +8,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0005_auto_20160218_1612'),
+        ("froide_campaign", "0005_auto_20160218_1612"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='campaign',
-            options={'verbose_name': 'Campaign', 'verbose_name_plural': 'Campaigns'},
+            name="campaign",
+            options={"verbose_name": "Campaign", "verbose_name_plural": "Campaigns"},
         ),
         migrations.AlterModelOptions(
-            name='informationobject',
-            options={'ordering': ('-ordering', 'title'), 'verbose_name': 'Information object', 'verbose_name_plural': 'Information objects'},
+            name="informationobject",
+            options={
+                "ordering": ("-ordering", "title"),
+                "verbose_name": "Information object",
+                "verbose_name_plural": "Information objects",
+            },
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='public',
+            model_name="campaign",
+            name="public",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -6,8 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 
 def forwards_func(apps, schema_editor):
-    Campaign = apps.get_model('froide_campaign', 'Campaign')
-    CampaignTranslation = apps.get_model('froide_campaign', 'CampaignTranslation')
+    Campaign = apps.get_model("froide_campaign", "Campaign")
+    CampaignTranslation = apps.get_model("froide_campaign", "CampaignTranslation")
 
     for obj in Campaign.objects.all():
         CampaignTranslation.objects.create(
@@ -22,8 +22,8 @@ def forwards_func(apps, schema_editor):
 
 
 def backwards_func(apps, schema_editor):
-    Campaign = apps.get_model('froide_campaign', 'Campaign')
-    CampaignTranslation = apps.get_model('froide_campaign', 'CampaignTranslation')
+    Campaign = apps.get_model("froide_campaign", "Campaign")
+    CampaignTranslation = apps.get_model("froide_campaign", "CampaignTranslation")
 
     for obj in Campaign.objects.all():
         translation = _get_translation(obj, CampaignTranslation)
@@ -32,7 +32,7 @@ def backwards_func(apps, schema_editor):
         obj._description = translation.description
         obj._subject_template = translation.subject_template
         obj._template = translation.template
-        obj.save()   # Note this only calls Model.save()
+        obj.save()  # Note this only calls Model.save()
 
 
 def _get_translation(object, MyModelTranslation):
@@ -53,7 +53,7 @@ def _get_translation(object, MyModelTranslation):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0041_auto_20210208_1530'),
+        ("froide_campaign", "0041_auto_20210208_1530"),
     ]
 
     operations = [

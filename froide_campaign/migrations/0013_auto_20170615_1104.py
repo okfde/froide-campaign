@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0012_auto_20161020_1243'),
+        ("froide_campaign", "0012_auto_20161020_1243"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='informationobject',
-            name='context',
+            model_name="informationobject",
+            name="context",
             field=models.JSONField(blank=True),
         ),
     ]

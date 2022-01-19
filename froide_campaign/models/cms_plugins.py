@@ -11,8 +11,7 @@ if CMSPlugin is not None:
 
     class CampaignRequestsCMSPlugin(CMSPlugin):
         campaign_page = models.ForeignKey(
-            CampaignPage, related_name='+',
-            on_delete=models.CASCADE
+            CampaignPage, related_name="+", on_delete=models.CASCADE
         )
 
         def __str__(self):
@@ -20,8 +19,7 @@ if CMSPlugin is not None:
 
     class CampaignCMSPlugin(CMSPlugin):
         campaign = models.ForeignKey(
-            Campaign, related_name='+',
-            on_delete=models.CASCADE
+            Campaign, related_name="+", on_delete=models.CASCADE
         )
 
         settings = models.JSONField(default=dict, blank=True)
@@ -32,8 +30,7 @@ if CMSPlugin is not None:
 
     class CampaignProgressCMSPlugin(CMSPlugin):
         campaign = models.ForeignKey(
-            Campaign, related_name='+',
-            on_delete=models.CASCADE
+            Campaign, related_name="+", on_delete=models.CASCADE
         )
 
         count_featured_only = models.BooleanField(default=False)
@@ -43,8 +40,7 @@ if CMSPlugin is not None:
 
     class CampaignQuestionaireCMSPlugin(CMSPlugin):
         questionaire = models.ForeignKey(
-            Questionaire, related_name='+',
-            on_delete=models.CASCADE
+            Questionaire, related_name="+", on_delete=models.CASCADE
         )
 
         def __str__(self):

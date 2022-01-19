@@ -6,18 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0023_fill_foirequests_field'),
+        ("froide_campaign", "0023_fill_foirequests_field"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='campaign',
-            name='provider',
-            field=models.CharField(blank=True, choices=[('', 'froide_campaign.providers.base.BaseProvider')], max_length=40),
+            model_name="campaign",
+            name="provider",
+            field=models.CharField(
+                blank=True,
+                choices=[("", "froide_campaign.providers.base.BaseProvider")],
+                max_length=40,
+            ),
         ),
         migrations.AddField(
-            model_name='campaign',
-            name='provider_kwargs',
+            model_name="campaign",
+            name="provider_kwargs",
             field=models.JSONField(blank=True, default=dict),
         ),
     ]

@@ -7,20 +7,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('cms', '0022_auto_20180620_1551'),
-        ('froide_campaign', '0020_informationobject_geo'),
+        ("cms", "0022_auto_20180620_1551"),
+        ("froide_campaign", "0020_informationobject_geo"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CampaignCMSPlugin',
+            name="CampaignCMSPlugin",
             fields=[
-                ('cmsplugin_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, related_name='froide_campaign_campaigncmsplugin', serialize=False, to='cms.CMSPlugin')),
-                ('campaign', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='froide_campaign.Campaign')),
+                (
+                    "cmsplugin_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        related_name="froide_campaign_campaigncmsplugin",
+                        serialize=False,
+                        to="cms.CMSPlugin",
+                    ),
+                ),
+                (
+                    "campaign",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="+",
+                        to="froide_campaign.Campaign",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
-            bases=('cms.cmsplugin',),
+            bases=("cms.cmsplugin",),
         ),
     ]

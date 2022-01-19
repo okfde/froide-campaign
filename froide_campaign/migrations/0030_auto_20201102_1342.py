@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0029_auto_20201027_1134'),
+        ("froide_campaign", "0029_auto_20201027_1134"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='informationobject',
-            name='subtitle',
+            model_name="informationobject",
+            name="subtitle",
             field=models.CharField(blank=True, max_length=255),
         )
     ]

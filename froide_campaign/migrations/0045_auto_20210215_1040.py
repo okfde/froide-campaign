@@ -7,18 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0044_auto_20210208_1747'),
+        ("froide_campaign", "0044_auto_20210208_1747"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='informationobject',
-            name='ident',
+            model_name="informationobject",
+            name="ident",
             field=models.CharField(db_index=True, max_length=255),
         ),
         migrations.AlterField(
-            model_name='report',
-            name='informationsobject',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reports', to='froide_campaign.informationobject'),
+            model_name="report",
+            name="informationsobject",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="reports",
+                to="froide_campaign.informationobject",
+            ),
         ),
     ]

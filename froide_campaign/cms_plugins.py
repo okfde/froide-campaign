@@ -12,13 +12,14 @@ from froide.foirequest.models.request import Resolution
 from froide.foirequest.models.request import FoiRequest
 from froide.foirequest.views import MakeRequestView
 
-from .models import (CampaignRequestsCMSPlugin,
-                     InformationObject,
-                     CampaignSubscription,
-                     CampaignCMSPlugin,
-                     CampaignQuestionaireCMSPlugin,
-                     CampaignProgressCMSPlugin
-                     )
+from .models import (
+    CampaignRequestsCMSPlugin,
+    InformationObject,
+    CampaignSubscription,
+    CampaignCMSPlugin,
+    CampaignQuestionaireCMSPlugin,
+    CampaignProgressCMSPlugin,
+)
 
 from .providers import BaseProvider
 
@@ -43,12 +44,9 @@ class CampaignRequestsPlugin(CMSPluginBase):
         context = super().render(context, instance, placeholder)
         campaigns = instance.campaign_page.campaigns.all()
         iobjs = InformationObject.objects.filter(
-            campaign__in=campaigns,
-            foirequest__isnull=False
-        ).select_related('foirequest')
-        context.update({
-            'iobjs': iobjs
-        })
+            campaign__in=campaigns, foirequest__isnull=False
+        ).select_related("foirequest")
+        context.update({"iobjs": iobjs})
         return context
 
 
@@ -66,9 +64,9 @@ class CampaignPlugin(CMSPluginBase):
 
         ip = get_client_ip(request)
         if not ip:
-            logger.warning('No IP found on request: %s', request)
+            logger.warning("No IP found on request: %s", request)
             return
-        if ip == '127.0.0.1':
+        if ip == "127.0.0.1":
             # Access via localhost
             return
 
@@ -82,7 +80,7 @@ class CampaignPlugin(CMSPluginBase):
         except Exception as e:
             logger.exception(e)
             return
-        if result and result.get('latitude'):
+        if result and result.get("latitude"):
             return result
 
     def get_map_config(self, request, instance):
@@ -97,31 +95,35 @@ class CampaignPlugin(CMSPluginBase):
         if request.user.is_authenticated:
             email = request.user.email
             has_subscription = CampaignSubscription.objects.filter(
-                email=email, campaign=instance.campaign).exists()
+                email=email, campaign=instance.campaign
+            ).exists()
 
-        plugin_settings.update({
-            'city': city or {},
-            'campaignId': campaign_id,
-            'lawType': instance.campaign.provider_kwargs.get('lawType'),
-            'addLocationAllowed': add_location_allowed,
-            'requestExtraText': request_extra_text,
-            'hasSubscription': has_subscription
-        })
+        plugin_settings.update(
+            {
+                "city": city or {},
+                "campaignId": campaign_id,
+                "lawType": instance.campaign.provider_kwargs.get("lawType"),
+                "addLocationAllowed": add_location_allowed,
+                "requestExtraText": request_extra_text,
+                "hasSubscription": has_subscription,
+            }
+        )
         return plugin_settings
 
     def render(self, context, instance, placeholder):
 
         context = super().render(context, instance, placeholder)
-        request = context.get('request')
+        request = context.get("request")
         fake_make_request_view = MakeRequestView(request=request)
 
-        context.update({
-            'config': json.dumps(self.get_map_config(request, instance)),
-            'request_config': json.dumps(
-                fake_make_request_view.get_js_context()),
-            'request_form': fake_make_request_view.get_form(),
-            'user_form': fake_make_request_view.get_user_form()
-        })
+        context.update(
+            {
+                "config": json.dumps(self.get_map_config(request, instance)),
+                "request_config": json.dumps(fake_make_request_view.get_js_context()),
+                "request_form": fake_make_request_view.get_form(),
+                "user_form": fake_make_request_view.get_user_form(),
+            }
+        )
         return context
 
 
@@ -134,13 +136,16 @@ class CampaignQuestionairePlugin(CMSPluginBase):
     cache = False
 
     def get_questions(self, instance):
-        return [{'text': question.text,
-                 'id': question.id,
-                 'options': question.options.split(','),
-                 'required': question.is_required,
-                 'helptext': question.help_text
-                 }
-                for question in instance.questionaire.questions.all()]
+        return [
+            {
+                "text": question.text,
+                "id": question.id,
+                "options": question.options.split(","),
+                "required": question.is_required,
+                "helptext": question.help_text,
+            }
+            for question in instance.questionaire.questions.all()
+        ]
 
     def get_answers(self, iobj):
         reports = iobj.reports.all()
@@ -151,13 +156,13 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         for answer in answers:
             question = answer.question
             answer_dict = {
-                'questionId': question.id,
-                'question': question.text,
-                'options': question.options.split(','),
-                'required': question.is_required,
-                'answer': answer.text,
-                'helptext': question.help_text,
-                'error': ''
+                "questionId": question.id,
+                "question": question.text,
+                "options": question.options.split(","),
+                "required": question.is_required,
+                "answer": answer.text,
+                "helptext": question.help_text,
+                "error": "",
             }
             answer_list.append(answer_dict)
         return reports[0].id, answer_list
@@ -167,11 +172,10 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         mapping = provider.get_foirequests_mapping(iobjs)
         data = []
         for obj in iobjs:
-            provider_data = provider.get_provider_item_data(
-                obj, foirequests=mapping)
+            provider_data = provider.get_provider_item_data(obj, foirequests=mapping)
             report_id, answers = self.get_answers(obj)
-            provider_data['report'] = report_id
-            provider_data['answers'] = answers
+            provider_data["report"] = report_id
+            provider_data["answers"] = answers
             data.append(provider_data)
 
         return data
@@ -179,55 +183,49 @@ class CampaignQuestionairePlugin(CMSPluginBase):
     def get_list_context(self, context, instance):
         campaign = instance.questionaire.campaign
         iobjs_success = campaign.informationobject_set.filter(
-            reports=None,
-            foirequests__resolution=Resolution.SUCCESSFUL
-        ).select_related('publicbody')
+            reports=None, foirequests__resolution=Resolution.SUCCESSFUL
+        ).select_related("publicbody")
         iobjs_success = iobjs_success.prefetch_related(
-            'reports',
-            'categories', 'categories__translations'
+            "reports", "categories", "categories__translations"
         )
         data = self.get_iobjs_list(instance, iobjs_success)
-        context.update({
-            'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
-        })
+        context.update({"informationobjects": json.dumps(data, cls=DjangoJSONEncoder)})
         return context
 
     def get_object_context(self, context, instance, request_id):
         campaign = instance.questionaire.campaign
         iobjs = campaign.informationobject_set.filter(
             foirequests__resolution=Resolution.SUCCESSFUL
-        ).select_related('publicbody')
-        iobjs = iobjs.prefetch_related(
-            'categories', 'categories__translations'
-        )
+        ).select_related("publicbody")
+        iobjs = iobjs.prefetch_related("categories", "categories__translations")
         try:
             foi_request = FoiRequest.objects.get(id=request_id)
             iobjs_request = iobjs.filter(foirequests=foi_request)
             data = self.get_iobjs_list(instance, iobjs_request)
-            context.update({
-                'informationobjects': json.dumps(data, cls=DjangoJSONEncoder)
-            })
+            context.update(
+                {"informationobjects": json.dumps(data, cls=DjangoJSONEncoder)}
+            )
             return context
 
         except FoiRequest.DoesNotExist:
             return self.get_list_context(context, instance)
 
     def render(self, context, instance, placeholder):
-        request = context.get('request')
+        request = context.get("request")
         context = super().render(context, instance, placeholder)
         config = {}
-        context.update({
-            'questionaire': instance.questionaire.id,
-            'description': instance.questionaire.description,
-            'questions': json.dumps(self.get_questions(instance)),
-            'config': json.dumps(config),
-        })
+        context.update(
+            {
+                "questionaire": instance.questionaire.id,
+                "description": instance.questionaire.description,
+                "questions": json.dumps(self.get_questions(instance)),
+                "config": json.dumps(config),
+            }
+        )
 
-        request_id = request.GET.get('request_id')
+        request_id = request.GET.get("request_id")
         if request_id:
-            return self.get_object_context(context,
-                                           instance,
-                                           request_id)
+            return self.get_object_context(context, instance, request_id)
 
         return self.get_list_context(context, instance)
 
@@ -242,7 +240,7 @@ class CampaignListPlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context = super().render(context, instance, placeholder)
-        request = context.get('request')
+        request = context.get("request")
 
         lang = get_language()
 
@@ -250,28 +248,28 @@ class CampaignListPlugin(CMSPluginBase):
         plugin_settings = instance.settings
 
         categories = campaign.categories.language(lang)
-        categories_dict = [{'id': cat.id, 'title': cat.title}
-                           for cat in categories]
+        categories_dict = [{"id": cat.id, "title": cat.title} for cat in categories]
 
         config = {
-            'campaignId': campaign.id,
-            'categories': categories_dict,
-            'requestExtraText': instance.request_extra_text,
+            "campaignId": campaign.id,
+            "categories": categories_dict,
+            "requestExtraText": instance.request_extra_text,
         }
         # Add provider kwargs to config
         config.update(instance.campaign.provider_kwargs)
 
         make_request_view = MakeRequestView(request=request)
 
-        context.update({
-            'config': json.dumps(config),
-            'settings': json.dumps(plugin_settings),
-            'request_config': json.dumps(
-                make_request_view.get_js_context()),
-            'request_form': make_request_view.get_form(),
-            'user_form': make_request_view.get_user_form(),
-            'language': lang,
-        })
+        context.update(
+            {
+                "config": json.dumps(config),
+                "settings": json.dumps(plugin_settings),
+                "request_config": json.dumps(make_request_view.get_js_context()),
+                "request_form": make_request_view.get_form(),
+                "user_form": make_request_view.get_user_form(),
+                "language": lang,
+            }
+        )
         return context
 
 
@@ -284,35 +282,52 @@ class CampaignProgressPlugin(CMSPluginBase):
     cache = False
 
     def german_number_display(self, number):
-        number = '{0:,}'.format(number)
+        number = "{0:,}".format(number)
         return number.replace(",", "X").replace(".", ",").replace("X", ".")
 
     def get_total(self, instance):
         if not instance.count_featured_only:
             return instance.campaign.get_provider().get_queryset().count()
         else:
-            return instance.campaign.informationobject_set.filter(
-                featured=True).count()
+            return instance.campaign.informationobject_set.filter(featured=True).count()
 
     def get_requests(self, instance):
         if not instance.count_featured_only:
-            return instance.campaign.informationobject_set.filter(
-                foirequests__isnull=False).distinct().count()
+            return (
+                instance.campaign.informationobject_set.filter(
+                    foirequests__isnull=False
+                )
+                .distinct()
+                .count()
+            )
         else:
-            return instance.campaign.informationobject_set.filter(
-                featured=True,
-                foirequests__isnull=False).distinct().count()
+            return (
+                instance.campaign.informationobject_set.filter(
+                    featured=True, foirequests__isnull=False
+                )
+                .distinct()
+                .count()
+            )
 
     def get_success(self, instance):
         if not instance.count_featured_only:
-            return instance.campaign.informationobject_set.filter(
-                foirequests__status='resolved',
-                foirequests__resolution='successful').distinct().count()
+            return (
+                instance.campaign.informationobject_set.filter(
+                    foirequests__status="resolved", foirequests__resolution="successful"
+                )
+                .distinct()
+                .count()
+            )
         else:
-            return instance.campaign.informationobject_set.filter(
-                featured=True,
-                foirequests__status='resolved',
-                foirequests__resolution='successful').distinct().count()
+            return (
+                instance.campaign.informationobject_set.filter(
+                    featured=True,
+                    foirequests__status="resolved",
+                    foirequests__resolution="successful",
+                )
+                .distinct()
+                .count()
+            )
 
     def get_perc(self, amount, total):
         if amount and amount > 0 and total > 0:
@@ -326,13 +341,13 @@ class CampaignProgressPlugin(CMSPluginBase):
         total = self.get_total(instance)
         requests = self.get_requests(instance)
         success = self.get_success(instance)
-        context['amount'] = self.german_number_display(requests)
-        context['percentage'] = self.get_perc(requests - success, total)
+        context["amount"] = self.german_number_display(requests)
+        context["percentage"] = self.get_perc(requests - success, total)
         if requests == total:
             # fill progress bar when it should be
             # to avoid rounding errors
             context["percentage_success"] = 100 - context["percentage"]
         else:
             context["percentage_success"] = self.get_perc(success, total)
-        context['total'] = self.german_number_display(total)
+        context["total"] = self.german_number_display(total)
         return context

@@ -6,28 +6,28 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('froide_campaign', '0042_move_campaign_translation'),
+        ("froide_campaign", "0042_move_campaign_translation"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='campaign',
-            name='_description',
+            model_name="campaign",
+            name="_description",
         ),
         migrations.RemoveField(
-            model_name='campaign',
-            name='_slug',
+            model_name="campaign",
+            name="_slug",
         ),
         migrations.RemoveField(
-            model_name='campaign',
-            name='_subject_template',
+            model_name="campaign",
+            name="_subject_template",
         ),
         migrations.RemoveField(
-            model_name='campaign',
-            name='_template',
+            model_name="campaign",
+            name="_template",
         ),
         migrations.RemoveField(
-            model_name='campaign',
-            name='_title',
+            model_name="campaign",
+            name="_title",
         ),
     ]

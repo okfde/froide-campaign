@@ -6,16 +6,16 @@ from .models import Campaign
 
 
 def connect_info_object(sender, **kwargs):
-    reference = kwargs.get('reference')
+    reference = kwargs.get("reference")
     if not reference:
         reference = sender.reference
     if not reference:
         return
-    if not reference.startswith('campaign:'):
+    if not reference.startswith("campaign:"):
         return
-    namespace, campaign_value = reference.split(':', 1)
+    namespace, campaign_value = reference.split(":", 1)
     try:
-        campaign, ident = campaign_value.split('@', 1)
+        campaign, ident = campaign_value.split("@", 1)
     except (ValueError, IndexError):
         return
 
@@ -41,8 +41,6 @@ def connect_info_object(sender, **kwargs):
 def broadcast_request_made(provider, iobj):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
-        PRESENCE_ROOM.format(provider.campaign.id), {
-            "type": "request_made",
-            "data": provider.get_detail_data(iobj)
-        }
+        PRESENCE_ROOM.format(provider.campaign.id),
+        {"type": "request_made", "data": provider.get_detail_data(iobj)},
     )
