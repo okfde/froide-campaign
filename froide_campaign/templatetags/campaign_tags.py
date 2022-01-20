@@ -91,7 +91,7 @@ def render_campaign_questionaire(foirequest):
         Report.objects.filter(questionaire=questionaire, foirequest=foirequest)
     )
     initial_data = {}
-    if reports:
+    if not questionaire.multiple_reports and reports:
         report = reports[-1]
         initial_data = {
             "field_{}".format(a.question_id): a.text for a in report.answer_set.all()
