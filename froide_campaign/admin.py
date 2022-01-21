@@ -268,7 +268,10 @@ class CampaignReportAdmin(admin.ModelAdmin):
             answer_texts = []
             for question in questions:
                 answers = report.answer_set.all()
-                text = answers.get(question=question).text
+                try:
+                    text = answers.get(question=question).text
+                except Answer.DoesNotExist:
+                    text = ""
                 answer_texts.append(text)
             row = infooject_details + answer_texts
             writer.writerow(row)
