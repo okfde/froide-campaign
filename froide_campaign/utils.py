@@ -6,9 +6,10 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
 
 from froide.publicbody.models import PublicBody
-from django.contrib.sites.shortcuts import get_current_site
+from froide.foirequest.models import FoiRequest
 
 from .models import Campaign, InformationObject, CampaignCategory
 
@@ -72,7 +73,9 @@ class CSVImporter(object):
             campaign = self.campaign_cache[campaign_id]
 
         title = line.pop("title")
-        slug = line.pop("slug", slugify(title))
+        slug = line.pop("slug")
+        if not slug:
+            slug = slugify(title)
         slug = slug[:255]
 
         lookup = {}
@@ -92,19 +95,28 @@ class CSVImporter(object):
             logger.debug("Found %s" % slug)
         except InformationObject.DoesNotExist:
             pass
+
         pb = None
-        if "publicbody_id" in line:
+        if "publicbody_id" in line.get("publicbody_id"):
             pb_id = line.pop("publicbody_id")
-            if pb_id:
-                if pb_id not in self.pb_cache:
-                    try:
-                        self.pb_cache[pb_id] = PublicBody.objects.get(id=pb_id)
-                        pb = self.pb_cache[pb_id]
-                    except PublicBody.DoesNotExist:
-                        pass
+            if pb_id not in self.pb_cache:
+                try:
+                    self.pb_cache[pb_id] = PublicBody.objects.get(id=pb_id)
+                except PublicBody.DoesNotExist:
+                    pass
+            pb = self.pb_cache[pb_id]
+
+        foirequest = None
+        if line.get("foirequest_id"):
+            fr_id = line.pop("foirequest_id")
+            try:
+                foirequest = FoiRequest.objects.get(id=fr_id)
+            except FoiRequest.DoesNotExist:
+                pass
         ordering = line.pop("ordering", "")
         point = None
-        if "lat" in line and "lng" in line:
+
+        if line.get("lat") and line.get("lng"):
             try:
                 lat = float(line.pop("lat"))
                 lng = float(line.pop("lng"))
@@ -120,7 +132,7 @@ class CSVImporter(object):
         if "featured" in line:
             featured = bool(line.pop("featured"))
 
-        if "context_as_json" in line:
+        if line.get("context_as_json"):
             context = line.pop("context_as_json")
             context_json = json.loads(context)
         else:
@@ -136,12 +148,16 @@ class CSVImporter(object):
             iobj.subtitle = subtitle
             iobj.context = context_json
             iobj.featured = featured
+            if foirequest:
+                iobj.foirequest = foirequest
+                iobj.foirequests.add(foirequest)
             iobj.save()
 
             self.add_translations(iobj, line)
             self.add_categories(iobj, line)
 
             return iobj
+
         iobj = InformationObject.objects.create(
             campaign=campaign,
             title=title,
@@ -153,7 +169,10 @@ class CSVImporter(object):
             context=context_json,
             featured=featured,
             geo=point,
+            foirequest=foirequest,
         )
+        if foirequest:
+            iobj.foirequests.add(foirequest)
         self.add_translations(iobj, line)
         self.add_categories(iobj, line)
         return iobj
