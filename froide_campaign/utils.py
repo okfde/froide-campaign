@@ -101,7 +101,7 @@ class CSVImporter(object):
             pass
 
         pb = None
-        if "publicbody_id" in line.get("publicbody_id"):
+        if line.get("publicbody_id"):
             pb_id = line.pop("publicbody_id")
             if pb_id not in self.pb_cache:
                 try:
