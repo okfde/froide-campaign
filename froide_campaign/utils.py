@@ -59,6 +59,10 @@ class CSVImporter(object):
                     iobj.categories.add(cat)
 
     def import_csv_line(self, line):
+        # remove export columns
+        line = {k: v for k, v in line.items() if not k.startswith("foirequest__")}
+        line.pop("resolved", None)
+
         if "campaign" in line:
             campaign_slug = line.pop("campaign")
             if campaign_slug not in self.campaign_cache:
