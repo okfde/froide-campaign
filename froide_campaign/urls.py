@@ -1,6 +1,6 @@
 from django.urls import path
 
-from froide.helper import api_router
+from froide.api import api_router
 
 from .views import (
     index,
