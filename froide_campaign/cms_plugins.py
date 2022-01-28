@@ -20,8 +20,6 @@ from .models import (
     CampaignProgressCMSPlugin,
 )
 
-from .providers import BaseProvider
-
 try:
     from django.contrib.gis.geoip2 import GeoIP2
 except ImportError:
@@ -168,6 +166,8 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         return reports[0].id, answer_list
 
     def get_iobjs_list(self, instance, iobjs):
+        from .providers import BaseProvider
+
         provider = BaseProvider(campaign=instance.questionaire.campaign)
         mapping = provider.get_foirequests_mapping(iobjs)
         data = []
