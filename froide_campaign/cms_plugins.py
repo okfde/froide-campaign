@@ -10,7 +10,6 @@ from cms.plugin_pool import plugin_pool
 
 from froide.foirequest.models.request import Resolution
 from froide.foirequest.models.request import FoiRequest
-from froide.foirequest.views import MakeRequestView
 
 from .models import (
     CampaignRequestsCMSPlugin,
@@ -111,6 +110,7 @@ class CampaignPlugin(CMSPluginBase):
         return plugin_settings
 
     def render(self, context, instance, placeholder):
+        from froide.foirequest.views import MakeRequestView
 
         context = super().render(context, instance, placeholder)
         request = context.get("request")
@@ -239,6 +239,8 @@ class CampaignListPlugin(CMSPluginBase):
     cache = False
 
     def render(self, context, instance, placeholder):
+        from froide.foirequest.views import MakeRequestView
+
         context = super().render(context, instance, placeholder)
         request = context.get("request")
 
