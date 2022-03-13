@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% load follower_tags %}
+{% load follow_tags %}
 
 <tr>
   <td>
@@ -29,7 +29,7 @@
       {% endif %}
 
       {% if object.foirequest and request.user.is_authenticated and request.user != object.foirequest.user %}
-        {% follow_request_form object.foirequest request follow_only=True verbose=False %}
+        {% follow_form "request" object.foirequest follow_only=True verbose=False %}
       {% endif %}
     {% endblock %}
   </td>

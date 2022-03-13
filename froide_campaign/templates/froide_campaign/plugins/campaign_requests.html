@@ -1,4 +1,4 @@
-{% load follower_tags i18n %}
+{% load follow_tags i18n %}
 
 {% for iobj in iobjs %}
 
@@ -10,7 +10,7 @@
 
     {% if iobj.foirequest.user != request.user %}
       <div class="ajax-parent">
-        {% follow_request_form iobj.foirequest request %}
+        {% follow_form "request" iobj.foirequest %}
       </div>
     {% endif %}
 
