@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --ext .js,.vue frontend",
+    "lint": "eslint frontend --ext .js,.ts,.vue",
     "dev": "webpack --watch",
     "build": "NODE_ENV=production webpack"
   },
@@ -23,15 +23,19 @@
   },
   "homepage": "https://github.com/okfde/froide-campaign#readme",
   "devDependencies": {
-    "babel-eslint": "^8.2.3",
-    "eslint": "^4.7.1",
-    "eslint-config-standard": "^11.0.0-beta.0",
-    "eslint-plugin-html": "^6.1.1",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "eslint-plugin-vue": "^7.6.0"
+    "@typescript-eslint/eslint-plugin": "^5.17.0",
+    "eslint": "^7.12.1",
+    "eslint-config-standard-with-typescript": "^21.0.1",
+    "eslint-plugin-html": "^6.2.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-vue": "^8.5.0",
+    "froide": "okfde/froide",
+    "prettier": "^2.6.2",
+    "prettier-config-standard": "^5.0.0",
+    "typescript": "^4.6.3"
   },
   "dependencies": {
     "@turf/bbox": "^6.0.1",
