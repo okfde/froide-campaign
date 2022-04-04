@@ -1,17 +1,16 @@
 import json
 import logging
 
-from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.gis.geos import Point
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.files.base import ContentFile
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.contrib.sites.shortcuts import get_current_site
-
-from froide.publicbody.models import PublicBody
 from froide.foirequest.models import FoiRequest
+from froide.publicbody.models import PublicBody
 
-from .models import Campaign, InformationObject, CampaignCategory
+from .models import Campaign, CampaignCategory, InformationObject
 
 logger = logging.getLogger()
 

@@ -2,34 +2,31 @@ import csv
 import io
 from datetime import timedelta
 
-from django.http import HttpResponse
-from django.contrib import admin
-from django.contrib import messages
+from adminsortable2.admin import SortableInlineAdminMixin
 from django import forms
-from django.shortcuts import redirect
-from django.utils.translation import gettext_lazy as _
 from django.conf.urls import url
-from django.utils import timezone
+from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
-
-from parler.admin import TranslatableAdmin
-from adminsortable2.admin import SortableInlineAdminMixin
-
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from froide.georegion.models import GeoRegion
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
-from froide.georegion.models import GeoRegion
+from parler.admin import TranslatableAdmin
 
 from .models import (
-    CampaignPage,
-    Campaign,
-    InformationObject,
-    CampaignSubscription,
-    Questionaire,
-    Question,
-    Report,
     Answer,
+    Campaign,
     CampaignCategory,
+    CampaignPage,
+    CampaignSubscription,
+    InformationObject,
+    Question,
+    Questionaire,
+    Report,
 )
 from .utils import CSVImporter
 

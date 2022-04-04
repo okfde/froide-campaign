@@ -1,23 +1,20 @@
 import json
 import logging
 
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import get_language
-
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-
-from froide.foirequest.models.request import Resolution
-from froide.foirequest.models.request import FoiRequest
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.translation import get_language
+from django.utils.translation import gettext_lazy as _
+from froide.foirequest.models.request import FoiRequest, Resolution
 
 from .models import (
-    CampaignRequestsCMSPlugin,
-    InformationObject,
-    CampaignSubscription,
     CampaignCMSPlugin,
-    CampaignQuestionaireCMSPlugin,
     CampaignProgressCMSPlugin,
+    CampaignQuestionaireCMSPlugin,
+    CampaignRequestsCMSPlugin,
+    CampaignSubscription,
+    InformationObject,
 )
 
 try:

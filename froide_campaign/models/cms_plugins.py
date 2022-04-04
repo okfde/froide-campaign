@@ -2,7 +2,8 @@ from django.db import models
 
 try:
     from cms.models.pluginmodel import CMSPlugin
-    from .campaign import CampaignPage, Campaign
+
+    from .campaign import Campaign, CampaignPage
     from .report import Questionaire
 except ImportError:
     CMSPlugin = None

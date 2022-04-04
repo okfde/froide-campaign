@@ -1,36 +1,33 @@
+import django_filters
+from django import forms
+from django.contrib import messages
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Count, F
-from django.views.generic import DetailView, ListView
+from django.http import QueryDict
+from django.shortcuts import Http404, get_object_or_404, redirect, render
 from django.urls import reverse
-from django.shortcuts import render, get_object_or_404, Http404, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.decorators.clickjacking import xframe_options_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.http import QueryDict
-from django.contrib import messages
-from django import forms
-
-import django_filters
-from parler.views import TranslatableSlugMixin
-
-from froide.team.forms import AssignTeamForm
-from froide.team.views import AssignTeamView
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.generic import DetailView, ListView
 from froide.campaign.models import Campaign as FroideCampaign
-from froide.foirequest.models.request import FoiRequest
 from froide.foirequest.auth import can_write_foirequest
-
-from froide.helper.cache import cache_anonymous_page
+from froide.foirequest.models.request import FoiRequest
 from froide.helper.auth import (
-    can_read_object,
-    can_manage_object,
     can_access_object,
+    can_manage_object,
+    can_read_object,
     get_read_queryset,
 )
+from froide.helper.cache import cache_anonymous_page
 from froide.helper.utils import render_403
+from froide.team.forms import AssignTeamForm
+from froide.team.views import AssignTeamView
+from parler.views import TranslatableSlugMixin
 
-from .models import CampaignPage, Campaign, InformationObject, Questionaire
 from .forms import QuestionaireForm
+from .models import Campaign, CampaignPage, InformationObject, Questionaire
 from .utils import make_embed
 
 

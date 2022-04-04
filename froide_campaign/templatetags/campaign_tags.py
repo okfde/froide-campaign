@@ -3,12 +3,12 @@ import hashlib
 
 from django import template
 from django.conf import settings
-from django.utils.html import mark_safe
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
+from django.utils.html import mark_safe
 
-from ..models import InformationObject, Questionaire, Report
 from ..forms import QuestionaireForm
+from ..models import InformationObject, Questionaire, Report
 
 register = template.Library()
 

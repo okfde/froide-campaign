@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Report, Answer
+from .models import Answer, Report
 
 
 class QuestionaireForm(forms.Form):
