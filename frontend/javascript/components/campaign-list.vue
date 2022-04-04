@@ -345,7 +345,7 @@ export default {
     },
     startRequest(data) {
       if (this.clientId) {
-        this.room.send({
+        this.room?.send({
           type: 'reserve',
           obj_id: '' + data.id,
           client_id: this.clientId
@@ -358,13 +358,13 @@ export default {
         if (this.alreadyRequested.has(this.showRequestForm.id)) {
           // Request has been sent, reserve item again
           // until request has come through
-          this.room.send({
+          this.room?.send({
             type: 'reserve',
             obj_id: '' + this.showRequestForm.id,
             client_id: this.clientId
           })
         } else {
-          this.room.send({
+          this.room?.send({
             type: 'unreserve',
             obj_id: '' + this.showRequestForm.id,
             client_id: this.clientId
