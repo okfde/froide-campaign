@@ -1,20 +1,17 @@
-import {renderDate, getRequestStatus} from '../lib/utils'
-
-
-var CampaignItemMixin = {
+const CampaignItemMixin = {
   computed: {
-    itemId () {
+    itemId() {
       return this.data.id
     },
-    hasRequests () {
+    hasRequests() {
       return this.data.foirequests.length > 0
     }
   },
   methods: {
-    setDetail () {
+    setDetail() {
       this.$emit('detail', this.data)
     },
-    startRequest () {
+    startRequest() {
       this.$emit('startRequest', this.data)
     }
   }

@@ -1,15 +1,15 @@
 // Bootstrap imports
 
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/reboot";
-@import "bootstrap/scss/type";
-@import "bootstrap/scss/grid";
-@import "bootstrap/scss/forms";
-@import "bootstrap/scss/buttons";
-@import "bootstrap/scss/input-group";
-@import "bootstrap/scss/progress";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/input-group';
+@import 'bootstrap/scss/progress';
 
 body {
   margin: 0;
@@ -37,7 +37,6 @@ body {
   opacity: 0.3;
   pointer-events: none;
 }
-
 
 .more-button {
   margin-top: 2rem;

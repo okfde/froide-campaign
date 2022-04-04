@@ -6,14 +6,12 @@
     <select
       class="form-control form-control-sm"
       id="ichangePublicbodySelect"
-      @change="onChangePublicBody($event)"
-    >
+      @change="onChangePublicBody($event)">
       <option
         v-for="(pb, index) in publicbodies"
         :key="index"
         :value="index"
-        :selected="publicbody.name === pb.name"
-      >
+        :selected="publicbody.name === pb.name">
         {{ pb.name }}
       </option>
     </select>
@@ -22,24 +20,23 @@
 
 <script>
 export default {
-  name: "campaign-choose-publicbody",
+  name: 'campaign-choose-publicbody',
   props: {
     publicbodies: {
-      type: Array,
+      type: Array
     },
     publicbody: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   methods: {
     onChangePublicBody(event) {
-      let value = event.target.value;
-      let publicbody = this.publicbodies[value];
-      this.$emit("publicBodyChanged", publicbody);
-    },
-  },
-};
+      const value = event.target.value
+      const publicbody = this.publicbodies[value]
+      this.$emit('publicBodyChanged', publicbody)
+    }
+  }
+}
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

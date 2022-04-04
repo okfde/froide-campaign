@@ -4,26 +4,21 @@
       <div class="card-body d-flex flex-column">
         <h5>{{ object.title }}</h5>
         <div class="d-flex mt-1">
-          <div
-            v-if="object.subtitle || object.address"
-            class="mb-3"
-          >
+          <div v-if="object.subtitle || object.address" class="mb-3">
             <p class="text-muted mb-0">
               {{ object.subtitle }}
             </p>
-            <small
-              v-if="object.address"
-              class="text-muted"
-            >{{ object.address }}</small>
+            <small v-if="object.address" class="text-muted">{{
+              object.address
+            }}</small>
           </div>
           <div class="ml-auto text-right">
             <h5>
               <CampaignListTag
-                v-for="(category) in object.categories"
+                v-for="category in object.categories"
                 :key="category.id"
                 :active="currentCategory === category.id"
-                @click="$emit('setCategoryFilter', category.id)"
-              >
+                @click="$emit('setCategoryFilter', category.id)">
                 #{{ category.title }}
               </CampaignListTag>
             </h5>
@@ -31,26 +26,20 @@
         </div>
         <div class="row mt-auto">
           <div class="col">
-            <button
-              v-if="isReserved"
-              class="btn btn-disabled"
-              disabled
-            >
+            <button v-if="isReserved" class="btn btn-disabled" disabled>
               {{ i18n.requestReserved }}
             </button>
             <a
               v-else-if="hasNoRequest"
               :href="object.request_url"
               class="btn btn-normal text-white"
-              @click.prevent.stop="$emit('startRequest', object)"
-            >
+              @click.prevent.stop="$emit('startRequest', object)">
               {{ i18n.request }}
             </a>
             <button
               v-else-if="object.public === undefined ? false : !object.public"
               class="btn btn-disabled"
-              disabled
-            >
+              disabled>
               {{ i18n.requestNotPublic }}
             </button>
             <div v-else>
@@ -58,29 +47,25 @@
                 :href="'/a/' + object.foirequest"
                 target="_blank"
                 class="btn text-white"
-                :class="[`btn-${object.resolution}`]"
-              >
+                :class="[`btn-${object.resolution}`]">
                 {{ i18n.viewRequest }}
               </a>
               <a
                 v-if="allowMultipleRequests"
                 :href="object.request_url"
                 class="btn btn-link"
-                @click.prevent.stop="$emit('startRequest', object)"
-              >
+                @click.prevent.stop="$emit('startRequest', object)">
                 {{ i18n.requestAgain }}
               </a>
             </div>
           </div>
           <div
             v-if="object.follow && object.follow.can_follow !== false"
-            class="col"
-          >
+            class="col">
             <campaign-follow
               :follow="object.follow"
               @followed="$emit('followed', $event)"
-              @unfollowed="$emit('unfollowed')"
-            />
+              @unfollowed="$emit('unfollowed')" />
           </div>
         </div>
       </div>
@@ -89,9 +74,9 @@
 </template>
 
 <script>
-import CampaignListTag from './campaign-list-tag';
+import CampaignListTag from './campaign-list-tag'
 import CampaignFollow from './campaign-follow.vue'
-import i18n from '../../i18n/campaign-list.json';
+import i18n from '../../i18n/campaign-list.json'
 
 export default {
   components: { CampaignListTag, CampaignFollow },
@@ -111,20 +96,20 @@ export default {
   },
   computed: {
     i18n() {
-      return i18n[this.language];
+      return i18n[this.language]
     },
-    hasNoRequest () {
+    hasNoRequest() {
       return this.object.resolution === 'normal'
     },
-    isReserved () {
+    isReserved() {
       if (!this.reservations) {
         return false
       }
-      const someClientId = this.reservations.get("" + this.object.id)
+      const someClientId = this.reservations.get('' + this.object.id)
       return !!(someClientId && someClientId !== this.clientId)
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

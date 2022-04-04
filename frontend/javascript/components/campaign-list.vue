@@ -27,52 +27,40 @@
       @requestmade="requestMade"
       @userupdated="userUpdated"
       @tokenupdated="tokenUpdated"
-      @close="requestFormClosed"
-    />
+      @close="requestFormClosed" />
 
     <div v-show="!showRequestForm">
       <div
         v-if="!settings.input_field"
         ref="searchTop"
         class="container mx-auto"
-        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
-      >
-        <h5>
-          Filter
-        </h5>
+        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']">
+        <h5>Filter</h5>
         <input
           v-model="search"
           type="search"
           :placeholder="i18n.search"
           class="form-control mb-3"
-          @keyup="searchObjects"
-        >
+          @keyup="searchObjects" />
       </div>
 
       <div
-        v-if="settings.input_field == 'topf-secret-fleisch'"
-        class="fleisch-form-background"
-      >
+        v-if="settings.input_field === 'topf-secret-fleisch'"
+        class="fleisch-form-background">
         <div class="container">
           <div class="col-md-5 mx-auto">
             <div
-              class="fleisch-form-container embed-responsive embed-responsive-21by9"
-            >
+              class="fleisch-form-container embed-responsive embed-responsive-21by9">
               <div class="fleisch-form shadow">
-                <p class="h4 font-weight-bolder">
-                  DE
-                </p>
+                <p class="h4 font-weight-bolder">DE</p>
                 <div class="input-group">
                   <input
                     v-model="search"
                     placeholder="BY 1234"
                     class="form-control text-center h4"
-                    @keyup="searchObjects"
-                  >
+                    @keyup="searchObjects" />
                 </div>
-                <p class="h4 font-weight-bolder">
-                  EG
-                </p>
+                <p class="h4 font-weight-bolder">EG</p>
               </div>
             </div>
           </div>
@@ -81,16 +69,14 @@
 
       <div
         class="container mx-auto mb-3"
-        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']"
-      >
+        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']">
         <div v-if="!settings.hide_status_filter">
           <CampaignListTag
             v-for="res in resolutions"
             :key="res"
             :active="res === resolution"
             :status="res"
-            @click="setResolutionFilter(res)"
-          >
+            @click="setResolutionFilter(res)">
             {{ i18n.resolutions[res] }}
           </CampaignListTag>
         </div>
@@ -99,8 +85,7 @@
             v-for="category in config.categories"
             :key="category.id"
             :active="currentCategory === category.id"
-            @click="setCategoryFilter(category.id)"
-          >
+            @click="setCategoryFilter(category.id)">
             #{{ category.title }}
           </CampaignListTag>
         </div>
@@ -109,8 +94,7 @@
           name="list"
           tag="div"
           class="row mt-3 mx-0"
-          :class="{ 'mx-n2': settings.twoColumns}"
-        >
+          :class="{ 'mx-n2': settings.twoColumns }">
           <CampaignListItem
             v-for="object in objects"
             :key="object.ident"
@@ -125,40 +109,24 @@
             @startRequest="startRequest"
             @setCategoryFilter="setCategoryFilter"
             @followed="followedRequest(object, $event)"
-            @unfollowed="object.follow.follows = false"
-          />
+            @unfollowed="object.follow.follows = false" />
 
           <div
             v-if="!loading && hasSearched && objects.length === 0"
             key="noResults"
-            class="text-center my-5 py-5 w-100"
-          >
-            <p
-              class="text-secondary"
-              v-html="i18n.noResults"
-            />
+            class="text-center my-5 py-5 w-100">
+            <p class="text-secondary" v-html="i18n.noResults" />
           </div>
-          <div
-            v-if="loading"
-            key="loading"
-            class="text-center my-5 py-5 w-100"
-          >
-            <div
-              class="spinner-border"
-              role="status"
-            >
+          <div v-if="loading" key="loading" class="text-center my-5 py-5 w-100">
+            <div class="spinner-border" role="status">
               <span class="sr-only">Loading...</span>
             </div>
           </div>
         </transition-group>
         <div
           v-if="!loading && (nextUrl || lastSearchWasRandom)"
-          class="row justify-content-center mb-5"
-        >
-          <button
-            class="btn btn-light"
-            @click="fetch"
-          >
+          class="row justify-content-center mb-5">
+          <button class="btn btn-light" @click="fetch">
             <template v-if="nextUrl">
               {{ i18n.loadMore }}
             </template>
@@ -181,12 +149,15 @@ import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'
 import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
-import Room from "froide/frontend/javascript/lib/websocket.ts"
+import Room from 'froide/frontend/javascript/lib/websocket.ts'
 
 function uuidv4() {
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  )
 }
 
 export default {
@@ -223,9 +194,13 @@ export default {
     }
   },
   data() {
-    this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    this.$root.csrfToken = document.querySelector(
+      '[name=csrfmiddlewaretoken]'
+    ).value
     return {
-      allowMultipleRequests: this.settings.allow_multiple_requests ? this.settings.allow_multiple_requests: false,
+      allowMultipleRequests: this.settings.allow_multiple_requests
+        ? this.settings.allow_multiple_requests
+        : false,
       alreadyRequested: new Set(),
       reservations: new Map(),
       user: this.userInfo,
@@ -253,27 +228,29 @@ export default {
 
       return messages[this.language]
     },
-    hideNewsletterCheckbox () {
-      return (this.settings.hide_newsletter_checkbox) ? this.settings.hide_newsletter_checkbox : true
+    hideNewsletterCheckbox() {
+      return this.settings.hide_newsletter_checkbox
+        ? this.settings.hide_newsletter_checkbox
+        : true
     },
-    maxRequestsPerUser () {
+    maxRequestsPerUser() {
       return this.settings.maxRequestsPerUser || 0
     },
-    searchParameters () {
-      let defaults = [
+    searchParameters() {
+      const defaults = [
         ['search', this.search],
         ['status', this.resolution],
-        ['category', this.currentCategory],
+        ['category', this.currentCategory]
       ]
-      return defaults.filter(d => !!d[1])
+      return defaults.filter((d) => !!d[1])
     },
-    hasSearchParameters () {
+    hasSearchParameters() {
       return this.searchParameters.length > 0
     },
-    lastSearchWasRandom () {
+    lastSearchWasRandom() {
       return this.lastSearch && this.lastSearch.indexOf('order=random') !== -1
     },
-    localRequestCount () {
+    localRequestCount() {
       return this.alreadyRequested.size
     }
   },
@@ -281,18 +258,17 @@ export default {
     this.clientId = null
     try {
       const key = 'campaign_temp_client_id'
-      const clientId = window.localStorage.getItem(key);
+      const clientId = window.localStorage.getItem(key)
       if (!clientId) {
         this.clientId = uuidv4()
-        localStorage.setItem(key, this.clientId);
+        localStorage.setItem(key, this.clientId)
       } else {
         this.clientId = clientId
       }
     } catch {
       // eslint-disable-next-line no-console
-      console.error("Could not access localstorage")
+      console.error('Could not access localstorage')
     }
-
   },
   mounted() {
     if (!this.settings.show_list_after_search) {
@@ -303,12 +279,13 @@ export default {
     if (this.settings.live) {
       try {
         this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
-        this.room.connect()
+        this.room
+          .connect()
           .on('request_made', (event) => {
             if (this.objects.length === 0) {
               return
             }
-            this.objects = this.objects.map(o => {
+            this.objects = this.objects.map((o) => {
               if (o.ident === event.data.ident) {
                 return event.data
               }
@@ -320,13 +297,15 @@ export default {
               return
             }
             this.reservations = new Map()
-            event.reservations.forEach(keyValue => this.reservations.set(keyValue[0], keyValue[1]))
+            event.reservations.forEach((keyValue) =>
+              this.reservations.set(keyValue[0], keyValue[1])
+            )
             if (this.reservationTimeout) {
               window.clearTimeout(this.reservationTimeout)
             }
             this.reservationTimeout = window.setTimeout(() => {
               this.room.send({
-                "type": "request_reservations"
+                type: 'request_reservations'
               })
             }, (event.timeout || 5 * 60) * 1000)
           })
@@ -337,10 +316,10 @@ export default {
     }
   },
   methods: {
-    userUpdated (user) {
+    userUpdated(user) {
       this.user = user
     },
-    detailFetched (data) {
+    detailFetched(data) {
       this.publicbody = data.publicbody
       this.publicbodies = data.publicbodies.objects
       this.objects = this.objects.map((f) => {
@@ -355,51 +334,53 @@ export default {
         return f
       })
     },
-    requestMade (data) {
+    requestMade(data) {
       this.alreadyRequested.add(data.id)
     },
-    updatePublicBody (publicbody) {
+    updatePublicBody(publicbody) {
       this.publicbody = publicbody
     },
-    tokenUpdated (token) {
+    tokenUpdated(token) {
       this.$root.csrfToken = token
     },
-    startRequest (data) {
+    startRequest(data) {
       if (this.clientId) {
         this.room.send({
-          "type": "reserve",
-          "obj_id": "" + data.id,
-          "client_id": this.clientId
+          type: 'reserve',
+          obj_id: '' + data.id,
+          client_id: this.clientId
         })
       }
       this.showRequestForm = data
     },
-    requestFormClosed () {
+    requestFormClosed() {
       if (this.clientId) {
         if (this.alreadyRequested.has(this.showRequestForm.id)) {
           // Request has been sent, reserve item again
           // until request has come through
           this.room.send({
-            "type": "reserve",
-            "obj_id": "" + this.showRequestForm.id,
-            "client_id": this.clientId
+            type: 'reserve',
+            obj_id: '' + this.showRequestForm.id,
+            client_id: this.clientId
           })
         } else {
           this.room.send({
-            "type": "unreserve",
-            "obj_id": "" + this.showRequestForm.id,
-            "client_id": this.clientId
+            type: 'unreserve',
+            obj_id: '' + this.showRequestForm.id,
+            client_id: this.clientId
           })
         }
       }
       this.showRequestForm = null
     },
-    getUrlWithParams (url) {
+    getUrlWithParams(url) {
       let query = this.searchParameters
       if (query.length === 0 && this.settings.order) {
         query = [['order', this.settings.order]]
       }
-      let queryString = query.map(p => `${p[0]}=${encodeURIComponent(p[1])}`).join('&')
+      const queryString = query
+        .map((p) => `${p[0]}=${encodeURIComponent(p[1])}`)
+        .join('&')
       return `${url}&${queryString}`
     },
     setResolutionFilter(name) {
@@ -411,7 +392,7 @@ export default {
       this.updateData()
     },
     setCategoryFilter(category) {
-      if (this.currentCategory == category) {
+      if (this.currentCategory === category) {
         this.currentCategory = null
       } else {
         this.currentCategory = category
@@ -421,7 +402,7 @@ export default {
     searchObjects: debounce(function () {
       this.updateData()
     }, 400),
-    updateData (url = null) {
+    updateData(url = null) {
       if (url === null) {
         url = this.getUrlWithParams(this.baseUrl)
       }
@@ -436,12 +417,13 @@ export default {
       if (this.abortController) {
         this.abortController.abort()
       }
-      this.abortController = new AbortController();
+      this.abortController = new AbortController()
       this.lastSearch = url
       this.loading = true
-      window.fetch(url, {signal: this.abortController.signal})
-        .then(response => response.json())
-        .then(data => {
+      window
+        .fetch(url, { signal: this.abortController.signal })
+        .then((response) => response.json())
+        .then((data) => {
           this.loading = false
           this.meta = data.meta
           if (this.lastSearchWasRandom) {
@@ -457,10 +439,11 @@ export default {
           this.hasSearched = true
           this.abortController = null
           this.getFollowers()
-      }).catch(e => {
-        // eslint-disable-next-line no-console
-        console.warn(`Fetch 1 error: ${e.message}`);
-      });
+        })
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.warn(`Fetch 1 error: ${e.message}`)
+        })
     },
     fetch() {
       if (this.nextUrl === null) {
@@ -468,35 +451,39 @@ export default {
       }
       return this.updateData(this.nextUrl)
     },
-    getFollowers () {
-      let requestIds = this.objects.map(m => m.foirequest).filter(x => !!x)
+    getFollowers() {
+      const requestIds = this.objects
+        .map((m) => m.foirequest)
+        .filter((x) => !!x)
       if (requestIds.length === 0) {
         return
       }
-      let requests = requestIds.join(',')
-      window.fetch(`/api/v1/following/?request=${requests}`)
+      const requests = requestIds.join(',')
+      window
+        .fetch(`/api/v1/following/?request=${requests}`)
         .then((response) => {
           return response.json()
-        }).then((data) => {
-          let requestMapping = new Map()
+        })
+        .then((data) => {
+          const requestMapping = new Map()
           this.objects.forEach((o, i) => {
             if (o.foirequest) {
               requestMapping.set(o.foirequest, i)
             }
           })
           data.objects.forEach((followObj) => {
-            let parts = followObj.request.split('/')
-            let requestId = parseInt(parts[parts.length - 2])
+            const parts = followObj.request.split('/')
+            const requestId = parseInt(parts[parts.length - 2])
 
-            let objIndex = requestMapping.get(requestId)
-            let obj = this.objects[objIndex]
+            const objIndex = requestMapping.get(requestId)
+            const obj = this.objects[objIndex]
             if (obj) {
               Vue.set(obj, 'follow', followObj)
             }
           })
         })
     },
-    followedRequest (data, resourceUri) {
+    followedRequest(data, resourceUri) {
       data.follow.follows = true
       data.follow.resource_uri = resourceUri
     }
@@ -510,14 +497,15 @@ export default {
 }
 
 .list-enter-active {
-  transition-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
 .list-leave-active {
-  transition-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
+  transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
 }
 
-.list-enter, .list-leave-to {
+.list-enter,
+.list-leave-to {
   transform: scale(0);
   opacity: 0;
   position: relative;
@@ -525,7 +513,7 @@ export default {
 
 .list-leave-move {
   position: relative;
-  transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fleisch-form-background {

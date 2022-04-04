@@ -5,8 +5,7 @@
 </template>
 
 <script>
-
 export default {
-  name: 'campaign-loader',
+  name: 'campaign-loader'
 }
 </script>

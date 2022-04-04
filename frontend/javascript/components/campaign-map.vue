@@ -1,6 +1,7 @@
 <template>
   <div>
-  <campaign-request v-if="showRequestForm"
+    <campaign-request
+      v-if="showRequestForm"
       :config="requestConfig"
       :buttonText="config.button_text"
       :request-form="requestForm"
@@ -22,171 +23,277 @@
       @requestmade="requestMade"
       @userupdated="userUpdated"
       @tokenupdated="tokenUpdated"
-      @close="requestFormClosed"
-    ></campaign-request>
+      @close="requestFormClosed"></campaign-request>
 
-  <div v-show="!showRequestForm">
-	  <div class="campaign-map-container container-fluid" ref="campaignMapContainer" id="campaign-map-container">
-      <div class="searchbar d-block d-md-none" id="searchbar">
-        <div class="searchbar-inner">
-          <div class="input-group">
-            <div class="clearable-input">
-              <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" :placeholder="placeholderText" @keydown.enter.prevent="userSearch">
-              <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
+    <div v-show="!showRequestForm">
+      <div
+        class="campaign-map-container container-fluid"
+        ref="campaignMapContainer"
+        id="campaign-map-container">
+        <div class="searchbar d-block d-md-none" id="searchbar">
+          <div class="searchbar-inner">
+            <div class="input-group">
+              <div class="clearable-input">
+                <input
+                  type="text"
+                  v-model="query"
+                  :class="{ 'search-query-active': !!lastQuery }"
+                  class="form-control"
+                  :placeholder="placeholderText"
+                  @keydown.enter.prevent="userSearch" />
+                <span
+                  class="clearer fa fa-close"
+                  v-if="query.length > 0"
+                  @click="clearSearch"></span>
+              </div>
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  @click="userSearch">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                  <span class="d-none d-sm-none d-md-inline">Suchen</span>
+                </button>
+              </div>
+              <div class="input-group-append mr-auto">
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="setLocator(true)">
+                  <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                  <span class="d-none d-sm-none d-md-inline">Ort</span>
+                </button>
+              </div>
+              <div
+                v-if="
+                  !this.config.hide_status_filter ||
+                  this.config.show_featured_only_filter
+                "
+                class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary"
+                  :class="{ active: showFilter }"
+                  @click="openFilter">
+                  <i class="fa fa-gears" aria-hidden="true"></i>
+                  <span class="d-none d-sm-none d-md-inline">Filter</span>
+                </button>
+              </div>
             </div>
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button" @click="userSearch">
-                <i class="fa fa-search" aria-hidden="true"></i>
-                <span class="d-none d-sm-none d-md-inline">Suchen</span>
-              </button>
-            </div>
-            <div class="input-group-append mr-auto">
-              <button class="btn btn-outline-secondary" @click="setLocator(true)">
-                <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                <span class="d-none d-sm-none d-md-inline">Ort</span>
-              </button>
-            </div>
-            <div v-if="!this.config.hide_status_filter || this.config.show_featured_only_filter" class="input-group-append">
-              <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
-                <i class="fa fa-gears" aria-hidden="true"></i>
-                <span class="d-none d-sm-none d-md-inline">Filter</span>
-              </button>
-            </div>
+            <slide-up-down :active="showFilter" :duration="300">
+              <div class="switch-filter">
+                <switch-button
+                  v-if="!this.config.hide_status_filter"
+                  v-model="onlyRequested"
+                  color="#FFC006"
+                  @toggle="search"
+                  >nur angefragte Orte zeigen</switch-button
+                >
+                <switch-button
+                  v-if="this.config.show_featured_only_filter"
+                  color="#FFC006"
+                  v-model="onlyFeatured"
+                  @toggle="getFeatured"
+                  >{{ this.showFeaturedSwitchText }}</switch-button
+                >
+              </div>
+            </slide-up-down>
           </div>
-          <slide-up-down :active="showFilter" :duration="300">
-            <div class="switch-filter">
-              <switch-button v-if="!this.config.hide_status_filter" v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
-              <switch-button v-if="this.config.show_featured_only_filter" color="#FFC006" v-model="onlyFeatured" @toggle="getFeatured">{{ this.showFeaturedSwitchText }}</switch-button>
-            </div>
-          </slide-up-down>
         </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-8 col-lg-9 order-md-2 map-column">
-          <div class="map-container" ref="campaignMap" id="campaign-map" :class="mapContainerClass" :style="mapContainerStyle">
-            <div v-if="showRefresh || searching" class="redo-search">
+        <div class="row">
+          <div class="col-md-8 col-lg-9 order-md-2 map-column">
+            <div
+              class="map-container"
+              ref="campaignMap"
+              id="campaign-map"
+              :class="mapContainerClass"
+              :style="mapContainerStyle">
+              <div v-if="showRefresh || searching" class="redo-search">
                 <button v-if="showRefresh" class="btn btn-dark" @click="search">
                   Im aktuellen Bereich suchen
                 </button>
-                <button v-if="searching" class="btn btn-secondary btn-sm disabled">
+                <button
+                  v-if="searching"
+                  class="btn btn-secondary btn-sm disabled">
                   <div class="spinner-border" role="status">
                     <span class="sr-only">Wird geladen...</span>
                   </div>
                   Suche läuft&hellip;
                 </button>
-            </div>
-            <div class="map-search d-none d-md-block" :class="{'map-search-full': !(showRefresh || searching)}">
-              <div class="input-group">
-                <div class="clearable-input">
-                  <input type="text" v-model="query" :class="{'search-query-active': !!lastQuery}" class="form-control" :placeholder="placeholderText"  @keydown.enter.prevent="userSearch">
-                  <span class="clearer fa fa-close" v-if="query.length > 0" @click="clearSearch"></span>
-                </div>
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" type="button" @click="userSearch">
-                    <i class="fa fa-search" aria-hidden="true"></i>
-                    <span class="d-none d-sm-none d-lg-inline">Suchen</span>
-                  </button>
-                </div>
-                <div v-if="showFeaturedSwitch" class="input-group-append">
-                  <div class="switch-filter py-0 border-top border-bottom border-dark">
-                    <switch-button color="#FFC006" v-model="onlyFeatured" @toggle="getFeatured">{{ this.showFeaturedSwitchText }}</switch-button>
+              </div>
+              <div
+                class="map-search d-none d-md-block"
+                :class="{ 'map-search-full': !(showRefresh || searching) }">
+                <div class="input-group">
+                  <div class="clearable-input">
+                    <input
+                      type="text"
+                      v-model="query"
+                      :class="{ 'search-query-active': !!lastQuery }"
+                      class="form-control"
+                      :placeholder="placeholderText"
+                      @keydown.enter.prevent="userSearch" />
+                    <span
+                      class="clearer fa fa-close"
+                      v-if="query.length > 0"
+                      @click="clearSearch"></span>
+                  </div>
+                  <div class="input-group-append">
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="userSearch">
+                      <i class="fa fa-search" aria-hidden="true"></i>
+                      <span class="d-none d-sm-none d-lg-inline">Suchen</span>
+                    </button>
+                  </div>
+                  <div v-if="showFeaturedSwitch" class="input-group-append">
+                    <div
+                      class="switch-filter py-0 border-top border-bottom border-dark">
+                      <switch-button
+                        color="#FFC006"
+                        v-model="onlyFeatured"
+                        @toggle="getFeatured"
+                        >{{ this.showFeaturedSwitchText }}</switch-button
+                      >
+                    </div>
+                  </div>
+                  <div class="input-group-append">
+                    <button
+                      class="btn btn-outline-secondary"
+                      @click="setLocator(true)">
+                      <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                      <span class="d-none d-lg-inline">Ort</span>
+                    </button>
+                  </div>
+                  <div v-if="!hideStatusFilter" class="input-group-append">
+                    <button
+                      class="btn btn-outline-secondary"
+                      :class="{ active: showFilter }"
+                      @click="openFilter">
+                      <i class="fa fa-gears" aria-hidden="true"></i>
+                      <span class="d-none d-sm-none d-md-inline">Filter</span>
+                    </button>
                   </div>
                 </div>
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" @click="setLocator(true)">
-                    <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                    <span class="d-none d-lg-inline">Ort</span>
-                  </button>
-                </div>
-                <div v-if="!hideStatusFilter" class="input-group-append">
-                  <button class="btn btn-outline-secondary" :class="{'active': showFilter}" @click="openFilter">
-                    <i class="fa fa-gears" aria-hidden="true"></i>
-                    <span class="d-none d-sm-none d-md-inline">Filter</span>
-                  </button>
-                </div>
+
+                <slide-up-down :active="showFilter" :duration="300">
+                  <div class="switch-filter">
+                    <switch-button
+                      v-if="!this.config.hide_status_filter"
+                      v-model="onlyRequested"
+                      color="#FFC006"
+                      @toggle="search"
+                      >nur angefragte Orte zeigen</switch-button
+                    >
+                  </div>
+                </slide-up-down>
               </div>
 
-              <slide-up-down :active="showFilter" :duration="300">
-                <div class="switch-filter">
-                  <switch-button v-if="!this.config.hide_status_filter" v-model="onlyRequested" color="#FFC006" @toggle="search">nur angefragte Orte zeigen</switch-button>
-                </div>
-              </slide-up-down>
-          </div>
-
-          <l-map ref="map" :zoom.sync="zoom" :center="center" :options="mapOptions" :max-bounds="maxBounds">
-            <l-tile-layer :url="tileProvider.url" :prefix="tileProvider.attribution" :attribution="attribution"/>
-              <l-control-zoom position="bottomright"/>
-              <l-control position="bottomleft" >
-                <ul class="color-legend">
-                  <li :style="colorLegend.normal"><span>{{getStatusString('normal')}}</span></li>
-                  <li :style="colorLegend.pending"><span>{{getStatusString('pending')}}</span></li>
-                  <li :style="colorLegend.success"><span>{{getStatusString('success')}}</span></li>
-                  <li :style="colorLegend.failure"><span>{{getStatusString('failure')}}</span></li>
-                </ul>
-              </l-control>
-              <l-marker v-for="(location, index) in locationWithGeo" :key="index"
-                :lat-lng="[location.lat, location.lng]" :title="location.title"
-                :draggable="false" :icon="getMarker(getStatus(location), location.featured)" :options="markerOptions" v-focusmarker>
-                <l-tooltip :content="location.title" :options="tooltipOptions" v-if="!isMobile"/>
-                  <l-popup :options="popupOptions" >
+              <l-map
+                ref="map"
+                :zoom.sync="zoom"
+                :center="center"
+                :options="mapOptions"
+                :max-bounds="maxBounds">
+                <l-tile-layer
+                  :url="tileProvider.url"
+                  :prefix="tileProvider.attribution"
+                  :attribution="attribution" />
+                <l-control-zoom position="bottomright" />
+                <l-control position="bottomleft">
+                  <ul class="color-legend">
+                    <li :style="colorLegend.normal">
+                      <span>{{ getStatusString('normal') }}</span>
+                    </li>
+                    <li :style="colorLegend.pending">
+                      <span>{{ getStatusString('pending') }}</span>
+                    </li>
+                    <li :style="colorLegend.success">
+                      <span>{{ getStatusString('success') }}</span>
+                    </li>
+                    <li :style="colorLegend.failure">
+                      <span>{{ getStatusString('failure') }}</span>
+                    </li>
+                  </ul>
+                </l-control>
+                <l-marker
+                  v-for="(location, index) in locationWithGeo"
+                  :key="index"
+                  :lat-lng="[location.lat, location.lng]"
+                  :title="location.title"
+                  :draggable="false"
+                  :icon="getMarker(getStatus(location), location.featured)"
+                  :options="markerOptions"
+                  v-focusmarker>
+                  <l-tooltip
+                    :content="location.title"
+                    :options="tooltipOptions"
+                    v-if="!isMobile" />
+                  <l-popup :options="popupOptions">
                     <campaign-popup
-                        :color="getStatusColor(getStatus(location))"
-                        :status="getStatus(location)"
-                        :statusString="getStatusString(getStatus(location))"
-                        :data="location"
-                        :buttonText="config.button_text"
-                        :allowMultipleRequests="allowMultipleRequests"
-                        @startRequest="startRequest"
-                        @detail="setDetail"/>
+                      :color="getStatusColor(getStatus(location))"
+                      :status="getStatus(location)"
+                      :statusString="getStatusString(getStatus(location))"
+                      :data="location"
+                      :buttonText="config.button_text"
+                      :allowMultipleRequests="allowMultipleRequests"
+                      @startRequest="startRequest"
+                      @detail="setDetail" />
                   </l-popup>
-            </l-marker>
-          </l-map>
+                </l-marker>
+              </l-map>
+            </div>
+          </div>
+          <div class="col-md-4 col-lg-3 order-md-1 sidebar-column">
+            <div
+              class="sidebar"
+              :class="{ 'modal-active': modalActive }"
+              ref="campaignList"
+              id="campaign-list"
+              v-scroll.window="handleSidebarScroll">
+              <div class="new-venue-area" v-if="hasSearched || error">
+                <template v-if="searchEmpty">
+                  <p>{{ nothingFoundText }}</p>
+                </template>
+                <button
+                  v-if="config.addLocationAllowed"
+                  class="btn btn-sm btn-light"
+                  @click="setNewPlace(true)">
+                  Ort nicht gefunden?
+                </button>
+              </div>
+              <campaign-sidebar-item
+                v-for="(location, index) in locations"
+                :key="index"
+                :color="getStatusColor(getStatus(location))"
+                :status="getStatus(location)"
+                :statusString="getStatusString(getStatus(location))"
+                :data="location"
+                :buttonText="config.button_text"
+                :allowMultipleRequests="allowMultipleRequests"
+                @startRequest="startRequest"></campaign-sidebar-item>
+            </div>
+          </div>
+          <campaign-locator
+            v-if="showLocator"
+            :defaultPostcode="postcode"
+            :defaultLocation="locationName"
+            :exampleCity="city"
+            :locationKnown="locationKnown"
+            :error="error"
+            :error-message="locatorErrorMessage"
+            :geolocation-disabled="geolocationDisabled"
+            :isMobile="isMobile"
+            @close="setLocator(false)"
+            @coordinatesChosen="coordinatesChosen"
+            @locationChosen="locationChosen"></campaign-locator>
+          <campaign-new-location
+            v-if="showNewPlace"
+            @close="showNewPlace = false"
+            @locationcreated="locationCreated"
+            :campaignId="config.campaignId"></campaign-new-location>
         </div>
       </div>
-      <div class="col-md-4 col-lg-3 order-md-1 sidebar-column">
-          <div class="sidebar" :class="{'modal-active': modalActive}"
-              ref="campaignList" id="campaign-list" v-scroll.window="handleSidebarScroll">
-            <div class="new-venue-area" v-if="hasSearched || error">
-              <template v-if="searchEmpty">
-                <p>{{ nothingFoundText }}</p>
-              </template>
-              <button v-if="config.addLocationAllowed" class="btn btn-sm btn-light" @click="setNewPlace(true)">
-                Ort nicht gefunden?
-              </button>
-            </div>
-            <campaign-sidebar-item v-for="(location, index) in locations"
-              :key="index"
-              :color="getStatusColor(getStatus(location))"
-              :status="getStatus(location)"
-              :statusString="getStatusString(getStatus(location))"
-              :data="location"
-              :buttonText="config.button_text"
-              :allowMultipleRequests="allowMultipleRequests"
-              @startRequest="startRequest"
-            ></campaign-sidebar-item>
-          </div>
-      </div>
-      <campaign-locator v-if="showLocator"
-        :defaultPostcode="postcode"
-        :defaultLocation="locationName"
-        :exampleCity="city"
-        :locationKnown="locationKnown"
-        :error="error"
-        :error-message="locatorErrorMessage"
-        :geolocation-disabled="geolocationDisabled"
-        :isMobile="isMobile"
-        @close="setLocator(false)"
-        @coordinatesChosen="coordinatesChosen"
-        @locationChosen="locationChosen"
-        ></campaign-locator>
-      <campaign-new-location v-if="showNewPlace"
-        @close="showNewPlace = false"
-        @locationcreated="locationCreated"
-        :campaignId="config.campaignId"
-      ></campaign-new-location>
-    </div>
-    </div>
     </div>
   </div>
 </template>
@@ -194,11 +301,18 @@
 <script>
 /* global L */
 import Vue from 'vue'
-import { LMap, LTileLayer, LControlLayers, LControlAttribution, LControlZoom, LControl, LMarker, LPopup, LTooltip } from 'vue2-leaflet'
+import {
+  LMap,
+  LTileLayer,
+  LControlZoom,
+  LControl,
+  LMarker,
+  LPopup,
+  LTooltip
+} from 'vue2-leaflet'
 import 'leaflet.icon.glyph'
 import bbox from '@turf/bbox'
 import SlideUpDown from 'vue-slide-up-down'
-import smoothScroll from '../lib/smoothscroll'
 import CampaignLocator from './campaign-locator'
 import CampaignSidebarItem from './campaign-sidebar-item'
 import CampaignPopup from './campaign-popup'
@@ -207,7 +321,12 @@ import CampaignNewLocation from './campaign-new-location'
 import CampaignRequest from './campaign-request'
 
 import {
-  getQueryVariable, canUseLocalStorage, getPinURL, COLORS, STATUS_STRINGS, latlngToGrid
+  getQueryVariable,
+  canUseLocalStorage,
+  getPinURL,
+  COLORS,
+  STATUS_STRINGS,
+  latlngToGrid
 } from '../lib/utils'
 
 Vue.directive('scroll', {
@@ -216,7 +335,7 @@ Vue.directive('scroll', {
     if (binding.modifiers.window) {
       scrollElement = window
     }
-    let f = function (evt) {
+    const f = function (evt) {
       if (binding.value(evt, el)) {
         scrollElement.removeEventListener('scroll', f)
       }
@@ -237,7 +356,7 @@ const MIN_DISTANCE_MOVED_REFRESH = 800 // in meters
 export default {
   name: 'campaign-map',
   props: {
-  	config: {
+    config: {
       type: Object
     },
     userInfo: {
@@ -256,19 +375,29 @@ export default {
     }
   },
   components: {
-    LMap, LTileLayer, LControlLayers, LControlZoom, LControl, LControlAttribution, LMarker, LPopup, LTooltip,
-    CampaignPopup, SwitchButton, SlideUpDown, CampaignSidebarItem, CampaignNewLocation, CampaignLocator, CampaignRequest
+    LMap,
+    LTileLayer,
+    LControlZoom,
+    LControl,
+    LMarker,
+    LPopup,
+    LTooltip,
+    CampaignPopup,
+    SwitchButton,
+    SlideUpDown,
+    CampaignSidebarItem,
+    CampaignNewLocation,
+    CampaignLocator,
+    CampaignRequest
   },
-  data () {
-  	let locationKnown = false
+  data() {
+    let locationKnown = false
     let zoom = null
     let center = null
-    let postcode = null
-    let requestsMade = []
-  	let latlng = getQueryVariable('latlng')
-  	let query = getQueryVariable('query')
-    let paramIdent = getQueryVariable('ident')
-    let marker = null
+    const postcode = null
+    const latlng = getQueryVariable('latlng')
+    const query = getQueryVariable('query')
+    const marker = null
 
     let city = this.config.city
     if (city.country_code && city.country_code !== 'DE') {
@@ -276,21 +405,19 @@ export default {
     }
 
     if (latlng) {
-      let parts = latlng.split(',')
-      center = [
-        parseFloat(parts[0]),
-        parseFloat(parts[1])
-      ]
+      const parts = latlng.split(',')
+      center = [parseFloat(parts[0]), parseFloat(parts[1])]
       if (center[0] && center[1]) {
         zoom = DETAIL_ZOOM_LEVEL
       }
     }
 
     if (canUseLocalStorage(window)) {
-      requestsMade = JSON.parse(window.localStorage.getItem('froide-campaign:requestsmade'))
       zoom = parseInt(window.localStorage.getItem('froide-campaign:zoom'))
       if (center === null) {
-        center = JSON.parse(window.localStorage.getItem('froide-campaign:center'))
+        center = JSON.parse(
+          window.localStorage.getItem('froide-campaign:center')
+        )
         if (center !== null) {
           center = [center.lat, center.lng]
         }
@@ -317,15 +444,20 @@ export default {
       zoom = DEFAULT_ZOOM
     }
 
-    this.$root.csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    this.$root.csrfToken = document.querySelector(
+      '[name=csrfmiddlewaretoken]'
+    ).value
 
-  	return {
-      allowMultipleRequests: this.config.allow_multiple_requests ? this.config.allow_multiple_requests: false,
+    return {
+      allowMultipleRequests: this.config.allow_multiple_requests
+        ? this.config.allow_multiple_requests
+        : false,
       alreadyRequested: {},
-      attribution: 'leaflet | &copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+      attribution:
+        'leaflet | &copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
       user: this.userInfo,
       showRequestForm: null,
-  		locations: [],
+      locations: [],
       zoom: zoom,
       locationKnown: locationKnown,
       locationName: '',
@@ -334,9 +466,9 @@ export default {
       center: center,
       city: city.city,
       postcode: '' + (postcode || city.postal_code || ''),
-  		maxBounds: maxBounds,
+      maxBounds: maxBounds,
       searching: false,
-  		marker: marker,
+      marker: marker,
       mapMoved: false,
       mapHeight: null,
       isMapTop: false,
@@ -349,7 +481,7 @@ export default {
       showNewPlace: false,
       showDetail: null,
       showFilter: false,
-  		markerOptions: {
+      markerOptions: {
         riseOnHover: true
       },
       stacked: this.isStacked(),
@@ -359,13 +491,16 @@ export default {
       lastQuery: '',
       onlyRequested: false,
       onlyFeatured: false,
-  		tileProvider: {
+      tileProvider: {
         name: 'Carto',
-        url: `//cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}${window.L.Browser.retina ? '@2x' : ''}.png`,
+        url: `//cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}${
+          window.L.Browser.retina ? '@2x' : ''
+        }.png`,
         // url: 'https://api.mapbox.com/styles/v1/{username}/{style}/tiles/{tileSize}/{z}/{x}/{y}{r}?access_token={accessToken}',
         // url: 'https://api.tiles.mapbox.com/v4/{style}/{z}/{x}/{y}.png?access_token={accessToken}',
         // url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>',
         options: {
           // style: 'mapbox.streets',
           // username: 'okfde',
@@ -374,9 +509,9 @@ export default {
           // accessToken: 'pk.eyJ1Ijoib2tmZGUiLCJhIjoiY2p3aHBpZ2wzMjVxbTQ4bWduM2YwenQ2eCJ9.kzkjyGM8xIEShOZ7ekH5AA'
         }
       }
-  	}
+    }
   },
-  created () {
+  created() {
     Vue.directive('focusmarker', {
       // When the bound element is inserted into the DOM...
       componentUpdated: (el, binding, vnode) => {
@@ -388,7 +523,7 @@ export default {
       }
     })
   },
-  mounted () {
+  mounted() {
     this.$nextTick(() => {
       this.map.attributionControl.setPrefix('')
       this.map.on('zoomend', (e) => {
@@ -397,8 +532,8 @@ export default {
       })
       this.map.on('moveend', (e) => {
         if (this.searchCenter !== null) {
-          let currentPosition = this.map.getCenter()
-          let distance = this.searchCenter.distanceTo(currentPosition)
+          const currentPosition = this.map.getCenter()
+          const distance = this.searchCenter.distanceTo(currentPosition)
           if (distance < MIN_DISTANCE_MOVED_REFRESH) {
             return
           }
@@ -412,12 +547,11 @@ export default {
       this.search()
     })
     this.map.on('popupopen', (e) => {
-        this.preventMapMoved()
-      }
-    )
+      this.preventMapMoved()
+    })
   },
   computed: {
-    currentUrl () {
+    currentUrl() {
       let url = `${this.config.appUrl}?latlng=${this.center[0]},${this.center[1]}`
       if (this.selectedVenueId) {
         url += `&ident=${encodeURIComponent(this.selectedVenue.ident)}`
@@ -427,71 +561,84 @@ export default {
       }
       return url
     },
-    locationWithGeo () {
+    locationWithGeo() {
       if (this.locations.length > 0) {
-        return this.locations.filter(location => location.lat)
+        return this.locations.filter((location) => location.lat)
       }
       return this.locations
     },
-    hideNewsletterCheckbox () {
-      return (this.config.hide_newsletter_checkbox) ? this.config.hide_newsletter_checkbox : false
+    hideNewsletterCheckbox() {
+      return this.config.hide_newsletter_checkbox
+        ? this.config.hide_newsletter_checkbox
+        : false
     },
-    hideStatusFilter () {
-      return (this.config.hide_status_filter) ? this.config.hide_status_filter : false
+    hideStatusFilter() {
+      return this.config.hide_status_filter
+        ? this.config.hide_status_filter
+        : false
     },
-    showFeaturedSwitch () {
-      return (this.config.showFeaturedSwitch) ? this.config.showFeaturedSwitch : false
+    showFeaturedSwitch() {
+      return this.config.showFeaturedSwitch
+        ? this.config.showFeaturedSwitch
+        : false
     },
-    ignoreMapFilter () {
-      return (this.config.ignore_mapfilter) ? this.config.ignore_mapfilter : false
+    ignoreMapFilter() {
+      return this.config.ignore_mapfilter ? this.config.ignore_mapfilter : false
     },
-    placeholderText () {
-      return (this.config.placeholder_text) ? this.config.placeholder_text : 'Nach Ort suchen'
+    placeholderText() {
+      return this.config.placeholder_text
+        ? this.config.placeholder_text
+        : 'Nach Ort suchen'
     },
-    nothingFoundText () {
-      return (this.config.nothing_found) ? this.config.nothing_found : 'Keine Orte gefunden.'
+    nothingFoundText() {
+      return this.config.nothing_found
+        ? this.config.nothing_found
+        : 'Keine Orte gefunden.'
     },
-    showFeaturedSwitchText () {
-      return (this.config.feature_switch_text) ? this.config.feature_switch_text : 'besondere Orte zeigen'
+    showFeaturedSwitchText() {
+      return this.config.feature_switch_text
+        ? this.config.feature_switch_text
+        : 'besondere Orte zeigen'
     },
-    modalActive () {
+    modalActive() {
       return this.showLocator || this.showDetail
     },
-    showRefresh () {
+    showRefresh() {
       return this.mapMoved && this.zoom >= 10
     },
-    tooltipOptions () {
+    tooltipOptions() {
       return {
         offset: L.point(0, -40),
         direction: 'top'
       }
     },
-  	isMobile () {
+    isMobile() {
       return this.stacked || L.Browser.mobile
     },
-  	map () {
+    map() {
       return this.$refs.map.mapObject
     },
-    colorLegend () {
+    colorLegend() {
       return {
         normal: `background-image: url('${getPinURL(COLORS.normal)}')`,
         pending: `background-image: url('${getPinURL(COLORS.pending)}')`,
         success: `background-image: url('${getPinURL(COLORS.success)}')`,
-        failure: `background-image: url('${getPinURL(COLORS.failure)}')`,
+        failure: `background-image: url('${getPinURL(COLORS.failure)}')`
       }
     },
-    mapContainerClass () {
+    mapContainerClass() {
       if (this.isMapTop && !this.stacked) {
         return 'map-full-height'
       }
+      return ''
     },
-    mapContainerStyle () {
+    mapContainerStyle() {
       if (this.mapHeight === null) {
         return ''
       }
       return `height: ${this.mapHeight}px`
     },
-    mapOptions () {
+    mapOptions() {
       return {
         scrollWheelZoom: !this.isMobile,
         doubleClickZoom: true,
@@ -499,27 +646,27 @@ export default {
         maxZoom: 18
       }
     },
-    popupOptions () {
+    popupOptions() {
       return {
         autoPanPaddingTopLeft: L.point([5, 85]),
         maxWidth: Math.round(window.innerWidth * 0.7)
       }
-    },
+    }
   },
   methods: {
-    updatePublicBody (publicbody) {
+    updatePublicBody(publicbody) {
       this.publicbody = publicbody
     },
-    tokenUpdated (token) {
+    tokenUpdated(token) {
       this.$root.csrfToken = token
     },
-    userUpdated (user) {
+    userUpdated(user) {
       this.user = user
     },
-    requestMade (data) {
+    requestMade(data) {
       this.alreadyRequested[data.id] = true
     },
-    detailFetched (data) {
+    detailFetched(data) {
       this.publicbody = data.publicbody
       this.publicbodies = data.publicbodies.objects
       this.locations = this.locations.map((f) => {
@@ -533,25 +680,21 @@ export default {
         return f
       })
     },
-    startRequest (data) {
+    startRequest(data) {
       this.showRequestForm = data
-      this.goToMap()
     },
-    requestFormClosed () {
+    requestFormClosed() {
       this.showRequestForm = null
-      this.goToMap()
     },
-    setLocator (data) {
+    setLocator(data) {
       this.showLocator = data
-      if (data) {
-        this.goToMap()
-      }
     },
-    coordinatesChosen (latlng) {
-      let center = L.latLng(latlng)
+    coordinatesChosen(latlng) {
+      const center = L.latLng(latlng)
       if (!this.maxBounds.contains(center)) {
         this.geolocationDisabled = true
-        this.locatorErrorMessage = 'Dein Ort scheint nicht in Deutschland zu sein!'
+        this.locatorErrorMessage =
+          'Dein Ort scheint nicht in Deutschland zu sein!'
         this.setLocator(true)
         return
       }
@@ -559,85 +702,80 @@ export default {
       this.locatorErrorMessage = ''
       this.locationKnown = true
       this.map.setView(center, DETAIL_ZOOM_LEVEL)
-      this.search({coordinates: center})
+      this.search({ coordinates: center })
       this.preventMapMoved()
     },
-    locationChosen (location) {
+    locationChosen(location) {
       let url = `/api/v1/georegion/?name=${location}&limit=1`
       if (location.match(/^\d{5}$/)) {
         window.localStorage.setItem('froide-campaign:postcode', location)
         url = `/api/v1/georegion/?kind=zipcode&name=${location}&limit=1`
       }
-      window.fetch(url)
+      window
+        .fetch(url)
         .then((response) => {
           return response.json()
-        }).then((data) => {
-          if (data['meta']['total_count'] === 0) {
+        })
+        .then((data) => {
+          if (data.meta.total_count === 0) {
             return
           }
-          let id = data.objects[0].id
-          let url = `/api/v1/georegion/${id}/`
-          window.fetch(url)
+          const id = data.objects[0].id
+          const url = `/api/v1/georegion/${id}/`
+          window
+            .fetch(url)
             .then((response) => {
               return response.json()
-            }).then((data) => {
+            })
+            .then((data) => {
               this.locationKnown = true
-              let geoRegion = data
+              const geoRegion = data
               let bounds = bbox(geoRegion.geom)
               bounds = L.latLngBounds([
                 [bounds[1], bounds[0]],
                 [bounds[3], bounds[2]]
               ])
-              let coords = geoRegion.centroid.coordinates
-              let center = L.latLng([coords[1], coords[0]])
+              const coords = geoRegion.centroid.coordinates
+              const center = L.latLng([coords[1], coords[0]])
               this.map.fitBounds(bounds)
-              this.search({coordinates: center, bounds})
+              this.search({ coordinates: center, bounds })
               this.preventMapMoved()
-          })
-
-      })
+            })
+        })
     },
-    locationCreated (data) {
+    locationCreated(data) {
       data.full = false
       this.locations.push(data)
       this.startRequest(data)
     },
-    goToMap () {
-      // let fmc = this.$refs.campaignMapContainer
-      // if (fmc.getBoundingClientRect().top > 0) {
-      //   return
-      // }
-      // let y = fmc.offsetTop
-      // smoothScroll({x: 0, y: y, el: this.scrollContainer}, 300)
-    },
     setNewPlace(show) {
       this.showNewPlace = show
-      if (show) {
-        this.goToMap()
-      }
     },
-    recordMapPosition () {
-      let latlng = this.map.getCenter()
+    recordMapPosition() {
+      const latlng = this.map.getCenter()
       this.center = [latlng.lat, latlng.lng]
-      let zoom = this.map.getZoom()
+      const zoom = this.map.getZoom()
       if (!canUseLocalStorage(window)) {
         return
       }
       window.localStorage.setItem('froide-campaign:zoom', zoom)
-      window.localStorage.setItem('froide-campaign:center', JSON.stringify(latlng))
+      window.localStorage.setItem(
+        'froide-campaign:center',
+        JSON.stringify(latlng)
+      )
     },
     mapHasMoved() {
-      if (this.autoMoved || this.ignoreMapFilter || this.onlyFeatured ) {
+      if (this.autoMoved || this.ignoreMapFilter || this.onlyFeatured) {
         return
       }
       this.mapMoved = true
       this.search()
     },
-    clearSearch () {
+    clearSearch() {
       this.query = ''
       this.search()
     },
-    preventMapMoved () {
+    preventMapMoved() {
       this.autoMoved = true
       if (this.autoMovedTimeout !== null) {
         window.clearTimeout(this.autoMovedTimeout)
@@ -647,24 +785,21 @@ export default {
         this.autoMovedTimeout = null
       }, 1500)
     },
-    openFilter () {
+    openFilter() {
       this.showFilter = !this.showFilter
-      if (this.isMobile) {
-        this.goToMap()
-      }
     },
-    userSearch () {
+    userSearch() {
       if (this.query.match(/^\d{5}$/)) {
-        let p = this.query
+        const p = this.query
         this.query = ''
         return this.postcodeChosen(p)
       }
       this.search()
     },
-    getFeatured (options = {}) {
+    getFeatured(options = {}) {
       this.search()
     },
-    search (options = {}) {
+    search(options = {}) {
       this.map.closePopup()
       this.map.closeTooltip()
       this.mapMoved = false
@@ -675,22 +810,20 @@ export default {
       this.lastQuery = this.query
       this.searchCenter = this.map.getCenter()
 
-      let bounds = this.map.getBounds()
+      const bounds = this.map.getBounds()
 
       let radius = Math.min(
-          this.map.distance(
-            bounds.getNorthEast(),
-            bounds.getNorthWest()
-          ),
-          this.map.distance(
-            bounds.getNorthEast(),
-            bounds.getSouthEast()
-          )
-        )
+        this.map.distance(bounds.getNorthEast(), bounds.getNorthWest()),
+        this.map.distance(bounds.getNorthEast(), bounds.getSouthEast())
+      )
       radius = Math.max(Math.round(Math.min(radius, 100000) / 100) * 100, 500)
-      let reqCoords = latlngToGrid(this.searchCenter, radius)
+      const reqCoords = latlngToGrid(this.searchCenter, radius)
       let locationParam = ''
-      if (!this.ignoreMapFilter  && !this.onlyFeatured  && this.map.getZoom() > 7) {
+      if (
+        !this.ignoreMapFilter &&
+        !this.onlyFeatured &&
+        this.map.getZoom() > 7
+      ) {
         locationParam = `lat=${reqCoords.lat}&lng=${reqCoords.lng}&radius=${radius}&zoom=${this.zoom}`
       }
       let onlyRequested = ''
@@ -701,24 +834,32 @@ export default {
       if (this.onlyFeatured) {
         onlyFeatured = '&featured=1'
       }
-      window.fetch(`/api/v1/campaigninformationobject/search/?campaign=${this.config.campaignId}&q=${encodeURIComponent(this.query)}${onlyRequested}${onlyFeatured}&${locationParam}`)
+      window
+        .fetch(
+          `/api/v1/campaigninformationobject/search/?campaign=${
+            this.config.campaignId
+          }&q=${encodeURIComponent(
+            this.query
+          )}${onlyRequested}${onlyFeatured}&${locationParam}`
+        )
         .then((response) => {
           return response.json()
-        }).then(this.searchDone(options))
+        })
+        .then(this.searchDone(options))
     },
-    searchDone (options) {
+    searchDone(options) {
       return (data) => {
         this.searching = false
         this.hasSearched = true
         if (data.error) {
           console.warn('Error requesting the API')
-          return
         } else {
           this.searchEmpty = data.length === 0
           this.locations = data
-          let bounds = L.latLngBounds(this.locations)
+          const bounds = L.latLngBounds(this.locations)
           if (!this.maxBounds.contains(bounds)) {
-            this.locatorErrorMessage = 'Dein Ort scheint nicht in Deutschland zu sein!'
+            this.locatorErrorMessage =
+              'Dein Ort scheint nicht in Deutschland zu sein!'
             this.setLocator(true)
             return
           }
@@ -726,16 +867,13 @@ export default {
         }
       }
     },
-		isStacked () {
-      return this.stacked = (window.innerWidth < 768)
+    isStacked() {
+      return (this.stacked = window.innerWidth < 768)
     },
-    setDetail (data) {
+    setDetail(data) {
       this.showDetail = data
-      if (data) {
-        this.goToMap()
-      }
     },
-    getStatus (location) {
+    getStatus(location) {
       if (location.foirequests.length > 0) {
         if (location.resolution === 'successful') {
           return 'success'
@@ -743,41 +881,42 @@ export default {
         if (location.resolution === 'refused') {
           return 'failure'
         }
-        if (location.resolution  === 'user_withdrew') {
+        if (location.resolution === 'user_withdrew') {
           return 'withdrawn'
         }
         return 'pending'
       }
       return 'normal'
     },
-    getMarker (status, featured) {
-      let iconSize = [25,41]
+    getMarker(status, featured) {
+      const iconSize = [25, 41]
       let glyph = ''
       if (featured) {
-         glyph = this.config.featured_icon ? this.config.featured_icon : 'fa-exclamation'
+        glyph = this.config.featured_icon
+          ? this.config.featured_icon
+          : 'fa-exclamation'
       }
 
       return L.icon.glyph({
         className: 'campaign-marker-icon',
         prefix: 'fa',
-        glyph: glyph ,
+        glyph: glyph,
         iconUrl: this.getIconUrl(status),
         iconSize: iconSize
       })
     },
-    getStatusColor (status) {
+    getStatusColor(status) {
       return COLORS[status]
-
     },
-    getStatusString (status) {
+    getStatusString(status) {
       if (status) {
         return STATUS_STRINGS[status]
       }
     },
-    getIconUrl (status) {
+    getIconUrl(status) {
       return getPinURL(COLORS[status])
     },
-    handleSidebarScroll (evt, el) {
+    handleSidebarScroll(evt, el) {
       if (this.modalActive) {
         return
       }
@@ -788,7 +927,7 @@ export default {
           this.$refs.campaignMap.style.top = 0
         })
       }
-      let listTop = this.$refs.campaignList.getBoundingClientRect().top
+      const listTop = this.$refs.campaignList.getBoundingClientRect().top
       if (listTop < this.dividerSwitchHeight) {
         if (!this.listShown) {
           this.showFilter = false
@@ -797,9 +936,9 @@ export default {
       } else {
         this.listShown = false
       }
-      let mapRect = this.$refs.campaignMap.getBoundingClientRect()
-      let mapTop = mapRect.top
-      let isMapTop = mapTop <= 0
+      const mapRect = this.$refs.campaignMap.getBoundingClientRect()
+      const mapTop = mapRect.top
+      const isMapTop = mapTop <= 0
       if (isMapTop !== this.isMapTop) {
         window.setTimeout(() => {
           this.map.invalidateSize()
@@ -816,45 +955,44 @@ export default {
         }
       }
     }
-	}
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-
 $icon-normal: #007bff;
 $icon-pending: #ffc107;
 $icon-success: #28a745;
 $icon-failure: #dc3545;
 
-@import "~leaflet/dist/leaflet.css";
+@import '~leaflet/dist/leaflet.css';
 
 .icon-normal {
   fill: $icon-normal;
 }
 .icon-normal.selected {
-  fill: darken($icon-normal, 30%)
+  fill: darken($icon-normal, 30%);
 }
 
 .icon-pending {
   fill: $icon-pending;
 }
 .icon-pending.selected {
-  fill: darken($icon-pending, 30%)
+  fill: darken($icon-pending, 30%);
 }
 
 .icon-success {
   fill: $icon-normal;
 }
 .icon-success.selected {
-  fill: darken($icon-success, 30%)
+  fill: darken($icon-success, 30%);
 }
 
 .icon-failure {
   fill: $icon-failure;
 }
 .icon-failure.selected {
-  fill: darken($icon-failure, 30%)
+  fill: darken($icon-failure, 30%);
 }
 
 .campaign-wrapper {
@@ -872,7 +1010,7 @@ $icon-failure: #dc3545;
   }
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .campaign-map-embed {
     padding: 0;
   }
@@ -889,7 +1027,7 @@ $icon-failure: #dc3545;
   top: 0;
   z-index: 2050;
   background-color: #fff;
-  margin:0 -15px;
+  margin: 0 -15px;
 }
 
 .searchbar-inner {
@@ -909,7 +1047,8 @@ $icon-failure: #dc3545;
   .btn {
     background-color: #fff;
   }
-  .btn:hover, .btn:active {
+  .btn:hover,
+  .btn:active {
     background-color: #666;
   }
 }
@@ -918,7 +1057,7 @@ $icon-failure: #dc3545;
   width: 80%;
 }
 
-@media screen and (max-width: 960px){
+@media screen and (max-width: 960px) {
   .map-search {
     width: 60%;
   }
@@ -946,7 +1085,7 @@ $icon-failure: #dc3545;
   }
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .redo-search {
     left: 0;
     width: 30%;
@@ -958,7 +1097,7 @@ $icon-failure: #dc3545;
   }
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .searchbar-inner {
     padding: 0 15px;
   }
@@ -973,7 +1112,7 @@ $icon-failure: #dc3545;
   padding-left: 0;
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .map-column {
     padding-right: 15px;
     padding-left: 5px;
@@ -1008,8 +1147,7 @@ $icon-failure: #dc3545;
   }
 }
 
-
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .map-container {
     height: 80vh;
     position: sticky;
@@ -1041,7 +1179,7 @@ $icon-failure: #dc3545;
   padding-left: 0;
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .sidebar-column {
     padding-right: 0px;
     padding-left: 15px;
@@ -1118,5 +1256,4 @@ $icon-failure: #dc3545;
 .color-legend li span {
   color: #333;
 }
-
 </style>
