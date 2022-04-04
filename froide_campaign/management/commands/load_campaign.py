@@ -1,8 +1,8 @@
 import csv
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import translation
-from django.conf import settings
 
 from ...utils import CSVImporter
 

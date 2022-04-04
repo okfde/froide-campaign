@@ -1,10 +1,8 @@
 from django.template.defaultfilters import slugify
-
-from froide.publicbody.models import PublicBody, Category, Classification
 from froide.georegion.models import GeoRegion
+from froide.publicbody.models import Category, Classification, PublicBody
 
 from ..models import InformationObject
-
 from .base import BaseProvider, first
 
 
@@ -28,7 +26,7 @@ class PublicBodyProvider(BaseProvider):
             filters[key + "__in"] = model.get_tree(obj)
 
         attr_filters = ("jurisdiction_id",)
-        for key, model in attr_filters:
+        for key, _model in attr_filters:
             if key not in self.kwargs:
                 continue
             filters[key] = self.kwargs[key]

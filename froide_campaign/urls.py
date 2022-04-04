@@ -1,20 +1,19 @@
 from django.urls import path
-
 from froide.api import api_router
 
+from .api_views import InformationObjectViewSet
 from .views import (
-    index,
-    campaign_page,
-    CampaignPageListView,
-    CampaignPageEditView,
     AssignCampaignPageTeamView,
+    CampaignPageEditView,
     CampaignPageEmbedView,
+    CampaignPageListView,
     CampaignPageUpdateEmbedView,
-    redirect_to_make_request,
     CampaignStatistics,
     add_campaign_report,
+    campaign_page,
+    index,
+    redirect_to_make_request,
 )
-from .api_views import InformationObjectViewSet
 
 urlpatterns = [
     path("", index, name="campaign-index"),

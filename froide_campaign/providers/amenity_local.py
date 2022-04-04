@@ -1,8 +1,6 @@
-from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
-
+from django.contrib.gis.measure import D
 from froide.publicbody.models import PublicBody
-
 
 from .amenity import AmenityProvider
 

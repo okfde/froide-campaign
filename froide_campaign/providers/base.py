@@ -1,19 +1,16 @@
 import html
-
 from collections import defaultdict
-from urllib.parse import urlencode, quote
+from urllib.parse import quote, urlencode
 
-from django.urls import reverse
 from django.conf import settings
-from django.template import Context
 from django.contrib.gis.measure import D
-
+from django.template import Context
+from django.urls import reverse
 from froide.campaign.utils import connect_foirequest
 from froide.foirequest.models import FoiRequest
 
 from ..models import InformationObject
 from ..serializers import CampaignProviderItemSerializer
-
 
 LIMIT = 100
 

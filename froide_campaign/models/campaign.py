@@ -4,26 +4,23 @@ import re
 
 from django.apps import apps
 from django.conf import settings
-from django.db import models
 from django.contrib.gis.db import models as gis_models
+from django.contrib.postgres.search import SearchQuery, SearchVector, SearchVectorField
+from django.db import models
+from django.template import Context, Template
 from django.urls import reverse
-from django.utils.safestring import mark_safe
-from django.template import Template, Context
-from django.utils.http import urlquote
 from django.utils.html import format_html
+from django.utils.http import urlquote
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from django.contrib.postgres.search import SearchVectorField, SearchVector, SearchQuery
-
-from parler.models import TranslatableModel, TranslatedFields
-from parler.managers import TranslatableManager
-
-from froide.publicbody.models import PublicBody
-from froide.foirequest.models import FoiRequest, FoiAttachment
-from froide.team.models import Team
+from froide.foirequest.models import FoiAttachment, FoiRequest
 from froide.helper.csv_utils import export_csv
+from froide.publicbody.models import PublicBody
+from froide.team.models import Team
+from parler.managers import TranslatableManager
+from parler.models import TranslatableModel, TranslatedFields
 
 from froide_campaign.storage import OverwriteStorage
-
 
 WORD_RE = re.compile(r"^\w+$", re.IGNORECASE)
 

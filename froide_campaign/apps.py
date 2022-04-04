@@ -10,15 +10,15 @@ class FroideCampaignConfig(AppConfig):
     verbose_name = _("Froide Campaign App")
 
     def ready(self):
-        from .listeners import connect_info_object
-
         from froide.foirequest.models import FoiRequest
+
+        from .listeners import connect_info_object
 
         FoiRequest.request_sent.connect(connect_info_object)
 
-        from froide.account.menu import menu_registry, MenuItem
-        from froide.account.export import registry
         from froide.account import account_merged
+        from froide.account.export import registry
+        from froide.account.menu import MenuItem, menu_registry
 
         registry.register(export_user_data)
         account_merged.connect(merge_user)
@@ -37,6 +37,7 @@ class FroideCampaignConfig(AppConfig):
 
 def merge_user(sender, old_user=None, new_user=None, **kwargs):
     from froide.account.utils import move_ownership
+
     from .models import CampaignPage
 
     move_ownership(CampaignPage, "user", old_user, new_user)
@@ -44,6 +45,7 @@ def merge_user(sender, old_user=None, new_user=None, **kwargs):
 
 def export_user_data(user):
     from froide.foirequest.models.request import get_absolute_domain_short_url
+
     from .models import CampaignPage, InformationObject
 
     campaign_pages = CampaignPage.objects.filter(user=user)
