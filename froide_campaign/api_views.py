@@ -4,13 +4,15 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404
-from froide.foirequest.api_views import throttle_action
-from froide.foirequest.models import FoiRequest
+
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
+
+from froide.foirequest.api_views import throttle_action
+from froide.foirequest.models import FoiRequest
 
 from .filters import (
     CategoryFilter,

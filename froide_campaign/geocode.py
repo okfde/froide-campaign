@@ -1,9 +1,11 @@
 import logging
 import re
 
-import geocoder
 from django.conf import settings
 from django.contrib.gis.geos import Point
+
+import geocoder
+
 from froide.georegion.models import GeoRegion
 
 logger = logging.getLogger()

@@ -1,7 +1,8 @@
 from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from froide.helper.presence import get_expiring_keys_manager
 from websockets.exceptions import ConnectionClosedOK
+
+from froide.helper.presence import get_expiring_keys_manager
 
 from .models import Campaign
 

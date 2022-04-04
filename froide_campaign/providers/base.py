@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.measure import D
 from django.template import Context
 from django.urls import reverse
+
 from froide.campaign.utils import connect_foirequest
 from froide.foirequest.models import FoiRequest
 

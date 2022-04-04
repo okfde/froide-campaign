@@ -2,9 +2,10 @@
 
 import django.contrib.postgres.fields.jsonb
 import django.db.models.deletion
+from django.db import migrations, models
+
 import parler.fields
 import parler.models
-from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
