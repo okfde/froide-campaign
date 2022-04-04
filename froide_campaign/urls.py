@@ -1,4 +1,5 @@
 from django.urls import path
+
 from froide.api import api_router
 
 from .api_views import InformationObjectViewSet

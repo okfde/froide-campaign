@@ -7,6 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.files.base import ContentFile
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
+
 from froide.foirequest.models import FoiRequest
 from froide.publicbody.models import PublicBody
 

@@ -2,8 +2,9 @@
 from __future__ import unicode_literals
 
 import django.db.models.deletion
-import parler
 from django.db import migrations, models
+
+import parler
 
 
 class Migration(migrations.Migration):

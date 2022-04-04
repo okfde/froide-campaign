@@ -3,6 +3,7 @@ from functools import reduce
 
 from django.conf import settings
 from django.db import models
+
 from rest_framework import filters
 from rest_framework.compat import distinct
 

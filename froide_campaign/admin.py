@@ -2,7 +2,6 @@ import csv
 import io
 from datetime import timedelta
 
-from adminsortable2.admin import SortableInlineAdminMixin
 from django import forms
 from django.conf.urls import url
 from django.contrib import admin, messages
@@ -12,10 +11,13 @@ from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from adminsortable2.admin import SortableInlineAdminMixin
+from parler.admin import TranslatableAdmin
+
 from froide.georegion.models import GeoRegion
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
-from parler.admin import TranslatableAdmin
 
 from .models import (
     Answer,

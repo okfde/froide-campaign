@@ -1,4 +1,5 @@
 from django.template.defaultfilters import slugify
+
 from froide.georegion.models import GeoRegion
 from froide.publicbody.models import Category, Classification, PublicBody
 

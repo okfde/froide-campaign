@@ -4,7 +4,9 @@ from functools import reduce
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+
 from django_amenities.models import Amenity
+
 from froide.campaign.utils import connect_foirequest
 from froide.georegion.models import GeoRegion
 from froide.publicbody.models import PublicBody

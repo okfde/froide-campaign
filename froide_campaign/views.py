@@ -1,4 +1,3 @@
-import django_filters
 from django import forms
 from django.contrib import messages
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -11,6 +10,10 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import DetailView, ListView
+
+import django_filters
+from parler.views import TranslatableSlugMixin
+
 from froide.campaign.models import Campaign as FroideCampaign
 from froide.foirequest.auth import can_write_foirequest
 from froide.foirequest.models.request import FoiRequest
@@ -24,7 +27,6 @@ from froide.helper.cache import cache_anonymous_page
 from froide.helper.utils import render_403
 from froide.team.forms import AssignTeamForm
 from froide.team.views import AssignTeamView
-from parler.views import TranslatableSlugMixin
 
 from .forms import QuestionaireForm
 from .models import Campaign, CampaignPage, InformationObject, Questionaire
