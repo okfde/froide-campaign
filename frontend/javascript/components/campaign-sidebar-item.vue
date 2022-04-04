@@ -16,8 +16,7 @@
               <CampaignListTag
                 v-for="(category, i) in data.categories"
                 :key="i"
-                :isButton="false"
-              >
+                :isButton="false">
                 #{{ category.title }}
               </CampaignListTag>
             </h5>
@@ -26,24 +25,37 @@
         <div class="row">
           <div class="col-12">
             <div v-if="status !== 'normal'" class="request-status">
-              <p :style="{'color':color}">
-                  {{ statusString }} <br>
-                <a :href="'/a/' + data.foirequest" target="_blank">zur Anfrage&nbsp;&rarr;</a>
+              <p :style="{ color: color }">
+                {{ statusString }} <br />
+                <a :href="'/a/' + data.foirequest" target="_blank"
+                  >zur Anfrage&nbsp;&rarr;</a
+                >
               </p>
               <p v-if="allowMultipleRequests">
-                <a @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
-                  erneut<br class="d-block d-sm-none"/>
+                <a
+                  @click.prevent.stop="startRequest"
+                  class="btn btn-primary btn-sm make-request-btn text-white"
+                  target="_blank">
+                  erneut<br class="d-block d-sm-none" />
                   anfragen&nbsp;&rarr;
                 </a>
               </p>
             </div>
             <p v-if="status === 'normal' || status === 'withdrawn'">
-              <a v-if="buttonText" @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
-                <br class="d-block d-sm-none"/>
-                {{this.buttonText}}&nbsp;&rarr;
+              <a
+                v-if="buttonText"
+                @click.prevent.stop="startRequest"
+                class="btn btn-primary btn-sm make-request-btn text-white"
+                target="_blank">
+                <br class="d-block d-sm-none" />
+                {{ this.buttonText }}&nbsp;&rarr;
               </a>
-              <a v-else @click.prevent.stop="startRequest" class="btn btn-primary btn-sm make-request-btn text-white" target="_blank">
-                Ort<br class="d-block d-sm-none"/>
+              <a
+                v-else
+                @click.prevent.stop="startRequest"
+                class="btn btn-primary btn-sm make-request-btn text-white"
+                target="_blank">
+                Ort<br class="d-block d-sm-none" />
                 anfragen&nbsp;&rarr;
               </a>
             </p>
@@ -86,7 +98,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .sidebar-item {
   padding: 0;
   width: 100%;
@@ -101,7 +112,7 @@ export default {
   padding-top: 0.5rem;
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .sidebar-item:first-child .sidebar-item-inner {
     padding-top: 1rem;
   }
@@ -116,14 +127,13 @@ export default {
   min-width: 110px;
 }
 
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .image-column {
     padding: 0 5px 0 5px;
   }
 }
 
-
-@media screen and (min-width: 768px){
+@media screen and (min-width: 768px) {
   .map-container {
     height: 80vh;
   }
@@ -133,7 +143,8 @@ export default {
   }
 }
 
-.image-column-inner, .image-column-inner-link {
+.image-column-inner,
+.image-column-inner-link {
   display: block;
   background-color: #eee;
   padding: 0;
@@ -249,5 +260,4 @@ export default {
 .request-status {
   font-size: 0.9rem;
 }
-
 </style>

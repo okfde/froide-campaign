@@ -1,28 +1,17 @@
 <template>
-  <div
-    id="campaign-request"
-    ref="campaignRequest"
-    class="container mt-5 mb-5"
-  >
+  <div id="campaign-request" ref="campaignRequest" class="container mt-5 mb-5">
     <div class="row">
       <div class="col-12">
-        <div
-          v-if="fetching"
-          class="loading"
-        >
+        <div v-if="fetching" class="loading">
           <campaign-loader />
         </div>
         <campaign-recommend
           v-else-if="showMaxRequestWarning"
           :user="userInfo"
           :request-count="userRequestCount"
-          @close="$emit('close')"
-        />
+          @close="$emit('close')" />
         <template v-else>
-          <button
-            class="btn btn-sm btn-light"
-            @click="$emit('close')"
-          >
+          <button class="btn btn-sm btn-light" @click="$emit('close')">
             &lt; {{ messages.back }}
           </button>
           <div class="row justify-content-md-end mt-5">
@@ -30,8 +19,7 @@
               v-if="!fetching && publicbodiesOptions.length > 1"
               :publicbodies="publicbodiesOptions"
               :publicbody="publicbody"
-              @publicBodyChanged="updatePublicBody"
-            />
+              @publicBodyChanged="updatePublicBody" />
           </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
@@ -43,36 +31,27 @@
             method="post"
             :action="config.url.makeRequest"
             target="_blank"
-            @submit="formSubmit"
-          >
+            @submit="formSubmit">
             <input
               type="hidden"
               name="csrfmiddlewaretoken"
-              :value="csrfToken"
-            >
+              :value="csrfToken" />
             <input
               v-model="params.redirect_url"
               type="hidden"
-              name="redirect_url"
-            >
-            <input
-              v-model="params.ref"
-              type="hidden"
-              name="reference"
-            >
+              name="redirect_url" />
+            <input v-model="params.ref" type="hidden" name="reference" />
             <input
               v-if="!privateRequests"
               type="hidden"
               name="public"
-              value="1"
-            >
+              value="1" />
             <input
               v-for="k in hideParams"
               :key="k"
               type="hidden"
               :name="k"
-              value="1"
-            >
+              value="1" />
             <request-form
               v-if="!fetching"
               :publicbodies="[publicbody]"
@@ -88,30 +67,20 @@
               :hide-editing="hideParams.includes('hide_editing')"
               :law-type="lawType"
               :use-pseudonym="false"
-              :config="config"
-            />
+              :config="config" />
             <user-registration
               :form="userForm"
               :config="config"
               :user="userInfo"
               :default-law="defaultLaw"
               :address-help-text="addressHelpText"
-              :address-required="addressRequired"
-            />
-            <user-terms
-              v-if="!userInfo"
-              :form="userForm"
-            />
-            <div
-              v-if="!hideNewsletterCheckbox"
-              class="row"
-            >
+              :address-required="addressRequired" />
+            <user-terms v-if="!userInfo" :form="userForm" />
+            <div v-if="!hideNewsletterCheckbox" class="row">
               <div class="col-md-12">
                 <div class="card mb-3">
                   <div class="card-body">
-                    <div
-                      class="form-group row"
-                    >
+                    <div class="form-group row">
                       <div class="col-lg-9">
                         <div class="form-check">
                           <label class="form-check-label">
@@ -121,19 +90,19 @@
                               type="checkbox"
                               name="subscribe"
                               class="form-check-input"
-                              :value="userHasSubscription"
+                              :value="userHasSubscription" />
+                            <span v-if="subscribeText">{{
+                              subscribeText
+                            }}</span>
+                            <span v-else
+                              >Bitte senden Sie mir Informationen zu dieser
+                              Kampagne per E-mail</span
                             >
-                            <span v-if="subscribeText">{{ subscribeText }}</span>
-                            <span v-else>Bitte senden Sie mir Informationen zu dieser Kampagne per E-mail</span>
                           </label>
                         </div>
                       </div>
                     </div>
-                    <p
-                      v-if="extraText"
-                      class="mb-0"
-                      v-html="extraText"
-                    />
+                    <p v-if="extraText" class="mb-0" v-html="extraText" />
                   </div>
                 </div>
               </div>
@@ -143,24 +112,16 @@
                 v-if="buttonText"
                 type="submit"
                 class="btn btn-lg btn-success"
-                :disabled="submitting"
-              >
-                <i
-                  class="fa fa-angle-double-right"
-                  aria-hidden="true"
-                />
+                :disabled="submitting">
+                <i class="fa fa-angle-double-right" aria-hidden="true" />
                 {{ buttonText }}
               </button>
               <button
                 v-else
                 type="submit"
                 class="btn btn-lg btn-success"
-                :disabled="submitting"
-              >
-                <i
-                  class="fa fa-angle-double-right"
-                  aria-hidden="true"
-                />
+                :disabled="submitting">
+                <i class="fa fa-angle-double-right" aria-hidden="true" />
                 {{ messages.sendRequest }}
               </button>
             </div>
@@ -176,8 +137,8 @@ import CampaignChoosePublicbody from './campaign-choose-publicbody.vue'
 import RequestForm from 'froide/frontend/javascript/components/makerequest/request-form.vue'
 import UserRegistration from 'froide/frontend/javascript/components/makerequest/user-registration.vue'
 import UserTerms from 'froide/frontend/javascript/components/makerequest/user-terms.vue'
-import {selectBestLaw} from 'froide/frontend/javascript/lib/law-select'
-import campaign_i18n from '../../i18n/campaign-request.json'
+import { selectBestLaw } from 'froide/frontend/javascript/lib/law-select'
+import campaignI18n from '../../i18n/campaign-request.json'
 
 import CampaignLoader from './campaign-loader'
 import CampaignRecommend from './campaign-recommend'
@@ -263,12 +224,16 @@ export default {
       default: false
     }
   },
-  data () {
-    let language = document.documentElement.lang
-    let messages = campaign_i18n[language]
+  data() {
+    const language = document.documentElement.lang
+    const messages = campaignI18n[language]
     let text = messages.addressInfo
-    if (this.lawType == 'VIG') {
-      text = text + '<strong class="text-danger">' + messages.warningVIG + '</strong>'
+    if (this.lawType === 'VIG') {
+      text =
+        text +
+        '<strong class="text-danger">' +
+        messages.warningVIG +
+        '</strong>'
     }
 
     return {
@@ -281,67 +246,70 @@ export default {
     }
   },
   computed: {
-    csrfToken () {
+    csrfToken() {
       return this.$root.csrfToken
     },
-    showMaxRequestWarning () {
-      return this.maxRequestsPerUser > 0 && (
-        (this.userInfo &&
+    showMaxRequestWarning() {
+      return (
+        this.maxRequestsPerUser > 0 &&
+        ((this.userInfo &&
           this.data.userRequestCount >= this.maxRequestsPerUser) ||
-        (!this.userInfo &&
-          this.localRequestCount >= this.maxRequestsPerUser)
+          (!this.userInfo && this.localRequestCount >= this.maxRequestsPerUser))
       )
     },
-    userRequestCount () {
+    userRequestCount() {
       if (this.userInfo) {
         return this.data.userRequestCount
       }
       return this.localRequestCount
     },
-    params () {
-      let params = {}
+    params() {
+      const params = {}
       if (!this.data.makeRequestURL) {
         return {}
       }
-      this.data.makeRequestURL.split('?')[1].split('&').forEach((pair) => {
-        pair = pair.split('=')
-        params[pair[0]] = decodeURIComponent(pair[1])
-      })
+      this.data.makeRequestURL
+        .split('?')[1]
+        .split('&')
+        .forEach((pair) => {
+          pair = pair.split('=')
+          params[pair[0]] = decodeURIComponent(pair[1])
+        })
       return params
     },
-    subject () {
+    subject() {
       return this.params.subject.replace('\n', ' ') || ''
     },
-    body () {
+    body() {
       return this.params.body || ''
     },
-    hideParams () {
-      var a = []
-      for (let k in this.params) {
+    hideParams() {
+      const a = []
+      for (const k in this.params) {
         if (k.match(/hide_\w+/)) {
           a.push(k)
         }
       }
       return a
     },
-    defaultLaw () {
+    defaultLaw() {
       return selectBestLaw(this.publicbody.laws, this.lawType)
     }
   },
-  mounted () {
+  mounted() {
     this.$refs.campaignRequest.scrollIntoView(true)
     if (!this.data.full) {
       this.getDetail(this.data, this.campaignId)
     }
   },
   methods: {
-    updatePublicBody (publicbody) {
+    updatePublicBody(publicbody) {
       this.$emit('publicBodyChanged', publicbody)
     },
-    close () {
+    close() {
       this.$emit('close')
     },
-    formSubmit () {
+    formSubmit() {
       this.submitting = true
       window.setTimeout(() => {
         this.$emit('requestmade', this.data)
@@ -352,23 +320,22 @@ export default {
 }
 </script>
 
-
 <style lang="scss" scoped>
-  .loading {
-    height: 100vh;
-    padding-top: 30%;
-    background-color: #fff;
-    // animation: blinker 0.8s linear infinite;
-    text-align: center;
-  }
+.loading {
+  height: 100vh;
+  padding-top: 30%;
+  background-color: #fff;
+  // animation: blinker 0.8s linear infinite;
+  text-align: center;
+}
 
-  .loading img {
-    width: 10%;
-  }
+.loading img {
+  width: 10%;
+}
 
-  @keyframes blinker {
-    50% {
-      opacity: 0.25;
-    }
+@keyframes blinker {
+  50% {
+    opacity: 0.25;
   }
+}
 </style>

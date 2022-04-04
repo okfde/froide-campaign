@@ -3,12 +3,15 @@
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">
-            Wo wollen Sie suchen?
-          </h5>
-          <button type="button" class="close" aria-label="Close" @click="close" v-if="locationKnown">
-             <span aria-hidden="true">&times;</span>
-           </button>
+          <h5 class="modal-title">Wo wollen Sie suchen?</h5>
+          <button
+            type="button"
+            class="close"
+            aria-label="Close"
+            @click="close"
+            v-if="locationKnown">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -17,40 +20,60 @@
                 <span v-if="errorMessage">
                   {{ errorMessage }}
                 </span>
-                <span v-else>
-                  Es wurde nichts gefunden.
-                </span>
+                <span v-else> Es wurde nichts gefunden. </span>
               </div>
 
               <p v-if="geolocationAvailable">
                 Suchen Sie nach einem Ort, mit PLZ oder in Ihrer Umgebung.
               </p>
-              <p v-else>
-                Bitte geben Sie eine Postleitzahl oder Ort ein.
-              </p>
+              <p v-else>Bitte geben Sie eine Postleitzahl oder Ort ein.</p>
             </div>
           </div>
           <div class="row justify-content-lg-center">
-            <div :class="{'col-lg-6 col-md-7': geolocationAvailable, 'col-lg-12': !geolocationAvailable}">
+            <div
+              :class="{
+                'col-lg-6 col-md-7': geolocationAvailable,
+                'col-lg-12': !geolocationAvailable
+              }">
               <div class="input-group">
                 <div class="clearable-input">
-                  <input type="text" class="form-control" v-model="location"
+                  <input
+                    type="text"
+                    class="form-control"
+                    v-model="location"
                     placeholder="Ort oder PLZ"
                     @keydown.enter.prevent="locationLookup"
-                    ref="locationInput">
-                  <span class="clearer fa fa-close" v-if="location.length > 0" @click.stop="location = ''"></span>
+                    ref="locationInput" />
+                  <span
+                    class="clearer fa fa-close"
+                    v-if="location.length > 0"
+                    @click.stop="location = ''"></span>
                 </div>
                 <div class="input-group-append">
-                  <button class="btn" :class="{'btn-success': validLocation, 'btn-outline-secondary': !validLocation}" type="button" @click.prevent="locationLookup" :disabled="!validLocation">
+                  <button
+                    class="btn"
+                    :class="{
+                      'btn-success': validLocation,
+                      'btn-outline-secondary': !validLocation
+                    }"
+                    type="button"
+                    @click.prevent="locationLookup"
+                    :disabled="!validLocation">
                     Auf geht’s!
                   </button>
                 </div>
               </div>
               <div>
                 <small>
-                  Beispiel: 
+                  Beispiel:
                   <template v-for="city in exampleCities">
-                    <a href="#" :key="city" @click.prevent="setLocation(city)" class="example-city">{{ city }}</a>
+                    <a
+                      href="#"
+                      :key="city"
+                      @click.prevent="setLocation(city)"
+                      class="example-city"
+                      >{{ city }}</a
+                    >
                   </template>
                 </small>
               </div>
@@ -60,13 +83,19 @@
                 <strong>oder</strong>
               </div>
               <div class="col-md-4 col-lg-5">
-                <button class="btn btn-primary btn-block" @click.prevent="requestGeolocation" :disabled="determiningGeolocation">
+                <button
+                  class="btn btn-primary btn-block"
+                  @click.prevent="requestGeolocation"
+                  :disabled="determiningGeolocation">
                   <template v-if="geolocationDetermined">
                     <i class="fa fa-dot-circle-o" aria-hidden="true"></i>
                     Zu Ihrem Standort
                   </template>
                   <template v-else-if="determiningGeolocation">
-                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                    <span
+                      class="spinner-grow spinner-grow-sm"
+                      role="status"
+                      aria-hidden="true"></span>
                     Ihr Standort wird ermittelt...
                   </template>
                   <template v-else>
@@ -84,7 +113,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'campaign-locator',
   props: {
@@ -121,14 +149,15 @@ export default {
       default: false
     }
   },
-  mounted () {
+  mounted() {
     if (this.$refs.locationInput) {
       this.$refs.locationInput.focus()
     }
   },
-  data () {
+  data() {
     if (window.navigator && window.navigator.permissions) {
-      navigator.permissions.query({'name': 'geolocation'})
+      navigator.permissions
+        .query({ name: 'geolocation' })
         .then((permission) => {
           if (permission.state === 'denied') {
             this.geolocationAllowed = false
@@ -149,16 +178,20 @@ export default {
     }
   },
   computed: {
-    validPostcode () {
+    validPostcode() {
       return !!this.postcode.match(/^\d{5}$/)
     },
-    validLocation () {
+    validLocation() {
       return this.location.length > 0
     },
-    geolocationAvailable () {
-      return !!window.navigator.geolocation && this.geolocationAllowed && !this.geolocationDisabled
+    geolocationAvailable() {
+      return (
+        !!window.navigator.geolocation &&
+        this.geolocationAllowed &&
+        !this.geolocationDisabled
+      )
     },
-    exampleCities () {
+    exampleCities() {
       let examples = ['Berlin', 'Hamburg', 'Köln', 'München']
       if (this.exampleCity === '') {
         return examples
@@ -168,17 +201,17 @@ export default {
     }
   },
   methods: {
-    locationLookup () {
+    locationLookup() {
       if (this.validLocation) {
-          this.$emit('locationChosen', '' + this.location)
-          this.$emit('close')
+        this.$emit('locationChosen', '' + this.location)
+        this.$emit('close')
       }
     },
-    setLocation (city) {
+    setLocation(city) {
       this.location = city
       this.locationLookup()
     },
-    requestGeolocation () {
+    requestGeolocation() {
       if (this.geolocationDetermined) {
         this.$emit('close')
         return
@@ -189,21 +222,21 @@ export default {
         this.geolocationError
       )
     },
-    close () {
+    close() {
       if (this.locationKnown) {
         this.$emit('close')
       }
     },
-    geolocationSuccess (pos) {
+    geolocationSuccess(pos) {
       this.determiningGeolocation = false
       this.geolocationDetermined = true
-      var crd = pos.coords
+      const crd = pos.coords
       this.$emit('coordinatesChosen', [crd.latitude, crd.longitude])
       if (!this.autoGeolocation) {
         this.$emit('close')
       }
     },
-    geolocationError (err) {
+    geolocationError(err) {
       this.determiningGeolocation = false
       if (err) {
         this.geolocationAllowed = false
@@ -215,54 +248,52 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  #campaign-locator {
-    z-index: 3000;
-  }
+#campaign-locator {
+  z-index: 3000;
+}
 
-  .postcode-input {
-    width: 120px;
-  }
+.postcode-input {
+  width: 120px;
+}
 
-  .or-column {
-    text-align: center;
-    padding: 0.5rem;
-  }
+.or-column {
+  text-align: center;
+  padding: 0.5rem;
+}
 
-  .modal-mask {
-    position: absolute;
-    z-index: 9998;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .5);
-    display: flex;
-    transition: opacity .3s ease;
-  }
+.modal-mask {
+  position: absolute;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: opacity 0.3s ease;
+}
 
-  .clearable-input {
-    position: relative;
-    flex: 1 1 auto;
-    width: 1%;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-bottom: 0;
-  }
-  .clearer {
-    position: absolute;
-    right: 10px;
-    top: 30%;
-    color: #999;
-    cursor: pointer;
-  }
+.clearable-input {
+  position: relative;
+  flex: 1 1 auto;
+  width: 1%;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+.clearer {
+  position: absolute;
+  right: 10px;
+  top: 30%;
+  color: #999;
+  cursor: pointer;
+}
 
-  .example-city {
-    text-decoration: underline;
-  }
+.example-city {
+  text-decoration: underline;
+}
 
-  .example-city:not(:last-child) {
-    margin-right: 0.5rem;
-  }
-
-
+.example-city:not(:last-child) {
+  margin-right: 0.5rem;
+}
 </style>

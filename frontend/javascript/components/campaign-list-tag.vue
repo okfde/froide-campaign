@@ -3,8 +3,7 @@
     class="flex badge badge-pill badge-light mb-1 mr-1"
     :class="[{ 'badge-dark': active }, status && 'filter-badge-' + status]"
     v-on="$listeners"
-    aria-role="button"
-  >
+    aria-role="button">
     <slot />
   </span>
 </template>
@@ -19,8 +18,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-@import "~froide/frontend/styles/variables.scss";
+@import '~froide/frontend/styles/variables.scss';
 
 $normal: $secondary;
 $pending: $primary;
@@ -34,7 +32,7 @@ $refused: $danger;
 }
 
 .filter-badge {
-  content: "";
+  content: '';
   display: inline-block;
   width: 0.5rem;
   height: 0.5rem;

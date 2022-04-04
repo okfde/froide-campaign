@@ -1,11 +1,23 @@
-var CampaignDetailMixin = {
+const CampaignDetailMixin = {
   methods: {
-    getDetail (data, campaignId) {
+    getDetail(data, campaignId) {
       this.fetching = true
-      window.fetch(`/api/v1/campaigninformationobject/${data.ident}/?campaign=${campaignId}&lat=${data.lat}&lng=${data.lng}&name=${encodeURIComponent(data.name)}&address=${encodeURIComponent(data.address)}&city=${data.city ? encodeURIComponent(data.city) : ''}&language=${document.documentElement.lang}`)
+      window
+        .fetch(
+          `/api/v1/campaigninformationobject/${
+            data.ident
+          }/?campaign=${campaignId}&lat=${data.lat}&lng=${
+            data.lng
+          }&name=${encodeURIComponent(data.name)}&address=${encodeURIComponent(
+            data.address
+          )}&city=${data.city ? encodeURIComponent(data.city) : ''}&language=${
+            document.documentElement.lang
+          }`
+        )
         .then((response) => {
           return response.json()
-        }).then((data) => {
+        })
+        .then((data) => {
           if (data.error) {
             console.warn('Error requesting the API')
           }
@@ -29,19 +41,21 @@ var CampaignDetailMixin = {
           this.$emit('detailfetched', data)
         })
     },
-    getUser () {
-      return window.fetch('/api/v1/user/')
-        .then((response) => {
-          return response.json()
-        })
-    },
-    getCSRFToken () {
-      return window.fetch('.').then((response) => {
-        return response.text()
-      }).then((text) => {
-        let match = text.match(/name="csrfmiddlewaretoken" value="([^"]+)"/)
-        return match[1]
+    getUser() {
+      return window.fetch('/api/v1/user/').then((response) => {
+        return response.json()
       })
+    },
+    getCSRFToken() {
+      return window
+        .fetch('.')
+        .then((response) => {
+          return response.text()
+        })
+        .then((text) => {
+          const match = text.match(/name="csrfmiddlewaretoken" value="([^"]+)"/)
+          return match[1]
+        })
     }
   }
 }

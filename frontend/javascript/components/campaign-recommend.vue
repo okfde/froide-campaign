@@ -2,18 +2,10 @@
   <div>
     <div class="row justify-content-center mt-5">
       <div class="col-md-9">
-        <h1
-          v-if="user"
-          class="text-center"
-        >
+        <h1 v-if="user" class="text-center">
           {{ i18n.holdOn }}, {{ userName }}!
         </h1>
-        <h1
-          v-else
-          class="text-center"
-        >
-          {{ i18n.holdOn }}!
-        </h1>
+        <h1 v-else class="text-center">{{ i18n.holdOn }}!</h1>
 
         <p class="lead">
           <template v-if="requestCount == 1">
@@ -35,44 +27,23 @@
       </div>
     </div>
     <div class="row justify-content-center">
-      <div
-        v-if="canShare"
-        class="col-md-4 mt-3 text-center"
-      >
-        <button
-          class="btn btn-primary"
-          @click="share"
-        >
-          <span
-            class="fa fa-share-square-o"
-            aria-hidden="true"
-          />
+      <div v-if="canShare" class="col-md-4 mt-3 text-center">
+        <button class="btn btn-primary" @click="share">
+          <span class="fa fa-share-square-o" aria-hidden="true" />
           &nbsp;{{ i18n.shareNow }}
         </button>
       </div>
 
       <div class="col-md-4 mt-3 text-center">
-        <a
-          :href="whatsAppLink"
-          class="btn btn-success"
-        >
-          <span
-            class="fa fa-whatsapp"
-            aria-hidden="true"
-          />
+        <a :href="whatsAppLink" class="btn btn-success">
+          <span class="fa fa-whatsapp" aria-hidden="true" />
           &nbsp;{{ i18n.viaWhatsapp }}
         </a>
       </div>
 
       <div class="col-md-4 mt-3 text-center">
-        <a
-          :href="mailLink"
-          class="btn btn-secondary"
-        >
-          <span
-            class="fa fa-envelope"
-            aria-hidden="true"
-          />
+        <a :href="mailLink" class="btn btn-secondary">
+          <span class="fa fa-envelope" aria-hidden="true" />
           &nbsp;{{ i18n.viaMail }}
         </a>
       </div>
@@ -87,8 +58,7 @@
         class="btn btn-info sharing__link -twitter"
         rel="noopener"
         target="_blank"
-        :href="twitterLink"
-      >
+        :href="twitterLink">
         <i class="fa fa-twitter" />
         Twitter
       </a>
@@ -96,22 +66,18 @@
         class="btn btn-primary sharing__link -facebook"
         rel="noopener"
         target="_blank"
-        :href="facebookLink"
-      >
+        :href="facebookLink">
         <i class="fa fa-facebook" />
         Facebook
       </a>
     </div>
 
-    <hr>
+    <hr />
 
     <div class="row justify-content-center mt-5">
       <div class="col-md-8">
         <p class="text-center">
-          <button
-            class="btn btn-secondary"
-            @click="$emit('close')"
-          >
+          <button class="btn btn-secondary" @click="$emit('close')">
             {{ i18n.backToOverview }}
           </button>
         </p>
@@ -121,8 +87,7 @@
 </template>
 
 <script>
-
-import campaign_i18n from '../../i18n/campaign-request.json'
+import campaignI18n from '../../i18n/campaign-request.json'
 
 export default {
   name: 'CampaignRecommend',
@@ -134,58 +99,64 @@ export default {
     user: {
       type: Object,
       required: true
-    },
+    }
   },
   computed: {
-    i18n () {
-      let language = document.documentElement.lang
-      return campaign_i18n[language]
+    i18n() {
+      const language = document.documentElement.lang
+      return campaignI18n[language]
     },
-    userName () {
+    userName() {
       if (this.user) {
         return `${this.user.first_name} ${this.user.last_name}`
       }
       return ''
     },
-    socialUrl () {
-      let url = document.location.href
+    socialUrl() {
+      const url = document.location.href
       if (url.indexOf('?') !== -1) {
         return url + '&social=1'
       }
       return url + '?social=1'
     },
-    canShare () {
+    canShare() {
       return !!navigator.canShare
     },
-    socialText () {
+    socialText() {
       return `${this.i18n.socialText}\n\n${this.socialUrl}`
     },
-    smsLink () {
+    smsLink() {
       return `sms:?&body=${encodeURIComponent(this.socialText)}`
     },
-    whatsAppLink () {
+    whatsAppLink() {
       return `whatsapp://send?text=${encodeURIComponent(this.socialText)}`
     },
-    mailLink () {
-      let subject = encodeURIComponent(this.i18n.socialSubject)
-      return `mailto:?Subject=${subject}&Body=${encodeURIComponent(this.socialText)}`
+    mailLink() {
+      const subject = encodeURIComponent(this.i18n.socialSubject)
+      return `mailto:?Subject=${subject}&Body=${encodeURIComponent(
+        this.socialText
+      )}`
     },
-    twitterLink () {
-      return `https://twitter.com/share?text=${encodeURIComponent(this.socialText)}&amp;url=${encodeURIComponent(this.socialUrl)}&amp;via=fragdenstaat`
+    twitterLink() {
+      return `https://twitter.com/share?text=${encodeURIComponent(
+        this.socialText
+      )}&amp;url=${encodeURIComponent(this.socialUrl)}&amp;via=fragdenstaat`
     },
-    facebookLink () {
-      return `https://www.facebook.com/sharer.php?u=${encodeURIComponent(this.socialUrl)}`
+    facebookLink() {
+      return `https://www.facebook.com/sharer.php?u=${encodeURIComponent(
+        this.socialUrl
+      )}`
     }
   },
   methods: {
-    share () {
+    share() {
       navigator.share({
         title: this.i18n.socialSubject,
         text: this.i18n.socialText,
         url: this.socialUrl
       })
     },
-    close () {
+    close() {
       this.$emit('close')
     }
   }
