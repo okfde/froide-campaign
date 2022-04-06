@@ -77,7 +77,7 @@ class CSVImporter(object):
             campaign = self.campaign_cache[campaign_id]
 
         title = line.pop("title")
-        slug = line.pop("slug")
+        slug = line.pop("slug", "")
         if not slug:
             slug = slugify(title)
         slug = slug[:255]
