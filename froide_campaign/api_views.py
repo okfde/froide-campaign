@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.db.models import Prefetch
-from django.shortcuts import get_object_or_404
+from django.shortcuts import Http404, get_object_or_404
 
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
@@ -135,7 +135,10 @@ class InformationObjectViewSet(
             qs = Campaign.objects.all()
         else:
             qs = Campaign.objects.get_public()
-        return get_object_or_404(qs, id=campaign_id)
+        try:
+            return get_object_or_404(qs, id=campaign_id)
+        except ValueError:
+            raise Http404
 
     def get_queryset(self):
         campaign = self.get_campaign()
