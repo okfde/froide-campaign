@@ -47,6 +47,13 @@ def get_lat_lng(request):
     return lat, lng
 
 
+def get_language(request):
+    lang = request.GET.get("language", settings.LANGUAGE_CODE)
+    if lang not in dict(settings.LANGUAGES):
+        return settings.LANGUAGE_CODE
+    return lang
+
+
 class AddLocationPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         campaign_id = request.data.get("campaign")
@@ -84,8 +91,7 @@ class InformationObjectViewSet(
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        lang = self.request.GET.get("language", settings.LANGUAGE_CODE)
-        context.update({"language": lang})
+        context.update({"language": get_language(self.request)})
         return context
 
     def get_permissions(self):
@@ -108,7 +114,7 @@ class InformationObjectViewSet(
 
     def retrieve(self, request, *args, **kwargs):
         campaign = self.get_campaign()
-        language = self.request.GET.get("language", settings.LANGUAGE_CODE)
+        language = get_language(self.request)
         campaign.set_current_language(language)
         provider = campaign.get_provider()
         ident = kwargs.pop("pk")
