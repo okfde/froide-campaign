@@ -272,10 +272,16 @@ class InformationObjectViewSet(
         except (ValueError, TypeError):
             pass
 
-        data = provider.search(**filters)
+        try:
+            data = provider.search(**filters)
+        except ValueError:
+            return Response([])
 
         if not type(provider) == BaseProvider:
-            iobjs = BaseProvider(campaign).search(**filters)
-            data = data + iobjs
+            try:
+                iobjs = BaseProvider(campaign).search(**filters)
+                data = data + iobjs
+            except ValueError:
+                return Response([])
 
         return Response(data)
