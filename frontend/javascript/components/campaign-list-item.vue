@@ -117,6 +117,7 @@ $normal: #007bff;
 $pending: #ffc107;
 $successful: #28a745;
 $refused: #dc3545;
+$withdrawn: #007bff;
 
 .btn-normal {
   background-color: $normal;
@@ -143,5 +144,12 @@ $refused: #dc3545;
   border-color: $refused;
   box-shadow: none;
   background-color: $refused;
+}
+
+.btn-withdrawn {
+  background-color: $withdrawn;
+  border-color: $withdrawn;
+  box-shadow: none;
+  background-color: $withdrawn;
 }
 </style>
