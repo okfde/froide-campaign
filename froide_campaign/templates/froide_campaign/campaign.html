@@ -25,10 +25,10 @@
 {% if campaign_page.requires_foi %}
 <div class="progress">
   <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
-    <span class="sr-only">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
+    <span class="visually-hidden">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
   </div>
   <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
-    <span class="sr-only">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
+    <span class="visually-hidden">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
   </div>
 </div>
 {% endif %}

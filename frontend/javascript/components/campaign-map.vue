@@ -46,7 +46,7 @@
                   v-if="query.length > 0"
                   @click="clearSearch"></span>
               </div>
-              <div class="input-group-append">
+              <div class="">
                 <button
                   class="btn btn-outline-secondary"
                   type="button"
@@ -55,7 +55,7 @@
                   <span class="d-none d-sm-none d-md-inline">Suchen</span>
                 </button>
               </div>
-              <div class="input-group-append mr-auto">
+              <div class="me-auto">
                 <button
                   class="btn btn-outline-secondary"
                   @click="setLocator(true)">
@@ -68,7 +68,7 @@
                   !this.config.hide_status_filter ||
                   this.config.show_featured_only_filter
                 "
-                class="input-group-append">
+                class="">
                 <button
                   class="btn btn-outline-secondary"
                   :class="{ active: showFilter }"
@@ -115,7 +115,7 @@
                   v-if="searching"
                   class="btn btn-secondary btn-sm disabled">
                   <div class="spinner-border" role="status">
-                    <span class="sr-only">Wird geladen...</span>
+                    <span class="visually-hidden">Wird geladen...</span>
                   </div>
                   Suche läuft&hellip;
                 </button>
@@ -137,7 +137,7 @@
                       v-if="query.length > 0"
                       @click="clearSearch"></span>
                   </div>
-                  <div class="input-group-append">
+                  <div class="">
                     <button
                       class="btn btn-outline-secondary"
                       type="button"
@@ -146,7 +146,7 @@
                       <span class="d-none d-sm-none d-lg-inline">Suchen</span>
                     </button>
                   </div>
-                  <div v-if="showFeaturedSwitch" class="input-group-append">
+                  <div v-if="showFeaturedSwitch" class="">
                     <div
                       class="switch-filter py-0 border-top border-bottom border-dark">
                       <switch-button
@@ -157,7 +157,7 @@
                       >
                     </div>
                   </div>
-                  <div class="input-group-append">
+                  <div class="">
                     <button
                       class="btn btn-outline-secondary"
                       @click="setLocator(true)">
@@ -165,7 +165,7 @@
                       <span class="d-none d-lg-inline">Ort</span>
                     </button>
                   </div>
-                  <div v-if="!hideStatusFilter" class="input-group-append">
+                  <div v-if="!hideStatusFilter" class="">
                     <button
                       class="btn btn-outline-secondary"
                       :class="{ active: showFilter }"
@@ -965,7 +965,7 @@ $icon-pending: #ffc107;
 $icon-success: #28a745;
 $icon-failure: #dc3545;
 
-@import '~leaflet/dist/leaflet.css';
+@import 'leaflet/dist/leaflet.css';
 
 .icon-normal {
   fill: $icon-normal;
@@ -1214,8 +1214,8 @@ $icon-failure: #dc3545;
   position: relative;
   flex: 1 1 auto;
   width: 1%;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-end-radius: 0;
+  border-bottom-end-radius: 0;
   margin-bottom: 0;
 }
 .clearer {

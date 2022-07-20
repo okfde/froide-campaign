@@ -6,11 +6,9 @@
           <h4 class="modal-title">Details des fehlenden Ortes</h4>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             aria-label="Close"
-            @click="$emit('close')">
-            <span aria-hidden="true">&times;</span>
-          </button>
+            @click="$emit('close')"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -29,7 +27,7 @@
                   gelistet wird, können Sie hier die Details des Ortes
                   eintragen.
                 </p>
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="new-venue-title">Der Name des Ortes</label>
                   <input
                     v-model="title"
@@ -40,7 +38,7 @@
                     placeholder="Name"
                     required />
                 </div>
-                <div class="form-group">
+                <div class="mb-3">
                   <label for="new-venue-address">Adresse</label>
                   <input
                     v-model="address"
@@ -52,7 +50,7 @@
                 </div>
                 <div class="row">
                   <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                       <label for="new-venue-plz">PLZ</label>
                       <input
                         v-model="postcode"
@@ -64,7 +62,7 @@
                     </div>
                   </div>
                   <div class="col">
-                    <div class="form-group">
+                    <div class="mb-3">
                       <label for="new-venue-ort">Ort</label>
                       <input
                         v-model="city"
@@ -76,7 +74,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-right">
+                <p class="text-end">
                   <button type="submit" class="btn btn-primary">
                     Ort finden und Anfrage stellen
                   </button>

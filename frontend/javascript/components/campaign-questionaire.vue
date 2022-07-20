@@ -34,7 +34,7 @@
     <div class="row my-5">
       <div class="col-7">
         <div v-if="loading" class="spinner-border" role="status">
-          <span class="sr-only">Loading...</span>
+          <span class="visually-hidden">Loading...</span>
         </div>
         <div v-if="request">
           <p v-if="description" v-html="description"></p>
@@ -50,10 +50,7 @@
         <div class="sticky-top">
           <h4>Fragen:</h4>
           <form>
-            <div
-              class="form-group"
-              v-for="(answer, index) in answers"
-              :key="index">
+            <div class="mb-3" v-for="(answer, index) in answers" :key="index">
               <label
                 >{{ answer.question
                 }}<span v-if="answer.required">*</span></label
@@ -87,14 +84,14 @@
             <button
               type="submit"
               @click.prevent="submitAnswersAndNext"
-              class="btn btn-primary pull-right"
+              class="btn btn-primary float-end"
               v-if="objectListIndex < maxIndex">
               Absenden und weiter
             </button>
             <button
               type="submit"
               @click.prevent="submitAnswers"
-              class="btn btn-light mb-2 mr-2 pull-right">
+              class="btn btn-light mb-2 me-2 float-end">
               Absenden
             </button>
           </form>

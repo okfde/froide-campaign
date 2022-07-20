@@ -1,7 +1,10 @@
 <template>
   <span
-    class="flex badge badge-pill badge-light mb-1 mr-1"
-    :class="[{ 'badge-dark': active }, status && 'filter-badge-' + status]"
+    class="flex badge rounded-pill mb-1 me-1"
+    :class="[
+      { 'text-bg-dark': active, 'text-bg-light': !active },
+      status && 'filter-badge-' + status
+    ]"
     v-on="$listeners"
     aria-role="button">
     <slot />
