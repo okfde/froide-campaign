@@ -6,12 +6,10 @@
           <h5 class="modal-title">Wo wollen Sie suchen?</h5>
           <button
             type="button"
-            class="close"
+            class="btn-close"
             aria-label="Close"
             @click="close"
-            v-if="locationKnown">
-            <span aria-hidden="true">&times;</span>
-          </button>
+            v-if="locationKnown"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -49,7 +47,7 @@
                     v-if="location.length > 0"
                     @click.stop="location = ''"></span>
                 </div>
-                <div class="input-group-append">
+                <div class="">
                   <button
                     class="btn"
                     :class="{
@@ -83,26 +81,28 @@
                 <strong>oder</strong>
               </div>
               <div class="col-md-4 col-lg-5">
-                <button
-                  class="btn btn-primary btn-block"
-                  @click.prevent="requestGeolocation"
-                  :disabled="determiningGeolocation">
-                  <template v-if="geolocationDetermined">
-                    <i class="fa fa-dot-circle-o" aria-hidden="true"></i>
-                    Zu Ihrem Standort
-                  </template>
-                  <template v-else-if="determiningGeolocation">
-                    <span
-                      class="spinner-grow spinner-grow-sm"
-                      role="status"
-                      aria-hidden="true"></span>
-                    Ihr Standort wird ermittelt...
-                  </template>
-                  <template v-else>
-                    <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                    Ihren Standort ermitteln
-                  </template>
-                </button>
+                <div class="d-grid">
+                  <button
+                    class="btn btn-primary"
+                    @click.prevent="requestGeolocation"
+                    :disabled="determiningGeolocation">
+                    <template v-if="geolocationDetermined">
+                      <i class="fa fa-dot-circle-o" aria-hidden="true"></i>
+                      Zu Ihrem Standort
+                    </template>
+                    <template v-else-if="determiningGeolocation">
+                      <span
+                        class="spinner-grow spinner-grow-sm"
+                        role="status"
+                        aria-hidden="true"></span>
+                      Ihr Standort wird ermittelt...
+                    </template>
+                    <template v-else>
+                      <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                      Ihren Standort ermitteln
+                    </template>
+                  </button>
+                </div>
               </div>
             </template>
           </div>

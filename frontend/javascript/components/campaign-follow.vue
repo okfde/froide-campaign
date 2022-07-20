@@ -1,8 +1,8 @@
 <template>
-  <div v-if="canFollow">
+  <div v-if="canFollow" class="d-grid">
     <button
       v-if="follows || justFollowed"
-      class="input-large btn btn-block btn-sm"
+      class="input-large btn btn-sm"
       :class="{ 'hover-btn-danger': !justFollowed }"
       @click.stop="unfollow">
       <span v-if="!justFollowed" class="on-hover">
@@ -16,7 +16,7 @@
     </button>
     <button
       v-else
-      class="input-large btn hover-btn-success btn-block btn-sm"
+      class="input-large btn hover-btn-success btn-sm"
       @click.stop="doFollow">
       <span class="on-hover">
         <i class="fa fa-star" aria-hidden="true"></i>

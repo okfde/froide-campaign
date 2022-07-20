@@ -12,7 +12,7 @@
               object.address
             }}</small>
           </div>
-          <div class="ml-auto text-right">
+          <div class="ms-auto text-end">
             <h5>
               <CampaignListTag
                 v-for="category in object.categories"

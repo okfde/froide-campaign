@@ -20,7 +20,7 @@
         <form id="searchform">
           <div class="input-group">
             <input type="text" class="form-control" placeholder="{% trans 'topic' %}" aria-label="Search" id="search-input" autocomplete="off">
-            <div class="input-group-append">
+            <div class="">
               <button class="btn btn-primary" type="submit">
                 {% trans "Search" %}
               </button>
@@ -39,10 +39,12 @@
                 <small>{{ iobj.publicbody.name }}</small>
               </h6>
             </div>
-            <div class="col mr-auto">
-              <a href="{{ iobj.make_request_url }}" rel="noopener" class="btn btn-primary btn-block">
-                {% trans "Request this" %}
-              </a>
+            <div class="col me-auto">
+              <div class="d-grid">
+                <a href="{{ iobj.make_request_url }}" rel="noopener" class="btn btn-primary">
+                  {% trans "Request this" %}
+                </a>
+              </div>
             </div>
           </div>
         {% endfor %}

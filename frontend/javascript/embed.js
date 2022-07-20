@@ -46,9 +46,11 @@ function renderResults(results, emptyMessage) {
         </h6>
       </div>
       <div class="col mr-auto">
-        <a href="${r.request_url}" rel="noopener" class="btn btn-primary btn-block">
-          ${window.Froide.i18n.requestThis}
-        </a>
+        <div class="d-grid">
+          <a href="${r.request_url}" rel="noopener" class="btn btn-primary">
+            ${window.Froide.i18n.requestThis}
+          </a>
+        </div>
       </div>
     </div>`
       )

@@ -11,7 +11,7 @@
             <p v-if="data.subtitle">{{ data.subtitle }}</p>
             <p v-if="data.address" class="venue-address">{{ data.address }}</p>
           </div>
-          <div class="col text-right">
+          <div class="col text-end">
             <h5>
               <CampaignListTag
                 v-for="(category, i) in data.categories"

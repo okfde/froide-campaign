@@ -1,6 +1,6 @@
 <template>
-  <form class="form-group">
-    <label class="my-1 mr-2" for="changePublicbodySelect"
+  <form class="mb-3">
+    <label class="my-1 me-2" for="changePublicbodySelect"
       >Behörde ändern:</label
     >
     <select

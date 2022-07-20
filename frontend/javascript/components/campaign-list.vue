@@ -52,7 +52,7 @@
             <div
               class="fleisch-form-container embed-responsive embed-responsive-21by9">
               <div class="fleisch-form shadow">
-                <p class="h4 font-weight-bolder">DE</p>
+                <p class="h4 fw-bolder">DE</p>
                 <div class="input-group">
                   <input
                     v-model="search"
@@ -60,7 +60,7 @@
                     class="form-control text-center h4"
                     @keyup="searchObjects" />
                 </div>
-                <p class="h4 font-weight-bolder">EG</p>
+                <p class="h4 fw-bolder">EG</p>
               </div>
             </div>
           </div>
@@ -119,7 +119,7 @@
           </div>
           <div v-if="loading" key="loading" class="text-center my-5 py-5 w-100">
             <div class="spinner-border" role="status">
-              <span class="sr-only">Loading...</span>
+              <span class="visually-hidden">Loading...</span>
             </div>
           </div>
         </transition-group>

@@ -80,7 +80,7 @@
               <div class="col-md-12">
                 <div class="card mb-3">
                   <div class="card-body">
-                    <div class="form-group row">
+                    <div class="mb-3 row">
                       <div class="col-lg-9">
                         <div class="form-check">
                           <label class="form-check-label">
@@ -107,7 +107,7 @@
                 </div>
               </div>
             </div>
-            <div class="text-right">
+            <div class="text-end">
               <button
                 v-if="buttonText"
                 type="submit"
