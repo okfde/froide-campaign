@@ -1,6 +1,3 @@
-{% load static %}
-{% load sekizai_tags %}
-
 {% csrf_token %}
 
 <campaign-list
@@ -15,16 +12,4 @@
   >
 </campaign-list>
 
-{% addtoblock 'js' %}
-  <script src="{% static 'js/common.js' %}" charset="utf-8"></script>
-{% endaddtoblock %}
-{% addtoblock 'js' %}
-  <script src="{% static 'js/campaign_list.js' %}" charset="utf-8"></script>
-{% endaddtoblock %}
-
-{% addtoblock 'css' %}
-  <link rel="stylesheet" href="{% static 'css/common.css' %}">
-{% endaddtoblock %}
-{% addtoblock 'css' %}
-  <link rel="stylesheet" href="{% static 'css/campaign_list.css' %}">
-{% endaddtoblock %}
+{% include "_frontend.html" with entry_point="campaign_list.js" %}
