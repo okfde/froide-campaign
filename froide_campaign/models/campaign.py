@@ -14,7 +14,6 @@ from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from froide_campaign.storage import OverwriteStorage
 from parler.managers import TranslatableManager
 from parler.models import TranslatableModel, TranslatedFields
 
@@ -22,6 +21,8 @@ from froide.foirequest.models import FoiAttachment, FoiRequest
 from froide.helper.csv_utils import export_csv
 from froide.publicbody.models import PublicBody
 from froide.team.models import Team
+
+from froide_campaign.storage import OverwriteStorage
 
 WORD_RE = re.compile(r"^\w+$", re.IGNORECASE)
 
