@@ -34,7 +34,7 @@
               <p v-if="allowMultipleRequests">
                 <a
                   @click.prevent.stop="startRequest"
-                  class="btn btn-primary btn-sm make-request-btn text-white"
+                  class="btn btn-primary btn-sm make-request-btn"
                   target="_blank">
                   erneut<br class="d-block d-sm-none" />
                   anfragen&nbsp;&rarr;
@@ -45,7 +45,7 @@
               <a
                 v-if="buttonText"
                 @click.prevent.stop="startRequest"
-                class="btn btn-primary btn-sm make-request-btn text-white"
+                class="btn btn-primary btn-sm make-request-btn"
                 target="_blank">
                 <br class="d-block d-sm-none" />
                 {{ this.buttonText }}&nbsp;&rarr;
@@ -53,7 +53,7 @@
               <a
                 v-else
                 @click.prevent.stop="startRequest"
-                class="btn btn-primary btn-sm make-request-btn text-white"
+                class="btn btn-primary btn-sm make-request-btn"
                 target="_blank">
                 Ort<br class="d-block d-sm-none" />
                 anfragen&nbsp;&rarr;

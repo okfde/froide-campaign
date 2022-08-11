@@ -32,7 +32,7 @@
             <a
               v-else-if="hasNoRequest"
               :href="object.request_url"
-              class="btn btn-normal text-white"
+              class="btn btn-normal"
               @click.prevent.stop="$emit('startRequest', object)">
               {{ i18n.request }}
             </a>
@@ -46,7 +46,7 @@
               <a
                 :href="'/a/' + object.foirequest"
                 target="_blank"
-                class="btn text-white"
+                class="btn"
                 :class="[`btn-${object.resolution}`]">
                 {{ i18n.viewRequest }}
               </a>
@@ -113,16 +113,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$normal: #007bff;
-$pending: #ffc107;
-$successful: #28a745;
-$refused: #dc3545;
-$withdrawn: #007bff;
+@import 'froide/frontend/styles/variables';
+@import 'froide/frontend/styles/color-contrast';
+
+/* FIXME: use colors from variables */
+$normal: $primary;
+$pending: $warning;
+$successful: $success;
+$refused: $danger;
+$withdrawn: $blue-800;
 
 .btn-normal {
   background-color: $normal;
   border-color: $normal;
   box-shadow: none;
+  color: color-contrast($normal);
 }
 
 .btn-pending {
@@ -130,6 +135,7 @@ $withdrawn: #007bff;
   border-color: $pending;
   box-shadow: none;
   background-color: $pending;
+  color: color-contrast($pending);
 }
 
 .btn-successful {
@@ -137,6 +143,7 @@ $withdrawn: #007bff;
   border-color: $successful;
   box-shadow: none;
   background-color: $successful;
+  color: color-contrast($successful);
 }
 
 .btn-refused {
@@ -144,6 +151,7 @@ $withdrawn: #007bff;
   border-color: $refused;
   box-shadow: none;
   background-color: $refused;
+  color: color-contrast($refused);
 }
 
 .btn-withdrawn {
@@ -151,5 +159,6 @@ $withdrawn: #007bff;
   border-color: $withdrawn;
   box-shadow: none;
   background-color: $withdrawn;
+  color: color-contrast($withdrawn);
 }
 </style>
