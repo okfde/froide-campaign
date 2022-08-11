@@ -301,6 +301,8 @@
 <script>
 /* global L */
 import Vue from 'vue'
+import 'leaflet/dist/leaflet.css'
+
 import {
   LMap,
   LTileLayer,
@@ -964,8 +966,6 @@ $icon-normal: #007bff;
 $icon-pending: #ffc107;
 $icon-success: #28a745;
 $icon-failure: #dc3545;
-
-@import 'leaflet/dist/leaflet.css';
 
 .icon-normal {
   fill: $icon-normal;
