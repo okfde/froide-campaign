@@ -3,12 +3,12 @@ import io
 from datetime import timedelta
 
 from django import forms
-from django.conf.urls import url
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -109,8 +109,8 @@ class InformationObjectAdmin(TranslatableAdmin):
     def get_urls(self):
         urls = super(InformationObjectAdmin, self).get_urls()
         my_urls = [
-            url(
-                r"^upload/$",
+            path(
+                "upload/",
                 self.admin_site.admin_view(self.upload_information_objects),
                 name="froide_campaign-admin_upload",
             ),
