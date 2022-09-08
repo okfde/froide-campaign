@@ -1,6 +1,7 @@
 import functools
 import json
 import re
+from urllib.parse import quote as urlquote
 
 from django.apps import apps
 from django.conf import settings
@@ -10,7 +11,6 @@ from django.db import models
 from django.template import Context, Template
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
