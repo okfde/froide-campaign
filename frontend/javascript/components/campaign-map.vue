@@ -803,7 +803,11 @@ export default {
     },
     search(options = {}) {
       this.map.closePopup()
-      this.map.closeTooltip()
+      this.map.eachLayer((layer) => {
+        if (layer.options.pane === 'tooltipPane') {
+          layer.removeFrom(this.map)
+        }
+      })
       this.mapMoved = false
       this.error = false
       this.searching = true
