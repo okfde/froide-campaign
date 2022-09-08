@@ -36,7 +36,6 @@ setup(
     install_requires=[
         "froide",
         "django-filter",
-        "django-markdown-deux",
         "django-admin-sortable2",
         "djangorestframework",
     ],
