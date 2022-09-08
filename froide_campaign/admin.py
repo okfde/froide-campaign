@@ -12,7 +12,7 @@ from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from adminsortable2.admin import SortableInlineAdminMixin
+from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
 from parler.admin import TranslatableAdmin
 
 from froide.georegion.models import GeoRegion
@@ -186,7 +186,7 @@ class QuestionInline(SortableInlineAdminMixin, admin.TabularInline):
     min_num = 0
 
 
-class CampaignQuestionaireAdmin(admin.ModelAdmin):
+class CampaignQuestionaireAdmin(SortableAdminBase, admin.ModelAdmin):
     list_filter = ("campaign",)
     list_display = ("campaign", "title")
     inlines = [QuestionInline]
