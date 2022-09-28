@@ -79,10 +79,6 @@ class AmenityProvider(BaseProvider):
 
     def _get_publicbodies(self, amenity):
         pbs = PublicBody.objects.all()
-        if self.kwargs.get("category"):
-            pbs = pbs.filter(
-                categories__name=self.kwargs["category"],
-            )
 
         regions = (
             GeoRegion.objects.filter(
@@ -93,6 +89,19 @@ class AmenityProvider(BaseProvider):
         )
 
         pbs = pbs.filter(regions__in=regions)
+
+        cats = []
+        if self.kwargs.get("categories"):
+            cats = self.kwargs["categories"]
+        elif self.kwargs.get("category"):
+            cats = [self.kwargs["category"]]
+
+        for cat in cats:
+            pbs = pbs.filter(
+                categories__name=cat,
+            )
+            if pbs:
+                return pbs
         return pbs
 
     def _get_publicbody(self, amenity):

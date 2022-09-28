@@ -40,8 +40,15 @@ class AmenityLocalProvider(AmenityProvider):
             by_name = nearby_pbs.filter(name=amenity.name)
             if by_name:
                 return by_name.first()
-            if self.kwargs.get("category"):
-                by_cat = nearby_pbs.filter(categories__name=self.kwargs["category"])
+
+            cats = []
+            if self.kwargs.get("categories"):
+                cats = self.kwargs["categories"]
+            elif self.kwargs.get("category"):
+                cats = [self.kwargs["category"]]
+
+            for cat in cats:
+                by_cat = nearby_pbs.filter(categories__name=cat)
                 if by_cat:
                     return by_cat.first()
             return nearby_pbs.first()
