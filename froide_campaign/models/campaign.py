@@ -240,7 +240,7 @@ class InformationObjectManager(TranslatableManager):
             "foirequest_id",
             "foirequest__status",
             "foirequest__resolution",
-            "foirequest__first_message",
+            "foirequest__created_at",
             "resolved",
             "context_as_json",
             ("lat", lambda o: o.get_latitude()),
