@@ -177,7 +177,7 @@ class BaseProvider:
             InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
             )
-            .order_by("-foirequest__first_message")
+            .order_by("-foirequest__created_at")
             .values_list(
                 "informationobject__ident",
                 "foirequest_id",

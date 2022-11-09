@@ -162,7 +162,7 @@ class InformationObjectAdmin(TranslatableAdmin):
         for iobj in queryset:
             if iobj.foirequest is None:
                 continue
-            if iobj.foirequest.first_message >= a_day_ago:
+            if iobj.foirequest.created_at >= a_day_ago:
                 continue
             if iobj.foirequest.is_visible():
                 continue

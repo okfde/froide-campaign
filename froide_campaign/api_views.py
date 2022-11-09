@@ -144,9 +144,7 @@ class InformationObjectViewSet(
         campaign = self.get_campaign()
         iobjs = InformationObject.objects.filter(campaign=campaign)
         iobjs = iobjs.prefetch_related(
-            Prefetch(
-                "foirequests", queryset=FoiRequest.objects.order_by("-first_message")
-            )
+            Prefetch("foirequests", queryset=FoiRequest.objects.order_by("-created_at"))
         )
         iobjs = iobjs.prefetch_related("campaign")
         iobjs = iobjs.prefetch_related("categories")
