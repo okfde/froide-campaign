@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'mx-n3': settings.twoColumns }">
+  <div>
     <campaign-request
       v-if="showRequestForm"
       :config="requestConfig"
