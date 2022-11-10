@@ -197,6 +197,10 @@ export default {
     this.$root.csrfToken = document.querySelector(
       '[name=csrfmiddlewaretoken]'
     ).value
+    let resolveHasObjects
+    const hasObjects = new Promise((resolve) => {
+      resolveHasObjects = resolve
+    })
     return {
       allowMultipleRequests: this.settings.allow_multiple_requests
         ? this.settings.allow_multiple_requests
@@ -208,6 +212,8 @@ export default {
       loading: false,
       search: '',
       objects: [],
+      hasObjects,
+      resolveHasObjects,
       baseUrl: `/api/v1/campaigninformationobject/?campaign=${this.config.campaignId}&limit=${this.settings.limit}&featured=${this.settings.featured_only}&language=${this.language}`,
       nextUrl: '',
       meta: [],
@@ -277,6 +283,13 @@ export default {
     }
     this.reservationTimeout = null
     if (this.settings.live) {
+      this.hasObjects.then(() => {
+        this.setupLive()
+      })
+    }
+  },
+  methods: {
+    setupLive() {
       try {
         this.room = new Room(`/ws/campaign/live/${this.config.campaignId}/`)
         this.room
@@ -313,9 +326,7 @@ export default {
         // eslint-disable-next-line no-console
         console.error(e)
       }
-    }
-  },
-  methods: {
+    },
     userUpdated(user) {
       this.user = user
     },
@@ -438,6 +449,7 @@ export default {
           }
           this.hasSearched = true
           this.abortController = null
+          this.resolveHasObjects()
           this.getFollowers()
         })
         .catch((e) => {
