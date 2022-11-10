@@ -57,6 +57,7 @@ class AmenityProvider(BaseProvider):
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         d = {
+            "id": obj.id,
             "ident": obj.ident,
             "request_url": self.get_request_url_redirect(obj.ident),
             "title": obj.name,

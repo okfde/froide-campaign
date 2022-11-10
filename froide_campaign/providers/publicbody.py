@@ -47,6 +47,7 @@ class PublicBodyProvider(BaseProvider):
 
     def get_provider_item_data(self, obj, foirequests=None, detail=False):
         d = {
+            "id": obj.id,
             "ident": obj.id,
             "request_url": self.get_request_url_redirect(obj.id),
             "title": obj.name,
