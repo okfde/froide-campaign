@@ -17,12 +17,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitAny":  true,
+    "noImplicitAny": true,
   },
   "include": [
     "./frontend/javascript/**/*"
   ],
-  "exclude":[
+  "exclude": [
     "node_modules"
-  ]
+  ],
+  "vueCompilerOptions": {
+    "extensions": [
+      ".vue"
+    ]
+  }
 }
