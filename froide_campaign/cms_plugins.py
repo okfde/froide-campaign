@@ -282,10 +282,6 @@ class CampaignProgressPlugin(CMSPluginBase):
     model = CampaignProgressCMSPlugin
     cache = False
 
-    def german_number_display(self, number):
-        number = "{0:,}".format(number)
-        return number.replace(",", "X").replace(".", ",").replace("X", ".")
-
     def get_total(self, instance):
         if not instance.count_featured_only:
             return instance.campaign.get_provider().get_queryset().count()
@@ -342,7 +338,7 @@ class CampaignProgressPlugin(CMSPluginBase):
         total = self.get_total(instance)
         requests = self.get_requests(instance)
         success = self.get_success(instance)
-        context["amount"] = self.german_number_display(requests)
+        context["requests"] = requests
         context["percentage"] = self.get_perc(requests - success, total)
         if requests == total:
             # fill progress bar when it should be
@@ -350,5 +346,5 @@ class CampaignProgressPlugin(CMSPluginBase):
             context["percentage_success"] = 100 - context["percentage"]
         else:
             context["percentage_success"] = self.get_perc(success, total)
-        context["total"] = self.german_number_display(total)
+        context["total"] = total
         return context
