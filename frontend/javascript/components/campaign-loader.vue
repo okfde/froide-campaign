@@ -6,6 +6,6 @@
 
 <script>
 export default {
-  name: 'campaign-loader'
+  name: 'CampaignLoader'
 }
 </script>

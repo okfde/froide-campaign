@@ -30,7 +30,7 @@
 const DATE_RE = /(\d{1,2})\.(\d{1,2})(\.\d{2,4})?/g
 
 export default {
-  name: 'campaign-questionair-message',
+  name: 'CampaignQuestionairMessage',
   props: {
     config: {
       type: Object

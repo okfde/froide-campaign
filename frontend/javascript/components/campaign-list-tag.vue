@@ -5,7 +5,7 @@
       { 'text-bg-dark': active, 'text-bg-light': !active },
       status && 'filter-badge-' + status
     ]"
-    v-on="$listeners"
+    v-bind="$attrs"
     aria-role="button">
     <slot />
   </span>

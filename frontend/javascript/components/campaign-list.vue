@@ -145,7 +145,6 @@
 <script>
 import deepmerge from 'deepmerge'
 import debounce from 'lodash.debounce'
-import Vue from 'vue'
 
 import CampaignListTag from './campaign-list-tag'
 import CampaignListItem from './campaign-list-item'
@@ -496,7 +495,7 @@ export default {
             const objIndex = requestMapping.get(requestId)
             const obj = this.objects[objIndex]
             if (obj) {
-              Vue.set(obj, 'follow', followObj)
+              obj.follow = followObj
             }
           })
         })

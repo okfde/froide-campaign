@@ -21,7 +21,7 @@ repos:
         files: \.(js|ts|vue)?$
         types: [file]
         additional_dependencies:
-          - eslint@7.32.0
+          - eslint@8.21.0
           - eslint-config-standard-with-typescript
           - eslint-plugin-html
           - eslint-plugin-import

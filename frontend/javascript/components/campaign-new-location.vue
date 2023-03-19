@@ -93,11 +93,11 @@
 import { postData } from '../lib/utils.js'
 
 export default {
-  name: 'campaign-new-location',
-  mounted() {},
+  name: 'CampaignNewLocation',
   props: {
     campaignId: {
-      type: Number
+      type: Number,
+      required: true
     }
   },
   data() {

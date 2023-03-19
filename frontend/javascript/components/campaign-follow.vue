@@ -36,7 +36,7 @@ import { postData } from '../lib/utils.js'
 import i18n from '../../i18n/campaign-follow.json'
 
 export default {
-  name: 'campaign-follow',
+  name: 'CampaignFollow',
   props: {
     follow: {
       type: Object

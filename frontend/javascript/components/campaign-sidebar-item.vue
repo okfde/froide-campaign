@@ -16,7 +16,7 @@
               <CampaignListTag
                 v-for="(category, i) in data.categories"
                 :key="i"
-                :isButton="false">
+                :is-button="false">
                 #{{ category.title }}
               </CampaignListTag>
             </h5>
@@ -71,7 +71,7 @@ import CampaignItemMixin from '../lib/mixin'
 import CampaignListTag from './campaign-list-tag'
 
 export default {
-  name: 'campaign-sidebar-item',
+  name: 'CampaignSidebarItem',
   mixins: [CampaignItemMixin],
   components: { CampaignListTag },
   props: {

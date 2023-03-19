@@ -20,7 +20,7 @@
 
 <script>
 export default {
-  name: 'campaign-choose-publicbody',
+  name: 'CampaignChoosePublicbody',
   props: {
     publicbodies: {
       type: Array
