@@ -64,10 +64,9 @@
               <div>
                 <small>
                   Beispiel:
-                  <template v-for="city in exampleCities">
+                  <template v-for="city in exampleCities" :key="city">
                     <a
                       href="#"
-                      :key="city"
                       @click.prevent="setLocation(city)"
                       class="example-city"
                       >{{ city }}</a
@@ -114,7 +113,7 @@
 
 <script>
 export default {
-  name: 'campaign-locator',
+  name: 'CampaignLocator',
   props: {
     defaultPostcode: {
       type: String,

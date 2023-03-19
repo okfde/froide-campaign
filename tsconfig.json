@@ -1,15 +1,8 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es5",
-      "es2015",
-      "es2015.promise"
-    ],
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ESNext",
     "sourceMap": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -18,6 +11,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitAny": true,
+    "downlevelIteration": true
   },
   "include": [
     "./frontend/javascript/**/*"
@@ -28,6 +22,7 @@
   "vueCompilerOptions": {
     "extensions": [
       ".vue"
-    ]
+    ],
+    "target": 3.3,
   }
 }

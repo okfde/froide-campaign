@@ -109,7 +109,7 @@ import { postData } from '../lib/utils.js'
 import { getData } from 'froide/frontend/javascript/lib/api.js'
 import CampaignQuestionairMessage from './campaign-questionaire-message'
 export default {
-  name: 'campaign-questionaire',
+  name: 'CampaignQuestionaire',
   components: {
     CampaignQuestionairMessage
   },
@@ -196,7 +196,7 @@ export default {
         }
       })
     },
-    next: function (event) {
+    next: function () {
       const objectListIndex = this.objectListIndex + 1
       this.objectListIndex = objectListIndex
       this.currentObject = this.informationobjects[objectListIndex]
@@ -227,7 +227,7 @@ export default {
       }
     },
     validateData: function () {
-      const answers = this.answers.map((answer, index) => {
+      const answers = this.answers.map((answer) => {
         const required = answer.required
         const currentAnswer = answer.answer
         return {

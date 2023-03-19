@@ -3,21 +3,21 @@
     <campaign-request
       v-if="showRequestForm"
       :config="requestConfig"
-      :buttonText="config.button_text"
+      :button-text="config.button_text"
       :request-form="requestForm"
       :user-info="user"
       :user-form="userForm"
       :data="showRequestForm"
       :current-url="currentUrl"
-      :campaignId="config.campaignId"
-      :lawType="config.lawType"
-      :extraText="config.requestExtraText"
-      :hideNewsletterCheckbox="hideNewsletterCheckbox"
-      :subscribeText="config.subscribe_text"
-      :hasSubscription="config.hasSubscription"
+      :campaign-id="config.campaignId"
+      :law-type="config.lawType"
+      :extra-text="config.requestExtraText"
+      :hide-newsletter-checkbox="hideNewsletterCheckbox"
+      :subscribe-text="config.subscribe_text"
+      :has-subscription="config.hasSubscription"
       :publicbody="publicbody"
       :publicbodies="[publicbody]"
-      :publicbodiesOptions="publicbodies"
+      :publicbodies-options="publicbodies"
       @publicBodyChanged="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
@@ -178,7 +178,8 @@
 
               <l-map
                 ref="map"
-                :zoom.sync="zoom"
+                :zoom="zoom"
+                @update:zoom="zoom = $event"
                 :center="center"
                 :options="mapOptions"
                 :max-bounds="maxBounds">
@@ -220,10 +221,10 @@
                     <campaign-popup
                       :color="getStatusColor(getStatus(location))"
                       :status="getStatus(location)"
-                      :statusString="getStatusString(getStatus(location))"
+                      :status-string="getStatusString(getStatus(location))"
                       :data="location"
-                      :buttonText="config.button_text"
-                      :allowMultipleRequests="allowMultipleRequests"
+                      :button-text="config.button_text"
+                      :allow-multiple-requests="allowMultipleRequests"
                       @startRequest="startRequest"
                       @detail="setDetail" />
                   </l-popup>
@@ -254,23 +255,23 @@
                 :key="index"
                 :color="getStatusColor(getStatus(location))"
                 :status="getStatus(location)"
-                :statusString="getStatusString(getStatus(location))"
+                :status-string="getStatusString(getStatus(location))"
                 :data="location"
-                :buttonText="config.button_text"
-                :allowMultipleRequests="allowMultipleRequests"
+                :button-text="config.button_text"
+                :allow-multiple-requests="allowMultipleRequests"
                 @startRequest="startRequest"></campaign-sidebar-item>
             </div>
           </div>
           <campaign-locator
             ref="locator"
-            :defaultPostcode="postcode"
-            :defaultLocation="locationName"
-            :exampleCity="city"
-            :locationKnown="locationKnown"
+            :default-postcode="postcode"
+            :default-location="locationName"
+            :example-city="city"
+            :location-known="locationKnown"
             :error="error"
             :error-message="locatorErrorMessage"
             :geolocation-disabled="geolocationDisabled"
-            :isMobile="isMobile"
+            :is-mobile="isMobile"
             @close="setLocator(false)"
             @coordinatesChosen="coordinatesChosen"
             @locationChosen="locationChosen"></campaign-locator>
@@ -278,7 +279,7 @@
             ref="newvenue"
             @close="setNewPlace(false)"
             @locationcreated="locationCreated"
-            :campaignId="config.campaignId"></campaign-new-location>
+            :campaign-id="config.campaignId"></campaign-new-location>
         </div>
       </div>
     </div>
@@ -287,7 +288,6 @@
 
 <script>
 /* global L */
-import Vue from 'vue'
 import 'leaflet/dist/leaflet.css'
 
 import {
@@ -298,7 +298,7 @@ import {
   LMarker,
   LPopup,
   LTooltip
-} from 'vue2-leaflet'
+} from '@vue-leaflet/vue-leaflet'
 import Modal from 'bootstrap/js/dist/modal'
 import 'leaflet.icon.glyph'
 import bbox from '@turf/bbox'
@@ -319,8 +319,8 @@ import {
   latlngToGrid
 } from '../lib/utils'
 
-Vue.directive('scroll', {
-  inserted: function (el, binding) {
+const scroll = {
+  mounted(el, binding) {
     let scrollElement = el
     if (binding.modifiers.window) {
       scrollElement = window
@@ -332,7 +332,18 @@ Vue.directive('scroll', {
     }
     scrollElement.addEventListener('scroll', f)
   }
-})
+}
+
+const focusmarker = {
+  // When the bound element is inserted into the DOM...
+  updated: (el, binding, vnode) => {
+    if (vnode.key === binding.instance.selectedVenueId) {
+      binding.instance.mapObject.setZIndexOffset(300)
+    } else {
+      binding.instance.mapObject.setZIndexOffset(0)
+    }
+  }
+}
 
 const GERMANY_BOUNDS = [
   [56.9449741808516, 24.609375000000004],
@@ -349,10 +360,15 @@ function getColorMode() {
 }
 
 export default {
-  name: 'campaign-map',
+  directives: {
+    scroll,
+    focusmarker
+  },
+  name: 'CampaignMap',
   props: {
     config: {
-      type: Object
+      type: Object,
+      required: true
     },
     userInfo: {
       type: Object,
@@ -363,10 +379,12 @@ export default {
       default: null
     },
     requestForm: {
-      type: Object
+      type: Object,
+      required: true
     },
     requestConfig: {
-      type: Object
+      type: Object,
+      required: true
     }
   },
   components: {
@@ -510,16 +528,6 @@ export default {
     }
   },
   created() {
-    Vue.directive('focusmarker', {
-      // When the bound element is inserted into the DOM...
-      componentUpdated: (el, binding, vnode) => {
-        if (vnode.key === self.selectedVenueId) {
-          vnode.componentInstance.mapObject.setZIndexOffset(300)
-        } else {
-          vnode.componentInstance.mapObject.setZIndexOffset(0)
-        }
-      }
-    })
     const observer = new MutationObserver(
       () => (this.colorMode = getColorMode())
     )
@@ -531,11 +539,11 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.map.attributionControl.setPrefix('')
-      this.map.on('zoomend', (e) => {
+      this.map.on('zoomend', () => {
         this.mapHasMoved()
         this.recordMapPosition()
       })
-      this.map.on('moveend', (e) => {
+      this.map.on('moveend', () => {
         if (this.searchCenter !== null) {
           const currentPosition = this.map.getCenter()
           const distance = this.searchCenter.distanceTo(currentPosition)
@@ -551,7 +559,7 @@ export default {
       })
       this.search()
     })
-    this.map.on('popupopen', (e) => {
+    this.map.on('popupopen', () => {
       this.preventMapMoved()
     })
   },
@@ -830,7 +838,7 @@ export default {
       }
       this.search()
     },
-    getFeatured(options = {}) {
+    getFeatured() {
       this.search()
     },
     search(options = {}) {
@@ -885,7 +893,7 @@ export default {
         })
         .then(this.searchDone(options))
     },
-    searchDone(options) {
+    searchDone() {
       return (data) => {
         this.searching = false
         this.hasSearched = true
@@ -962,7 +970,7 @@ export default {
     getIconUrl(status) {
       return getPinURL(COLORS[status])
     },
-    handleSidebarScroll(evt, el) {
+    handleSidebarScroll() {
       if (this.modalActive) {
         return
       }
