@@ -137,43 +137,37 @@
                       v-if="query.length > 0"
                       @click="clearSearch"></span>
                   </div>
-                  <div class="">
-                    <button
-                      class="btn btn-outline-secondary"
-                      type="button"
-                      @click="userSearch">
-                      <i class="fa fa-search" aria-hidden="true"></i>
-                      <span class="d-none d-sm-none d-lg-inline">Suchen</span>
-                    </button>
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    @click="userSearch">
+                    <i class="fa fa-search me-1" aria-hidden="true"></i>
+                    <span class="d-none d-sm-none d-lg-inline">Suchen</span>
+                  </button>
+                  <div
+                    v-if="showFeaturedSwitch"
+                    class="switch-filter py-0 border-top border-bottom border-dark">
+                    <switch-button
+                      color="#FFC006"
+                      v-model="onlyFeatured"
+                      @toggle="getFeatured"
+                      >{{ this.showFeaturedSwitchText }}</switch-button
+                    >
                   </div>
-                  <div v-if="showFeaturedSwitch" class="">
-                    <div
-                      class="switch-filter py-0 border-top border-bottom border-dark">
-                      <switch-button
-                        color="#FFC006"
-                        v-model="onlyFeatured"
-                        @toggle="getFeatured"
-                        >{{ this.showFeaturedSwitchText }}</switch-button
-                      >
-                    </div>
-                  </div>
-                  <div class="">
-                    <button
-                      class="btn btn-outline-secondary"
-                      @click="setLocator(true)">
-                      <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                      <span class="d-none d-lg-inline">Ort</span>
-                    </button>
-                  </div>
-                  <div v-if="!hideStatusFilter" class="">
-                    <button
-                      class="btn btn-outline-secondary"
-                      :class="{ active: showFilter }"
-                      @click="openFilter">
-                      <i class="fa fa-gears" aria-hidden="true"></i>
-                      <span class="d-none d-sm-none d-md-inline">Filter</span>
-                    </button>
-                  </div>
+                  <button
+                    class="btn btn-outline-secondary"
+                    @click="setLocator(true)">
+                    <i class="fa fa-location-arrow me-1" aria-hidden="true"></i>
+                    <span class="d-none d-lg-inline">Ort</span>
+                  </button>
+                  <button
+                    v-if="!hideStatusFilter"
+                    class="btn btn-outline-secondary"
+                    :class="{ active: showFilter }"
+                    @click="openFilter">
+                    <i class="fa fa-gears me-1" aria-hidden="true"></i>
+                    <span class="d-none d-sm-none d-md-inline">Filter</span>
+                  </button>
                 </div>
 
                 <slide-up-down :active="showFilter" :duration="300">
@@ -196,7 +190,7 @@
                 :options="mapOptions"
                 :max-bounds="maxBounds">
                 <l-tile-layer
-                  :url="tileProvider.url"
+                  :url="tileUrl"
                   :prefix="tileProvider.attribution"
                   :attribution="attribution" />
                 <l-control-zoom position="bottomright" />
@@ -257,7 +251,7 @@
                 </template>
                 <button
                   v-if="config.addLocationAllowed"
-                  class="btn btn-sm btn-light"
+                  class="btn btn-sm btn-secondary"
                   @click="setNewPlace(true)">
                   Ort nicht gefunden?
                 </button>
@@ -354,6 +348,11 @@ const DETAIL_ZOOM_LEVEL = 12
 const DEFAULT_ZOOM = 6
 const DEFAULT_POS = [51.00289959043832, 10.245523452758789]
 const MIN_DISTANCE_MOVED_REFRESH = 800 // in meters
+const MIN_MAP_HEIGHT = 300
+
+function getColorMode() {
+  return document.documentElement.getAttribute('data-bs-theme') || 'light'
+}
 
 export default {
   name: 'campaign-map',
@@ -460,17 +459,17 @@ export default {
       user: this.userInfo,
       showRequestForm: null,
       locations: [],
-      zoom: zoom,
-      locationKnown: locationKnown,
+      zoom,
+      locationKnown,
       locationName: '',
       locatorErrorMessage: '',
       geolocationDisabled: false,
-      center: center,
+      center,
       city: city.city,
       postcode: '' + (postcode || city.postal_code || ''),
-      maxBounds: maxBounds,
+      maxBounds,
       searching: false,
-      marker: marker,
+      marker,
       mapMoved: false,
       mapHeight: null,
       isMapTop: false,
@@ -493,6 +492,7 @@ export default {
       lastQuery: '',
       onlyRequested: false,
       onlyFeatured: false,
+      colorMode: getColorMode(),
       tileProvider: {
         name: 'Carto',
         url: `//cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}${
@@ -524,6 +524,13 @@ export default {
         }
       }
     })
+    const observer = new MutationObserver(
+      () => (this.colorMode = getColorMode())
+    )
+    observer.observe(document.documentElement, {
+      attributeFilter: ['data-bs-theme'],
+      attributeOldValue: true
+    })
   },
   mounted() {
     this.$nextTick(() => {
@@ -553,6 +560,11 @@ export default {
     })
   },
   computed: {
+    tileUrl() {
+      return `//cartodb-basemaps-{s}.global.ssl.fastly.net/${
+        this.colorMode
+      }_all/{z}/{x}/{y}${window.L.Browser.retina ? '@2x' : ''}.png`
+    },
     currentUrl() {
       let url = `${this.config.appUrl}?latlng=${this.center[0]},${this.center[1]}`
       if (this.selectedVenueId) {
@@ -906,9 +918,9 @@ export default {
       return L.icon.glyph({
         className: 'campaign-marker-icon',
         prefix: 'fa',
-        glyph: glyph,
+        glyph,
         iconUrl: this.getIconUrl(status),
-        iconSize: iconSize
+        iconSize
       })
     },
     getStatusColor(status) {
@@ -955,7 +967,7 @@ export default {
       this.isMapTop = isMapTop
       if (!this.stacked) {
         if (!isMapTop) {
-          this.mapHeight = window.innerHeight - mapTop
+          this.mapHeight = Math.max(window.innerHeight - mapTop, MIN_MAP_HEIGHT)
         } else {
           this.mapHeight = null
         }
@@ -1030,7 +1042,7 @@ $icon-failure: #dc3545;
   position: sticky;
   top: 0;
   z-index: 2050;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
   margin: 0 -15px;
 }
 
@@ -1049,11 +1061,12 @@ $icon-failure: #dc3545;
   margin-right: 1rem;
 
   .btn {
-    background-color: #fff;
+    color: var(--bs-body);
+    background-color: var(--bs-body-bg);
   }
   .btn:hover,
   .btn:active {
-    background-color: #666;
+    background-color: var(--bs-secondary-bg-subtle);
   }
 }
 
@@ -1131,7 +1144,7 @@ $icon-failure: #dc3545;
 }
 
 .sidebar {
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .sidebar.modal-active {
@@ -1191,11 +1204,10 @@ $icon-failure: #dc3545;
 }
 
 .divider-column {
-  background-color: #fff;
-  border-bottom: 2px solid #eee;
+  background-color: var(--bs-body-bg);
+  border-bottom: 2px solid var(--bs-tertiary-bg-subtle);
   padding: 0.25rem 0;
   z-index: 2025;
-  position: -webkit-sticky;
   position: sticky;
   top: 37px;
   padding: 6px 0 6px;
@@ -1208,8 +1220,8 @@ $icon-failure: #dc3545;
   margin: 0;
   a {
     padding: 0.25rem 0.5rem;
-    background: #eee;
-    color: #333;
+    background: var(--bs-tertiary-bg-subtle);
+    color: var(--bs-body);
     border-radius: 5px;
   }
 }
@@ -1230,7 +1242,7 @@ $icon-failure: #dc3545;
   cursor: pointer;
 }
 .search-query-active {
-  background-color: #f7dc8c;
+  background-color: var(--bs-primary-bg-subtle);
 }
 
 .new-venue-area {
@@ -1242,13 +1254,14 @@ $icon-failure: #dc3545;
   display: flex;
   justify-content: flex-end;
   padding: 15px;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
 }
 
 .color-legend {
   margin-bottom: 0;
   padding: 0.5rem;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
+  color: var(--bs-body);
   list-style: none;
 }
 
@@ -1258,6 +1271,26 @@ $icon-failure: #dc3545;
 }
 
 .color-legend li span {
-  color: #333;
+  color: var(--bs-body);
+}
+</style>
+
+<style global>
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip,
+.leaflet-bar a {
+  background: var(--bs-body-bg);
+  color: var(--bs-body);
+}
+.leaflet-bar a.leaflet-disabled {
+  background: var(--bs-body-bg);
+}
+.leaflet-container {
+  background-color: var(--bs-secondary-bg);
+}
+.leaflet-container .leaflet-control-attribution,
+.leaflet-container .leaflet-control-attribution a {
+  background: var(--bs-body-bg);
+  color: var(--bs-secondary);
 }
 </style>

@@ -21,7 +21,7 @@
         </button>
         <button
           @click.prevent="next"
-          class="btn btn-light mb-2"
+          class="btn btn-secondary mb-2"
           v-if="objectListIndex == maxIndex && maxIndex > 0"
           disabled>
           Überspringen</button
@@ -91,7 +91,7 @@
             <button
               type="submit"
               @click.prevent="submitAnswers"
-              class="btn btn-light mb-2 me-2 float-end">
+              class="btn btn-secondary mb-2 me-2 float-end">
               Absenden
             </button>
           </form>

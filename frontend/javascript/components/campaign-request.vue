@@ -11,7 +11,7 @@
           :request-count="userRequestCount"
           @close="$emit('close')" />
         <template v-else>
-          <button class="btn btn-sm btn-light" @click="$emit('close')">
+          <button class="btn btn-sm btn-secondary" @click="$emit('close')">
             &lt; {{ messages.back }}
           </button>
           <div class="row justify-content-md-end mt-5">
@@ -324,7 +324,7 @@ export default {
 .loading {
   height: 100vh;
   padding-top: 30%;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
   // animation: blinker 0.8s linear infinite;
   text-align: center;
 }

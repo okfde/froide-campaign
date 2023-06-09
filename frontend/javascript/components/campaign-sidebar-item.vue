@@ -208,7 +208,7 @@ export default {
 }
 
 .highlighted {
-  background-color: #fffbbf;
+  background-color: var(--froide-highlight-bg);
 }
 
 .venue-img {
@@ -220,7 +220,7 @@ export default {
 .dummy-image {
   height: 70px;
   width: 100%;
-  background-color: #aaa;
+  background-color: var(--bs-tertiary-bg-subtle);
 }
 
 .make-request-btn {

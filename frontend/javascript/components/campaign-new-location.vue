@@ -156,7 +156,7 @@ export default {
 }
 .loading {
   padding-top: 3em 0;
-  background-color: #fff;
+  background-color: var(--bs-body-bg);
   text-align: center;
 }
 

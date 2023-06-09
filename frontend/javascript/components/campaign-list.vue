@@ -126,7 +126,7 @@
         <div
           v-if="!loading && (nextUrl || lastSearchWasRandom)"
           class="row justify-content-center mb-5">
-          <button class="btn btn-light" @click="fetch">
+          <button class="btn btn-secondary" @click="fetch">
             <template v-if="nextUrl">
               {{ i18n.loadMore }}
             </template>
@@ -538,7 +538,7 @@ export default {
 .fleisch-form-container {
   display: inline-flex;
   overflow: hidden;
-  color: #000;
+  color: var(--bs-body);
 
   .fleisch-form {
     display: flex;
@@ -546,13 +546,13 @@ export default {
     justify-content: space-evenly;
     align-items: center;
     width: 100%;
-    border: 2px #000 solid;
+    border: 2px var(--bs-body) solid;
     padding: 0.5rem 3rem;
     border-radius: 50%;
-    background-color: #fff;
+    background-color: var(--bs-body-bg);
 
     input {
-      color: #000;
+      color: var(--bs-body);
     }
   }
 }
