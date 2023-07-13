@@ -27,7 +27,7 @@ class PublicBodyProvider(BaseProvider):
             filters[key + "__in"] = model.get_tree(obj)
 
         attr_filters = ("jurisdiction_id",)
-        for key, _model in attr_filters:
+        for key in attr_filters:
             if key not in self.kwargs:
                 continue
             filters[key] = self.kwargs[key]
