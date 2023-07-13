@@ -12,7 +12,7 @@ class PublicBodyProvider(BaseProvider):
         qs = PublicBody.objects.all()
         filters = {}
         tree_filter = (
-            ("categories", Category),
+            ("category", Category),
             ("classification", Classification),
             ("regions", GeoRegion),
         )
