@@ -12,25 +12,30 @@ class PublicBodyProvider(BaseProvider):
         qs = PublicBody.objects.all()
         filters = {}
         tree_filter = (
-            ("category", Category),
-            ("classification", Classification),
-            ("regions", GeoRegion),
+            ("category", "categories", Category),
+            ("classification", "classification", Classification),
+            ("region", "regions", GeoRegion),
         )
 
-        for key, model in tree_filter:
+        for key, field, model in tree_filter:
             if key not in self.kwargs:
                 continue
             try:
                 obj = model.objects.get(id=self.kwargs[key])
             except model.DoesNotExist:
                 continue
-            filters[key + "__in"] = model.get_tree(obj)
+            filters[field + "__in"] = model.get_tree(obj)
 
-        attr_filters = ("jurisdiction_id",)
-        for key in attr_filters:
+        attr_filters = (
+            (
+                "jurisdiction",
+                "jurisdiction_id",
+            ),
+        )
+        for key, field in attr_filters:
             if key not in self.kwargs:
                 continue
-            filters[key] = self.kwargs[key]
+            filters[field] = self.kwargs[key]
 
         return qs.filter(**filters)
 
