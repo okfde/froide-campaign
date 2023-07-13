@@ -109,20 +109,13 @@
             </div>
             <div class="text-end">
               <button
-                v-if="buttonText"
                 type="submit"
                 class="btn btn-lg btn-success"
-                :disabled="submitting">
+                @click="submitting = true"
+                :disabled="submitted">
                 <i class="fa fa-angle-double-right" aria-hidden="true" />
-                {{ buttonText }}
-              </button>
-              <button
-                v-else
-                type="submit"
-                class="btn btn-lg btn-success"
-                :disabled="submitting">
-                <i class="fa fa-angle-double-right" aria-hidden="true" />
-                {{ messages.sendRequest }}
+                <template v-if="buttonText">{{ buttonText }}</template>
+                <template v-else>{{ messages.sendRequest }}</template>
               </button>
             </div>
           </form>
