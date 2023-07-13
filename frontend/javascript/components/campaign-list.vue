@@ -7,6 +7,8 @@
       :request-form="requestForm"
       :user-info="user"
       :user-form="userForm"
+      :proof-form="proofForm"
+      :proof-required="settings.proofRequired"
       :data="showRequestForm"
       :current-url="''"
       :campaign-id="config.campaignId"
@@ -185,6 +187,10 @@ export default {
       default: null
     },
     userForm: {
+      type: Object,
+      default: null
+    },
+    proofForm: {
       type: Object,
       default: null
     },

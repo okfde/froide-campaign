@@ -31,6 +31,7 @@
             method="post"
             :action="config.url.makeRequest"
             target="_blank"
+            enctype="multipart/form-data"
             @submit="formSubmit">
             <input
               type="hidden"
@@ -59,6 +60,8 @@
               :user="userInfo"
               :default-law="defaultLaw"
               :user-form="userForm"
+              :proof-form="proofForm"
+              :proof-required="proofRequired"
               :initial-subject="subject"
               :initial-body="body"
               :show-draft="!hideParams.includes('hide_draft')"
@@ -67,7 +70,8 @@
               :hide-editing="hideParams.includes('hide_editing')"
               :law-type="lawType"
               :use-pseudonym="false"
-              :config="config" />
+              :config="config"
+              :submitting="submitting" />
             <user-registration
               :form="userForm"
               :config="config"
@@ -170,6 +174,14 @@ export default {
       type: Object,
       default: null
     },
+    proofForm: {
+      type: Object,
+      default: null
+    },
+    proofRequired: {
+      type: Boolean,
+      default: false
+    },
     currentUrl: {
       type: String
     },
@@ -232,10 +244,11 @@ export default {
     return {
       fetching: !this.data.full,
       submitting: false,
+      submitted: false,
       addressHelpText: text,
       userHasSubscription: this.hasSubscription,
-      language: language,
-      messages: messages
+      language,
+      messages
     }
   },
   computed: {
@@ -303,7 +316,7 @@ export default {
       this.$emit('close')
     },
     formSubmit() {
-      this.submitting = true
+      this.submitted = true
       window.setTimeout(() => {
         this.$emit('requestmade', this.data)
         this.$emit('close')

@@ -261,6 +261,10 @@ class CampaignListPlugin(CMSPluginBase):
 
         make_request_view = MakeRequestView(request=request)
 
+        proof_form = None
+        if plugin_settings.get("proofRequired"):
+            proof_form = make_request_view.get_proof_form()
+
         context.update(
             {
                 "config": json.dumps(config),
@@ -268,6 +272,7 @@ class CampaignListPlugin(CMSPluginBase):
                 "request_config": json.dumps(make_request_view.get_js_context()),
                 "request_form": make_request_view.get_form(),
                 "user_form": make_request_view.get_user_form(),
+                "proof_form": proof_form,
                 "language": lang,
             }
         )
