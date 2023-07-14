@@ -32,7 +32,7 @@
             <a
               v-else-if="hasNoRequest"
               :href="object.request_url"
-              class="btn btn-normal"
+              class="btn btn-outline-primary"
               @click.prevent.stop="$emit('startRequest', object)">
               {{ i18n.request }}
             </a>
@@ -47,7 +47,7 @@
                 :href="'/a/' + object.foirequest"
                 target="_blank"
                 class="btn"
-                :class="[`btn-${object.resolution}`]">
+                :class="btnClass">
                 {{ i18n.viewRequest }}
               </a>
               <a
@@ -101,6 +101,18 @@ export default {
     hasNoRequest() {
       return this.object.resolution === 'normal'
     },
+    btnClass() {
+      if (this.object.resolution === 'pending') {
+        return 'btn-outline-warning'
+      } else if (this.object.resolution === 'successful') {
+        return 'btn-outline-success'
+      } else if (this.object.resolution === 'refused') {
+        return 'btn-outline-danger'
+      } else if (this.object.resolution === 'withdrawn') {
+        return 'btn-outline-info'
+      }
+      return 'btn-outline-primary'
+    },
     isReserved() {
       if (!this.reservations) {
         return false
@@ -111,54 +123,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'froide/frontend/styles/variables';
-@import 'froide/frontend/styles/color-contrast';
-
-/* FIXME: use colors from variables */
-$normal: $primary;
-$pending: $warning;
-$successful: $success;
-$refused: $danger;
-$withdrawn: $blue-800;
-
-.btn-normal {
-  background-color: $normal;
-  border-color: $normal;
-  box-shadow: none;
-  color: color-contrast($normal);
-}
-
-.btn-pending {
-  background-color: $pending;
-  border-color: $pending;
-  box-shadow: none;
-  background-color: $pending;
-  color: color-contrast($pending);
-}
-
-.btn-successful {
-  background-color: $successful;
-  border-color: $successful;
-  box-shadow: none;
-  background-color: $successful;
-  color: color-contrast($successful);
-}
-
-.btn-refused {
-  background-color: $refused;
-  border-color: $refused;
-  box-shadow: none;
-  background-color: $refused;
-  color: color-contrast($refused);
-}
-
-.btn-withdrawn {
-  background-color: $withdrawn;
-  border-color: $withdrawn;
-  box-shadow: none;
-  background-color: $withdrawn;
-  color: color-contrast($withdrawn);
-}
-</style>
