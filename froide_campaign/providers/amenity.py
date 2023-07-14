@@ -16,6 +16,7 @@ from .base import BaseProvider, first
 
 
 class AmenityProvider(BaseProvider):
+    # TODO Needs to be fixed for new protocol from base
     CREATE_ALLOWED = True
     ADMIN_LEVELS = ["borough", "municipality", "admin_cooperation", "district", "state"]
     ORDER_BY = "id"
@@ -37,9 +38,6 @@ class AmenityProvider(BaseProvider):
             amenities = amenities.exclude(query)
 
         return amenities
-
-    def get_ident_list(self, qs):
-        return [obj.ident for obj in qs]
 
     def filter(self, qs, **filter_kwargs):
         if filter_kwargs.get("q"):

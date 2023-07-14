@@ -2,7 +2,7 @@ import importlib
 
 from django.conf import settings
 
-from .base import BaseProvider
+from .informationobject import InformationObjectProvider
 
 PROVIDER_CLASS_CACHE = {}
 
@@ -20,7 +20,7 @@ def get_provider(campaign, provider_name, provider_kwargs):
         provider_dict = dict(settings.CAMPAIGN_PROVIDERS)
         provider_class_path = provider_dict.get(provider_name)
         if provider_class_path is None:
-            provider_klass = BaseProvider
+            provider_klass = InformationObjectProvider
         else:
             provider_klass = get_provider_class(provider_class_path)
     return provider_klass(campaign, **provider_kwargs)

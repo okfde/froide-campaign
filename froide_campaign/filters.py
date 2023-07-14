@@ -2,6 +2,8 @@ import operator
 from functools import reduce
 
 from django.conf import settings
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 from django.db import models
 
 from rest_framework import filters
@@ -55,7 +57,28 @@ class FeaturedFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class InformationObjectRequestedFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        if request.GET.get("requested") is not None:
+            try:
+                is_requested = bool(request.GET["requested"])
+                queryset = queryset.filter(foirequests__isnull=not is_requested)
+            except ValueError:
+                pass
+        return queryset
+
+
+class InformationObjectSearchVectorFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        q = request.GET.get("q")
+        if q:
+            return InformationObject.objects.search(queryset, q)
+        return queryset
+
+
 class CustomSearchFilter(filters.SearchFilter):
+    search_param = "q"
+
     def get_search_terms(self, request):
         """
         Search terms are set by a ?search=... query parameter,
@@ -114,3 +137,75 @@ class RandomOrderFilter(filters.BaseFilterBackend):
                 return queryset.order_by("?")
 
         return queryset
+
+
+def get_lat_lng(request):
+    try:
+        lat = float(request.GET.get("lat"))
+    except (ValueError, TypeError):
+        raise ValueError
+    try:
+        lng = float(request.GET.get("lng"))
+    except (ValueError, TypeError):
+        raise ValueError
+    return lat, lng
+
+
+class GeoDistanceFilter(filters.BaseFilterBackend):
+    DEFAULT_RADIUS = 1000
+
+    def filter_queryset(self, request, queryset, view):
+        # TODO: geocode
+        # location / coordinates
+        # if location is not None:
+        #     location_search = True
+        #     point, formatted_address = geocode(location, address=False)
+
+        try:
+            lat, lng = get_lat_lng(request)
+            coordinates = Point(lng, lat)
+        except ValueError:
+            return queryset
+        zoom = None
+        try:
+            zoom = int(request.GET.get("zoom"))
+        except (ValueError, TypeError):
+            return queryset
+        radius = self.DEFAULT_RADIUS
+        try:
+            radius = int(request.GET.get("radius"))
+        except (ValueError, TypeError):
+            return queryset
+        has_q = bool(request.GET.get("q"))
+
+        queryset = self.filter_geo(
+            queryset, coordinates=coordinates, has_q=has_q, radius=radius, zoom=zoom
+        )
+        return queryset
+
+    def filter_geo(
+        self, qs, has_q=False, coordinates=None, radius=None, zoom=None, **kwargs
+    ):
+        if coordinates is None:
+            return qs
+
+        if radius is None:
+            radius = self.DEFAULT_RADIUS
+        radius = int(radius * 0.9)
+
+        qs = (
+            qs.filter(geo__isnull=False)
+            .filter(geo__dwithin=(coordinates, radius))
+            .filter(geo__distance_lte=(coordinates, D(m=radius)))
+        )
+
+        # order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
+        # if not has_q and order_distance:
+        #     qs = (
+        #         qs.annotate(distance=Distance("geo", coordinates))
+        #         .order_by("distance")
+        #     )
+        # else:
+        #     qs = qs.order_by('?')
+
+        return qs

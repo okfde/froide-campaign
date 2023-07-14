@@ -1,26 +1,15 @@
-import random
-
 from django.conf import settings
 from django.contrib.gis.geos import Point
-from django.db.models import Prefetch
 from django.shortcuts import Http404, get_object_or_404
 
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
 
 from froide.foirequest.api_views import throttle_action
-from froide.foirequest.models import FoiRequest
 
-from .filters import (
-    CategoryFilter,
-    CustomSearchFilter,
-    FeaturedFilter,
-    RandomOrderFilter,
-    StatusFilter,
-)
 from .geocode import run_geocode
 from .models import (
     Answer,
@@ -31,20 +20,6 @@ from .models import (
     Questionaire,
     Report,
 )
-from .providers.base import BaseProvider
-from .serializers import CampaignProviderRequestSerializer, InformationObjectSerializer
-
-
-def get_lat_lng(request):
-    try:
-        lat = float(request.GET.get("lat"))
-    except (ValueError, TypeError):
-        raise ValueError
-    try:
-        lng = float(request.GET.get("lng"))
-    except (ValueError, TypeError):
-        raise ValueError
-    return lat, lng
 
 
 def get_language(request):
@@ -70,29 +45,41 @@ class AddLocationThrottle(UserRateThrottle):
     }
 
 
-class InformationObjectViewSet(
-    mixins.CreateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
+class InformationObjectViewSet(viewsets.GenericViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
-    serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
-    filter_backends = [
-        CustomSearchFilter,
-        StatusFilter,
-        CategoryFilter,
-        FeaturedFilter,
-        RandomOrderFilter,
-    ]
-    search_fields = ["translations__title", "translations__subtitle"]
+
+    def get_provider(self):
+        if not hasattr(self, "campaign"):
+            self.campaign = self.get_campaign()
+        self.provider = self.campaign.get_provider()
+        return self.provider
+
+    def get_campaign(self):
+        campaign_id = self.request.GET.get("campaign")
+        if self.request.user.is_staff:
+            qs = Campaign.objects.all()
+        else:
+            qs = Campaign.objects.get_public()
+        try:
+            return get_object_or_404(qs, id=campaign_id)
+        except ValueError:
+            raise Http404
+
+    def get_queryset(self):
+        return self.provider.get_queryset()
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context.update({"language": get_language(self.request)})
+        context.update(
+            {"language": get_language(self.request), "provider": self.provider}
+        )
         return context
+
+    def get_serializer(self, qs_obj, **kwargs):
+        kwargs.setdefault("context", self.get_serializer_context())
+        return self.provider.get_serializer(qs_obj, **kwargs)
 
     def get_permissions(self):
         if self.action == "create":
@@ -118,37 +105,33 @@ class InformationObjectViewSet(
         campaign.set_current_language(language)
         provider = campaign.get_provider()
         ident = kwargs.pop("pk")
-        obj = provider.get_by_ident(ident)
-        data = provider.get_provider_item_data(obj)
-        data["publicbody"] = provider.get_publicbody(ident)
-        data["publicbodies"] = provider.get_publicbodies(ident)
-        data["makeRequestURL"] = provider.get_request_url(ident, language=language)
-        data["userRequestCount"] = provider.get_user_request_count(request.user)
-        serializer = CampaignProviderRequestSerializer(
-            data, context={"request": request}
-        )
+        serializer = provider.get_request_serializer(request, ident)
         return Response(serializer.data)
 
-    def get_campaign(self):
-        campaign_id = self.request.GET.get("campaign")
-        if self.request.user.is_staff:
-            qs = Campaign.objects.all()
-        else:
-            qs = Campaign.objects.get_public()
-        try:
-            return get_object_or_404(qs, id=campaign_id)
-        except ValueError:
-            raise Http404
+    def list(self, request):
+        provider = self.get_provider()
+        queryset = self.get_queryset()
 
-    def get_queryset(self):
-        campaign = self.get_campaign()
-        iobjs = InformationObject.objects.filter(campaign=campaign)
-        iobjs = iobjs.prefetch_related(
-            Prefetch("foirequests", queryset=FoiRequest.objects.order_by("-created_at"))
-        )
-        iobjs = iobjs.prefetch_related("campaign")
-        iobjs = iobjs.prefetch_related("categories")
-        return iobjs
+        try:
+            queryset = provider.search(self.request, queryset)
+        except ValueError:
+            return Response([])
+
+        # TODO: move into non-base providers?
+        # if not type(provider) == BaseProvider:
+        #     try:
+        #         iobjs = BaseProvider(self.campaign).search(**filters)
+        #         data = data + iobjs
+        #     except ValueError:
+        #         return Response([])
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_geo(self, obj):
         if obj.address and not obj.geo:
@@ -210,76 +193,3 @@ class InformationObjectViewSet(
             except Campaign.DoesNotExist:
                 return Response({"error": "Campaign does not exist"})
         return Response({})
-
-    @action(detail=False, methods=["get"])
-    def random(self, request):
-        campaign = self.get_campaign()
-
-        provider = campaign.get_provider()
-
-        filters = {"requested": False}
-
-        data = provider.search(**filters)
-        if data:
-            random_data = random.choices(data, k=self.RANDOM_COUNT)
-            return Response(random_data)
-        return Response(data)
-
-    @action(detail=False, methods=["get"])
-    def search(self, request):
-        campaign = self.get_campaign()
-
-        provider = campaign.get_provider()
-
-        filters = {"q": request.GET.get("q", "")}
-
-        try:
-            if "featured" in request.GET:
-                filters["featured"] = int(request.GET["featured"])
-        except ValueError:
-            pass
-
-        try:
-            if "requested" in request.GET:
-                filters["requested"] = int(request.GET["requested"])
-        except ValueError:
-            pass
-
-        # TODO: geocode
-        # location / coordinates
-        # if location is not None:
-        #     location_search = True
-        #     point, formatted_address = geocode(location, address=False)
-
-        try:
-            lat, lng = get_lat_lng(request)
-            filters.update(
-                {
-                    "coordinates": Point(lng, lat),
-                }
-            )
-        except ValueError:
-            pass
-
-        try:
-            filters["zoom"] = int(request.GET.get("zoom"))
-        except (ValueError, TypeError):
-            pass
-        try:
-            filters["radius"] = int(request.GET.get("radius"))
-        except (ValueError, TypeError):
-            pass
-
-        try:
-            data = provider.search(**filters)
-        except ValueError:
-            return Response([])
-
-        if not type(provider) == BaseProvider:
-            try:
-                iobjs = BaseProvider(campaign).search(**filters)
-                data = data + iobjs
-            except ValueError:
-                return Response([])
-
-        return Response(data)

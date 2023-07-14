@@ -1,19 +1,49 @@
 import html
 from collections import defaultdict
+from typing import Any, Dict, List, Optional, Protocol
 from urllib.parse import quote, urlencode
 
 from django.conf import settings
-from django.contrib.gis.measure import D
 from django.template import Context
 from django.urls import reverse
 
-from froide.campaign.utils import connect_foirequest
 from froide.foirequest.models import FoiRequest
+from froide.publicbody.models import PublicBody
 
 from ..models import InformationObject
-from ..serializers import CampaignProviderItemSerializer
+from ..serializers import (
+    CampaignProviderItemSerializer,
+    CampaignProviderRequestSerializer,
+)
 
 LIMIT = 100
+
+
+class ProviderProtocol(Protocol):
+    def __init__(self, campaign, **kwargs):
+        ...
+
+    def get_queryset(self):
+        ...
+
+    def get_serializer(self, obj_or_list, **kwargs):
+        ...
+
+    def get_provider_item_data(
+        self, obj: Any, foirequests=None, detail=False
+    ) -> Dict[str, Any]:
+        ...
+
+    def make_ident(self, obj: Any) -> str:
+        ...
+
+    def get_request_url_context(
+        self, obj: Any, language=Optional[str]
+    ) -> Dict[str, Any]:
+        ...
+
+    def get_publicbodies(self, obj: Any) -> List[PublicBody]:
+        ...
 
 
 def first(x):
@@ -25,152 +55,36 @@ def first(x):
 class BaseProvider:
     ORDER_ZOOM_LEVEL = 15
     CREATE_ALLOWED = False
-    ORDER_BY = "-featured"
+    filter_backends = []
 
     def __init__(self, campaign, **kwargs):
         self.campaign = campaign
         self.kwargs = kwargs
 
-    def get_by_ident(self, ident):
-        return InformationObject.objects.get(campaign=self.campaign, ident=ident)
+    def search(self, request, queryset):
+        return self.filter_queryset(request, queryset)
+
+    def filter_queryset(self, request, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+
+        You are unlikely to want to override this method, although you may need
+        to call it either from a list view, or from a custom `get_object`
+        method if you want to apply the configured filtering backend to the
+        default queryset.
+        """
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(request, queryset, self)
+        return queryset
 
     def get_ident_list(self, qs):
-        return [i.ident for i in qs]
-
-    def get_queryset(self):
-        return InformationObject.objects.filter(campaign=self.campaign).select_related(
-            "publicbody"
-        )
-
-    def search(self, **filter_kwargs):
-        iobjs = self.get_queryset()
-        iobjs = self.filter(iobjs, **filter_kwargs)
-        iobjs = self.filter_geo(iobjs, **filter_kwargs)
-        iobjs = iobjs.order_by(self.ORDER_BY, "?").distinct()
-        iobjs.distinct()
-        if not filter_kwargs.get("featured") == 1:
-            iobjs = self.limit(iobjs)
-
-        foirequests_mapping = self.get_foirequests_mapping(iobjs)
-
-        data = [
-            self.get_provider_item_data(iobj, foirequests=foirequests_mapping)
-            for iobj in iobjs
-        ]
-
-        serializer = CampaignProviderItemSerializer(data, many=True)
-        return serializer.data
-
-    def detail(self, ident):
-        obj = self.get_by_ident(ident)
-        data = self.get_provider_item_data(obj, detail=True)
-        serializer = CampaignProviderItemSerializer(data)
-        return serializer.data
-
-    def get_detail_data(self, iobj):
-        mapping = self.get_foirequests_mapping([iobj])
-        data = self.get_provider_item_data(iobj, foirequests=mapping, detail=True)
-        serializer = CampaignProviderItemSerializer(data)
-        return serializer.data
-
-    def filter(self, iobjs, **filter_kwargs):
-        if filter_kwargs.get("q"):
-            iobjs = InformationObject.objects.search(iobjs, filter_kwargs["q"])
-        if filter_kwargs.get("requested") is not None:
-            iobjs = iobjs.filter(
-                foirequests__isnull=not bool(filter_kwargs["requested"])
-            )
-        if filter_kwargs.get("featured") is not None:
-            iobjs = iobjs.filter(featured=bool(filter_kwargs["featured"]))
-        return iobjs
-
-    def filter_geo(
-        self, qs, q=None, coordinates=None, radius=None, zoom=None, **kwargs
-    ):
-        if coordinates is None:
-            return qs
-
-        if radius is None:
-            radius = 1000
-        radius = int(radius * 0.9)
-
-        qs = (
-            qs.filter(geo__isnull=False)
-            .filter(geo__dwithin=(coordinates, radius))
-            .filter(geo__distance_lte=(coordinates, D(m=radius)))
-        )
-
-        # order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
-        # if not q and order_distance:
-        #     qs = (
-        #         qs.annotate(distance=Distance("geo", coordinates))
-        #         .order_by("distance")
-        #     )
-        # else:
-        #     qs = qs.order_by('?')
-
-        return qs
-
-    def limit(self, qs):
-        return qs[: self.kwargs.get("limit", LIMIT)]
-
-    def get_provider_item_data(self, obj, foirequests=None, detail=False):
-        data = {
-            "id": obj.id,
-            "ident": obj.ident,
-            "title": obj.title,
-            "subtitle": obj.subtitle,
-            "address": obj.address,
-            "request_url": self.get_request_url_redirect(obj.ident),
-            "publicbody_name": self.get_publicbody_name(obj),
-            "description": obj.get_description(),
-            "lat": obj.get_latitude(),
-            "lng": obj.get_longitude(),
-            "foirequest": None,
-            "foirequests": [],
-            "resolution": "normal",
-            "context": obj.context,
-            # obj.categories + translations prefetched
-            "categories": [
-                {"id": c.id, "title": c.title} for c in obj.categories.all()
-            ],
-            "featured": obj.featured,
-        }
-
-        if foirequests and foirequests[obj.ident]:
-            fr, res, public = self._get_foirequest_info(foirequests[obj.ident])
-            data.update(
-                {
-                    "foirequest": fr,
-                    "foirequests": foirequests[obj.ident],
-                    "resolution": res,
-                    "public": public,
-                }
-            )
-
-        return data
-
-    def _get_foirequest_info(self, frs):
-        fr_id, res = frs[0].get("id"), frs[0].get("resolution")
-        public = frs[0].get("public", False)
-
-        success_strings = ["successful", "partially_successful"]
-        withdrawn_strings = ["user_withdrew_costs", "user_withdrew"]
-
-        resolution = "pending"
-        if res:
-            if res in success_strings:
-                resolution = "successful"
-            if res == "refused":
-                resolution = "refused"
-            if res in withdrawn_strings:
-                resolution = "user_withdrew"
-
-        return fr_id, resolution, public
+        return [self.make_ident(obj) for obj in qs]
 
     def get_foirequests_mapping(self, qs):
         ident_list = self.get_ident_list(qs)
-        iobjs = InformationObject.objects.filter(ident__in=ident_list)
+        iobjs = InformationObject.objects.filter(
+            ident__in=ident_list, campaign=self.campaign
+        )
         mapping = defaultdict(list)
 
         iterable = (
@@ -195,42 +109,6 @@ class BaseProvider:
             )
 
         return mapping
-
-    def get_publicbody_name(self, obj):
-        if obj.publicbody is None:
-            return ""
-        return obj.publicbody.name
-
-    def get_publicbody(self, ident):
-        obj = self.get_by_ident(ident)
-        return self._get_publicbody(obj)
-
-    def get_publicbodies(self, ident):
-        pb = self.get_publicbody(ident)
-        if pb:
-            return [pb]
-        return []
-
-    def _get_publicbody(self, obj):
-        return obj.publicbody
-
-    def get_request_url_redirect(self, ident):
-        return reverse(
-            "campaign-redirect_to_make_request",
-            kwargs={"campaign_id": self.campaign.id, "ident": ident},
-        )
-
-    def get_request_url(self, ident, language=None):
-        obj = self.get_by_ident(ident)
-        return self.get_request_url_with_object(ident, obj, language=language)
-
-    def get_request_url_context(self, obj, language=None):
-        return obj.get_context(language)
-
-    def get_request_url_with_object(self, ident, obj, language=None):
-        context = self.get_request_url_context(obj, language)
-        publicbody = self._get_publicbody(obj)
-        return self.make_request_url(ident, context, publicbody)
 
     def make_request_url(self, ident, context, publicbody=None):
         if publicbody is not None:
@@ -276,21 +154,71 @@ class BaseProvider:
             campaign=self.campaign, foirequests__user=user
         ).count()
 
-    def connect_request(self, ident, sender):
-        try:
-            iobj = self.get_by_ident(ident)
-        except InformationObject.DoesNotExist:
-            return
+    def get_request_url_redirect(self, ident):
+        return reverse(
+            "campaign-redirect_to_make_request",
+            kwargs={"campaign_id": self.campaign.id, "ident": ident},
+        )
 
-        if iobj.publicbody != sender.public_body:
-            return
+    def get_request_url(self, obj, language=None):
+        context = self.get_request_url_context(obj, language=language)
+        publicbody = self.get_publicbody(obj)
+        ident = self.make_ident(obj)
+        return self.make_request_url(ident, context, publicbody)
 
-        if iobj.foirequest is None:
-            iobj.foirequest = sender
+    def get_serializer(self, obj_or_list, many=False, **kwargs):
+        if not many:
+            obj_or_list = [obj_or_list]
+        foirequests_mapping = self.get_foirequests_mapping(obj_or_list)
 
-        iobj.foirequests.add(sender)
-        iobj.save()
+        data = [
+            self.get_provider_item_data(pb, foirequests=foirequests_mapping)
+            for pb in obj_or_list
+        ]
+        if not many:
+            data = data[0]
 
-        connect_foirequest(sender, self.campaign.slug)
+        return CampaignProviderItemSerializer(data, many=many, **kwargs)
 
-        return iobj
+    def get_detail_data(self, obj):
+        serializer = self.get_serializer(obj, many=False)
+        return serializer.data
+
+    def get_foirequest_api_data(self, frs):
+        fr_id, res = frs[0].get("id"), frs[0].get("resolution")
+        public = frs[0].get("public", False)
+
+        success_strings = ["successful", "partially_successful"]
+        withdrawn_strings = ["user_withdrew_costs", "user_withdrew"]
+
+        resolution = "pending"
+        if res:
+            if res in success_strings:
+                resolution = "successful"
+            if res == "refused":
+                resolution = "refused"
+            if res in withdrawn_strings:
+                resolution = "user_withdrew"
+
+        return {
+            "foirequest": fr_id,
+            "foirequests": frs,
+            "resolution": resolution,
+            "public": public,
+        }
+
+    def get_request_serializer(self, request, ident, language=None):
+        obj = self.get_by_ident(ident)
+        data = self.get_provider_item_data(obj)
+        pbs = self.get_publicbodies(obj)
+        data["publicbody"] = pbs[0] if pbs else None
+        data["publicbodies"] = pbs
+        data["makeRequestURL"] = self.get_request_url(obj, language=language)
+        data["userRequestCount"] = self.get_user_request_count(request.user)
+        return CampaignProviderRequestSerializer(data, context={"request": request})
+
+    def get_publicbody(self, obj) -> Optional[PublicBody]:
+        pbs = self.get_publicbodies(obj)
+        if len(pbs) == 0:
+            return None
+        return pbs[0]

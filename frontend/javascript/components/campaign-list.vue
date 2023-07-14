@@ -250,7 +250,7 @@ export default {
     },
     searchParameters() {
       const defaults = [
-        ['search', this.search],
+        ['q', this.search],
         ['status', this.resolution],
         ['category', this.currentCategory]
       ]

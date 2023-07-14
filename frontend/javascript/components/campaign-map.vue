@@ -854,7 +854,7 @@ export default {
       }
       window
         .fetch(
-          `/api/v1/campaigninformationobject/search/?campaign=${
+          `/api/v1/campaigninformationobject/?campaign=${
             this.config.campaignId
           }&q=${encodeURIComponent(
             this.query
@@ -869,6 +869,7 @@ export default {
       return (data) => {
         this.searching = false
         this.hasSearched = true
+        data = data.objects
         if (data.error) {
           console.warn('Error requesting the API')
         } else {
