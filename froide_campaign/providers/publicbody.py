@@ -4,16 +4,77 @@ from django.template import Context
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
 
+from rest_framework import filters
+
 from froide.campaign.utils import connect_foirequest
 from froide.georegion.models import GeoRegion
 from froide.publicbody.models import Category, Classification, PublicBody
 
+from ..filters import RandomOrderFilter
 from ..models import InformationObject
 from .base import BaseProvider
 
 
+class InformationObjectRequestedFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, provider):
+        if request.GET.get("requested") is not None:
+            try:
+                is_requested = bool(request.GET["requested"])
+                requested_iobjs = InformationObject.objects.filter(
+                    campaign=provider.campaign,
+                    foirequests__isnull=not is_requested,
+                ).values_list("publicbody_id", flat=True)
+                queryset = queryset.filter(id__in=requested_iobjs)
+            except ValueError:
+                pass
+        return queryset
+
+
+class PublicBodySearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        q = request.GET.get("q")
+        if q:
+            return queryset.filter(name__icontains=q)
+        return queryset
+
+
+class StatusFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, provider):
+        if request.GET.get("status"):
+            iobjs = InformationObject.objects.filter(campaign=provider.campaign)
+            status = request.GET.get("status")
+            if status == "normal":
+                iobjs = iobjs.filter(foirequests__isnull=False)
+                return queryset.exclude(
+                    id__in=iobjs.values_list("publicbody_id", flat=True)
+                )
+            if status == "pending":
+                iobjs = iobjs.filter(foirequests__isnull=False).exclude(
+                    foirequests__status="resolved"
+                )
+            if status == "successful":
+                successful = ["successful", "partially_successful"]
+                iobjs = iobjs.filter(
+                    foirequests__status="resolved",
+                    foirequests__resolution__in=successful,
+                )
+            if status == "refused":
+                iobjs = iobjs.filter(
+                    foirequests__status="resolved", foirequests__resolution="refused"
+                )
+            return queryset.filter(id__in=iobjs.values_list("publicbody_id", flat=True))
+        return queryset
+
+
 class PublicBodyProvider(BaseProvider):
     IDENT_PREFIX = "pb-"
+
+    filter_backends = [
+        PublicBodySearchFilter,
+        StatusFilter,
+        InformationObjectRequestedFilter,
+        RandomOrderFilter,
+    ]
 
     def get_queryset(self):
         qs = PublicBody.objects.all()
