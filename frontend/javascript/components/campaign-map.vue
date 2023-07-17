@@ -262,7 +262,7 @@
             </div>
           </div>
           <campaign-locator
-            v-if="showLocator"
+            ref="locator"
             :defaultPostcode="postcode"
             :defaultLocation="locationName"
             :exampleCity="city"
@@ -275,8 +275,8 @@
             @coordinatesChosen="coordinatesChosen"
             @locationChosen="locationChosen"></campaign-locator>
           <campaign-new-location
-            v-if="showNewPlace"
-            @close="showNewPlace = false"
+            ref="newvenue"
+            @close="setNewPlace(false)"
             @locationcreated="locationCreated"
             :campaignId="config.campaignId"></campaign-new-location>
         </div>
@@ -299,6 +299,7 @@ import {
   LPopup,
   LTooltip
 } from 'vue2-leaflet'
+import Modal from 'bootstrap/js/dist/modal'
 import 'leaflet.icon.glyph'
 import bbox from '@turf/bbox'
 import SlideUpDown from 'vue-slide-up-down'
@@ -468,11 +469,13 @@ export default {
       isMapTop: false,
       autoMoved: false,
       showLocator: false,
+      locatorModal: null,
       hasSearched: false,
       searchCenter: null,
       searchEmpty: false,
       error: false,
       showNewPlace: false,
+      newPlaceModal: null,
       showDetail: null,
       showFilter: false,
       markerOptions: {
@@ -694,7 +697,18 @@ export default {
       this.showRequestForm = null
     },
     setLocator(data) {
+      if (this.locatorModal === null) {
+        this.locatorModal = new Modal(this.$refs.locator.$el)
+        this.$refs.locator.$el.addEventListener('hidden.bs.modal', () => {
+          this.setLocator(false)
+        })
+      }
       this.showLocator = data
+      if (data) {
+        this.locatorModal.show()
+      } else {
+        this.locatorModal.hide()
+      }
     },
     coordinatesChosen(latlng) {
       const center = L.latLng(latlng)
@@ -757,6 +771,19 @@ export default {
     },
     setNewPlace(show) {
       this.showNewPlace = show
+
+      if (this.newPlaceModal === null) {
+        this.newPlaceModal = new Modal(this.$refs.newvenue.$el)
+        this.$refs.newvenue.$el.addEventListener('hidden.bs.modal', () => {
+          this.setNewPlace(false)
+        })
+      }
+      this.showNewVenue = show
+      if (show) {
+        this.newPlaceModal.show()
+      } else {
+        this.newPlaceModal.hide()
+      }
     },
     recordMapPosition() {
       const latlng = this.map.getCenter()
@@ -1184,7 +1211,7 @@ $icon-failure: #dc3545;
 
 .sidebar-column {
   transform: translate3d(0px, 0px, 0px);
-  z-index: 2020;
+  z-index: 1045;
   margin-top: -1px;
   padding-right: 0;
   padding-left: 0;
@@ -1193,7 +1220,7 @@ $icon-failure: #dc3545;
 @media screen and (min-width: 768px) {
   .sidebar-column {
     padding-right: 0px;
-    padding-left: 15px;
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
   }
 }
 
