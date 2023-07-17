@@ -20,6 +20,7 @@ from .models import (
     Questionaire,
     Report,
 )
+from .serializers import InformationObjectSerializer
 
 
 def get_language(request):
@@ -48,6 +49,7 @@ class AddLocationThrottle(UserRateThrottle):
 class InformationObjectViewSet(viewsets.GenericViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
+    serializer_class = InformationObjectSerializer
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
     def get_provider(self):
@@ -73,13 +75,12 @@ class InformationObjectViewSet(viewsets.GenericViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context.update(
-            {"language": get_language(self.request), "provider": self.provider}
+            {
+                "language": get_language(self.request),
+                "provider": getattr(self, "provider", None),
+            }
         )
         return context
-
-    def get_serializer(self, qs_obj, **kwargs):
-        kwargs.setdefault("context", self.get_serializer_context())
-        return self.provider.get_serializer(qs_obj, **kwargs)
 
     def get_permissions(self):
         if self.action == "create":
@@ -125,12 +126,13 @@ class InformationObjectViewSet(viewsets.GenericViewSet):
         #     except ValueError:
         #         return Response([])
 
+        context = self.get_serializer_context()
         page = self.paginate_queryset(queryset)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = self.provider.get_serializer(page, many=True, context=context)
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = self.provider.get_serializer(queryset, many=True, context=context)
         return Response(serializer.data)
 
     def get_geo(self, obj):
