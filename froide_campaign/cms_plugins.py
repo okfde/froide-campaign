@@ -262,7 +262,7 @@ class CampaignListPlugin(CMSPluginBase):
         make_request_view = MakeRequestView(request=request)
 
         proof_form = None
-        if plugin_settings.get("proofRequired"):
+        if plugin_settings.get("proofEnabled"):
             proof_form = make_request_view.get_proof_form()
 
         context.update(
