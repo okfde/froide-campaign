@@ -46,37 +46,30 @@
                   v-if="query.length > 0"
                   @click="clearSearch"></span>
               </div>
-              <div class="">
-                <button
-                  class="btn btn-outline-secondary"
-                  type="button"
-                  @click="userSearch">
-                  <i class="fa fa-search" aria-hidden="true"></i>
-                  <span class="d-none d-sm-none d-md-inline">Suchen</span>
-                </button>
-              </div>
-              <div class="me-auto">
-                <button
-                  class="btn btn-outline-secondary"
-                  @click="setLocator(true)">
-                  <i class="fa fa-location-arrow" aria-hidden="true"></i>
-                  <span class="d-none d-sm-none d-md-inline">Ort</span>
-                </button>
-              </div>
-              <div
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                @click="userSearch">
+                <i class="fa fa-search" aria-hidden="true"></i>
+                <span class="d-none d-sm-none d-md-inline">Suchen</span>
+              </button>
+              <button
+                class="btn btn-outline-secondary"
+                @click="setLocator(true)">
+                <i class="fa fa-location-arrow" aria-hidden="true"></i>
+                <span class="d-none d-sm-none d-md-inline">Ort</span>
+              </button>
+              <button
                 v-if="
                   !this.config.hide_status_filter ||
                   this.config.show_featured_only_filter
                 "
-                class="">
-                <button
-                  class="btn btn-outline-secondary"
-                  :class="{ active: showFilter }"
-                  @click="openFilter">
-                  <i class="fa fa-gears" aria-hidden="true"></i>
-                  <span class="d-none d-sm-none d-md-inline">Filter</span>
-                </button>
-              </div>
+                class="btn btn-outline-secondary"
+                :class="{ active: showFilter }"
+                @click="openFilter">
+                <i class="fa fa-gears" aria-hidden="true"></i>
+                <span class="d-none d-sm-none d-md-inline">Filter</span>
+              </button>
             </div>
             <slide-up-down :active="showFilter" :duration="300">
               <div class="switch-filter">
