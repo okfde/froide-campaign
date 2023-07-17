@@ -1,6 +1,8 @@
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.measure import D
 
+from django_amenities.models import Amenity
+
 from froide.publicbody.models import PublicBody
 
 from .amenity import AmenityProvider
@@ -55,9 +57,8 @@ class AmenityLocalProvider(AmenityProvider):
 
         return super()._get_publicbody(amenity)
 
-    def get_publicbodies(self, ident):
-        amenity = self.get_by_ident(ident)
+    def get_publicbodies(self, amenity: Amenity):
         same_name = self._get_same_name_pbs(amenity)
         nearby_pbs = self._get_nearby_publicbodies(amenity)
-        with_cat = super().get_publicbodies(ident)
+        with_cat = super().get_publicbodies(amenity)
         return same_name.union(nearby_pbs, with_cat)

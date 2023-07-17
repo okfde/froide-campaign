@@ -1,18 +1,27 @@
 import operator
 from functools import reduce
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 
 from django_amenities.models import Amenity
+from rest_framework import filters
 
 from froide.campaign.utils import connect_foirequest
 from froide.georegion.models import GeoRegion
 from froide.publicbody.models import PublicBody
 
+from ..filters import GeoDistanceFilter
 from ..models import InformationObject
-from .base import BaseProvider, first
+from .base import BaseProvider
+
+
+class AmenitySearchFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        q = request.GET.get("q")
+        if q:
+            return queryset.filter(name__icontains=q)
+        return queryset
 
 
 class AmenityProvider(BaseProvider):
@@ -20,17 +29,23 @@ class AmenityProvider(BaseProvider):
     CREATE_ALLOWED = True
     ADMIN_LEVELS = ["borough", "municipality", "admin_cooperation", "district", "state"]
     ORDER_BY = "id"
+    filter_backends = [
+        AmenitySearchFilter,
+        GeoDistanceFilter,
+        # StatusFilter,
+        # InformationObjectRequestedFilter,
+    ]
 
     def get_queryset(self):
-        iobs = super().get_queryset()
-        ident_list = iobs.values_list("ident", flat=True)
-        osm_ids = [
-            int(ident.split("_")[1]) for ident in ident_list if "custom" not in ident
-        ]
+        # iobjs = InformationObject.objects.filter(campaign=self.campaign)
+        # ident_list = iobjs.values_list("ident", flat=True)
+        # osm_ids = [
+        #     int(ident.split("_")[1]) for ident in ident_list if "custom" not in ident
+        # ]
 
         amenities = Amenity.objects.filter(
             topics__contains=[self.kwargs.get("amenity_topic", "")]
-        ).exclude(Q(name="") | Q(osm_id__in=osm_ids))
+        ).exclude(name="")
 
         if self.kwargs.get("exclude"):
             clauses = (Q(name__icontains=p) for p in self.kwargs.get("exclude"))
@@ -39,22 +54,15 @@ class AmenityProvider(BaseProvider):
 
         return amenities
 
-    def filter(self, qs, **filter_kwargs):
-        if filter_kwargs.get("q"):
-            qs = qs.filter(name__search=filter_kwargs["q"])
-        if filter_kwargs.get("requested") is not None:
-            qs = qs.none()
-        return qs
+    def make_ident(self, obj: Amenity) -> str:
+        return obj.ident
 
-    def get_by_ident(self, ident):
-        try:
-            pk = ident.split("_")[0]
-            return self.get_queryset().get(id=pk)
-        except (ValueError, ObjectDoesNotExist):
-            return super().get_by_ident(ident)
+    def get_by_ident(self, ident: str) -> Amenity:
+        pk = ident.split("_")[0]
+        return self.get_queryset().get(id=pk)
 
-    def get_provider_item_data(self, obj, foirequests=None, detail=False):
-        d = {
+    def get_provider_item_data(self, obj: Amenity, foirequests=None, detail=False):
+        data = {
             "id": obj.id,
             "ident": obj.ident,
             "request_url": self.get_request_url_redirect(obj.ident),
@@ -63,20 +71,17 @@ class AmenityProvider(BaseProvider):
             "description": "",
             "lat": obj.geo.y,
             "lng": obj.geo.x,
+            "resolution": "normal",
             "foirequest": None,
             "foirequests": [],
         }
 
-        if foirequests:
-            d.update(
-                {
-                    "foirequest": first(foirequests[obj.ident]),
-                    "foirequests": foirequests[obj.ident],
-                }
-            )
-        return d
+        if foirequests and foirequests[obj.ident]:
+            data.update(self.get_foirequest_api_data(foirequests[obj.ident]))
 
-    def _get_publicbodies(self, amenity):
+        return data
+
+    def get_publicbodies(self, amenity: Amenity):
         pbs = PublicBody.objects.all()
 
         regions = (
@@ -96,27 +101,15 @@ class AmenityProvider(BaseProvider):
             cats = [self.kwargs["category"]]
 
         for cat in cats:
-            pbs = pbs.filter(
+            cat_pbs = pbs.filter(
                 categories__name=cat,
             )
-            if pbs:
-                return pbs
+            if cat_pbs:
+                return cat_pbs
         return pbs
 
-    def _get_publicbody(self, amenity):
-        pbs = self._get_publicbodies(amenity)
-        if len(pbs) == 0:
-            return None
-        elif len(pbs) > 1:
-            return pbs[0]
-        return pbs[0]
-
-    def get_publicbodies(self, ident):
-        amenity = self.get_by_ident(ident)
-        return self._get_publicbodies(amenity)
-
-    def get_request_url_context(self, obj, language=None):
-        return {"title": obj.name, "address": obj.address}
+    def get_request_url_context(self, obj: Amenity, language=None):
+        return {"title": obj.name, "address": obj.address, "amenity": obj}
 
     def connect_request(self, ident, sender):
         try:

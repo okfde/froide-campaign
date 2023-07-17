@@ -160,9 +160,10 @@ class BaseProvider:
             kwargs={"campaign_id": self.campaign.id, "ident": ident},
         )
 
-    def get_request_url(self, obj, language=None):
+    def get_request_url(self, obj, publicbody=None, language=None):
         context = self.get_request_url_context(obj, language=language)
-        publicbody = self.get_publicbody(obj)
+        if publicbody is None:
+            publicbody = self.get_publicbody(obj)
         ident = self.make_ident(obj)
         return self.make_request_url(ident, context, publicbody)
 
@@ -211,9 +212,12 @@ class BaseProvider:
         obj = self.get_by_ident(ident)
         data = self.get_provider_item_data(obj)
         pbs = self.get_publicbodies(obj)
-        data["publicbody"] = pbs[0] if pbs else None
+        pb = pbs[0] if pbs else None
+        data["publicbody"] = pb
         data["publicbodies"] = pbs
-        data["makeRequestURL"] = self.get_request_url(obj, language=language)
+        data["makeRequestURL"] = self.get_request_url(
+            obj, publicbody=pb, language=language
+        )
         data["userRequestCount"] = self.get_user_request_count(request.user)
         return CampaignProviderRequestSerializer(data, context={"request": request})
 
