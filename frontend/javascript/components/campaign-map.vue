@@ -895,7 +895,14 @@ export default {
         } else {
           this.searchEmpty = data.length === 0
           this.locations = data
-          const bounds = L.latLngBounds(this.locations)
+          let bounds = bbox({
+            type: 'MultiPoint',
+            coordinates: data.map((l) => [l.lng, l.lat])
+          })
+          bounds = L.latLngBounds([
+            [bounds[1], bounds[0]],
+            [bounds[3], bounds[2]]
+          ])
           if (!this.maxBounds.contains(bounds)) {
             this.locatorErrorMessage =
               'Dein Ort scheint nicht in Deutschland zu sein!'
