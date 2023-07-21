@@ -7,6 +7,7 @@ from django.conf import settings
 from django.template import Context
 from django.urls import reverse
 
+from froide.foirequest.auth import get_read_foirequest_queryset
 from froide.foirequest.models import FoiRequest
 from froide.publicbody.models import PublicBody
 
@@ -80,31 +81,45 @@ class BaseProvider:
     def get_ident_list(self, qs):
         return [self.make_ident(obj) for obj in qs]
 
-    def get_foirequests_mapping(self, qs):
+    def get_foirequests_mapping(self, qs, request=None):
         ident_list = self.get_ident_list(qs)
         iobjs = InformationObject.objects.filter(
             ident__in=ident_list, campaign=self.campaign
         )
         mapping = defaultdict(list)
 
-        iterable = (
-            InformationObject.foirequests.through.objects.filter(
+        through_qs = InformationObject.foirequests.through.objects.filter(
                 informationobject__in=iobjs
             )
-            .order_by("-foirequest__created_at")
-            .values_list(
+
+        readable_private_requests = set()
+        if request is not None:
+            readable_private_requests = set(
+                get_read_foirequest_queryset(
+                    request,
+                    FoiRequest.objects.filter(
+                        id__in=through_qs.filter(
+                            foirequest__visibility=FoiRequest.VISIBILITY.VISIBLE_TO_REQUESTER
+                        ).values_list("foirequest_id", flat=True)
+                    ),
+                ).values_list("id", flat=True)
+            )
+
+        iterable = through_qs.order_by("-foirequest__created_at").values_list(
                 "informationobject__ident",
                 "foirequest_id",
                 "foirequest__resolution",
                 "foirequest__visibility",
             )
-        )
+
         for iobj_ident, fr_id, resolution, visibility in iterable:
+            is_public = visibility == FoiRequest.VISIBILITY.VISIBLE_TO_PUBLIC
             mapping[iobj_ident].append(
                 {
                     "id": fr_id,
                     "resolution": resolution,
-                    "public": visibility == FoiRequest.VISIBILITY.VISIBLE_TO_PUBLIC,
+                    "public": is_public,
+                    "readable": is_public or fr_id in readable_private_requests,
                 }
             )
 
@@ -170,7 +185,10 @@ class BaseProvider:
     def get_serializer(self, obj_or_list, many=False, **kwargs):
         if not many:
             obj_or_list = [obj_or_list]
-        foirequests_mapping = self.get_foirequests_mapping(obj_or_list)
+
+        foirequests_mapping = self.get_foirequests_mapping(
+            obj_or_list, request=kwargs.get("context", {}).get("request")
+        )
 
         data = [
             self.get_provider_item_data(pb, foirequests=foirequests_mapping)
@@ -188,6 +206,7 @@ class BaseProvider:
     def get_foirequest_api_data(self, frs):
         fr_id, res = frs[0].get("id"), frs[0].get("resolution")
         public = frs[0].get("public", False)
+        readable = frs[0].get("readable", False)
 
         success_strings = ["successful", "partially_successful"]
         withdrawn_strings = ["user_withdrew_costs", "user_withdrew"]
@@ -206,6 +225,7 @@ class BaseProvider:
             "foirequests": frs,
             "resolution": resolution,
             "public": public,
+            "readable": readable,
         }
 
     def get_request_serializer(self, request, ident, language=None):

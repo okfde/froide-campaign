@@ -3,7 +3,9 @@
     <div class="card flex-1 w-100">
       <div class="card-body d-flex flex-column">
         <h5>{{ object.title }}</h5>
-        <div class="d-flex mt-1">
+        <div
+          v-if="object.subtitle || object.address || object.categories"
+          class="d-flex mt-1">
           <div v-if="object.subtitle || object.address" class="mb-3">
             <p class="text-muted mb-0">
               {{ object.subtitle }}
@@ -12,7 +14,7 @@
               object.address
             }}</small>
           </div>
-          <div class="ms-auto text-end">
+          <div v-if="object.categories" class="ms-auto text-end">
             <h5>
               <CampaignListTag
                 v-for="category in object.categories"
@@ -37,7 +39,9 @@
               {{ i18n.request }}
             </a>
             <button
-              v-else-if="object.public === undefined ? false : !object.public"
+              v-else-if="
+                object.readable === undefined ? false : !object.readable
+              "
               class="btn btn-disabled"
               disabled>
               {{ i18n.requestNotPublic }}
