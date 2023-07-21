@@ -49,43 +49,15 @@ class InformationObjectProvider(BaseProvider):
 
     def detail(self, ident):
         obj = self.get_by_ident(ident)
-        data = self.get_provider_item_data(obj, detail=True)
+        data = self.get_item_data(obj, detail=True)
         serializer = CampaignProviderItemSerializer(data)
         return serializer.data
 
-    def get_provider_item_data(self, obj, foirequests=None, detail=False):
-        pb = self.get_publicbody(obj)
-        data = {
-            "id": obj.id,
-            "ident": obj.ident,
-            "title": obj.title,
-            "subtitle": obj.subtitle,
-            "address": obj.address,
-            "request_url": self.get_request_url_redirect(obj.ident),
-            "publicbody_name": pb.name if pb else None,
-            "description": obj.get_description(),
-            "lat": obj.get_latitude(),
-            "lng": obj.get_longitude(),
-            "foirequest": None,
-            "foirequests": [],
-            "resolution": "normal",
-            "context": obj.context,
-            # obj.categories + translations prefetched
-            "categories": [
-                {"id": c.id, "title": c.title} for c in obj.categories.all()
-            ],
-            "featured": obj.featured,
-        }
-
-        if foirequests and foirequests[obj.ident]:
-            data.update(self.get_foirequest_api_data(foirequests[obj.ident]))
-
-        return data
+    def get_item_data(self, obj, foirequests=None, detail=False):
+        return self.get_default_item_data(obj, foirequests=foirequests, detail=detail)
 
     def get_publicbodies(self, obj):
-        if obj.publicbody:
-            return [obj.publicbody]
-        return []
+        return self.get_default_publicbodies(obj)
 
     def get_request_url_context(self, obj, language=None):
         return obj.get_context(language)

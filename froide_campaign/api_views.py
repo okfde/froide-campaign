@@ -4,6 +4,7 @@ from django.shortcuts import Http404, get_object_or_404
 
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.mixins import CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
@@ -36,7 +37,7 @@ class AddLocationPermission(permissions.BasePermission):
         if campaign_id is None:
             return False
         campaign = Campaign.objects.get(id=campaign_id)
-        return campaign.get_provider().CREATE_ALLOWED
+        return campaign.get_provider().can_add_items(request)
 
 
 class AddLocationThrottle(UserRateThrottle):
@@ -46,7 +47,7 @@ class AddLocationThrottle(UserRateThrottle):
     }
 
 
-class InformationObjectViewSet(viewsets.GenericViewSet):
+class InformationObjectViewSet(CreateModelMixin, viewsets.GenericViewSet):
     RANDOM_COUNT = 3
     SEARCH_COUNT = 10
     serializer_class = InformationObjectSerializer
@@ -117,14 +118,6 @@ class InformationObjectViewSet(viewsets.GenericViewSet):
             queryset = provider.search(self.request, queryset)
         except ValueError:
             return Response([])
-
-        # TODO: move into non-base providers?
-        # if not type(provider) == BaseProvider:
-        #     try:
-        #         iobjs = BaseProvider(self.campaign).search(**filters)
-        #         data = data + iobjs
-        #     except ValueError:
-        #         return Response([])
 
         context = self.get_serializer_context()
         page = self.paginate_queryset(queryset)

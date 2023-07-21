@@ -30,9 +30,7 @@ class ProviderProtocol(Protocol):
     def get_serializer(self, obj_or_list, **kwargs):
         ...
 
-    def get_provider_item_data(
-        self, obj: Any, foirequests=None, detail=False
-    ) -> Dict[str, Any]:
+    def get_item_data(self, obj: Any, foirequests=None, detail=False) -> Dict[str, Any]:
         ...
 
     def make_ident(self, obj: Any) -> str:
@@ -55,7 +53,6 @@ def first(x):
 
 class BaseProvider:
     ORDER_ZOOM_LEVEL = 15
-    CREATE_ALLOWED = False
     filter_backends = []
 
     def __init__(self, campaign, **kwargs):
@@ -89,8 +86,8 @@ class BaseProvider:
         mapping = defaultdict(list)
 
         through_qs = InformationObject.foirequests.through.objects.filter(
-                informationobject__in=iobjs
-            )
+            informationobject__in=iobjs
+        )
 
         readable_private_requests = set()
         if request is not None:
@@ -106,11 +103,11 @@ class BaseProvider:
             )
 
         iterable = through_qs.order_by("-foirequest__created_at").values_list(
-                "informationobject__ident",
-                "foirequest_id",
-                "foirequest__resolution",
-                "foirequest__visibility",
-            )
+            "informationobject__ident",
+            "foirequest_id",
+            "foirequest__resolution",
+            "foirequest__visibility",
+        )
 
         for iobj_ident, fr_id, resolution, visibility in iterable:
             is_public = visibility == FoiRequest.VISIBILITY.VISIBLE_TO_PUBLIC
@@ -191,7 +188,7 @@ class BaseProvider:
         )
 
         data = [
-            self.get_provider_item_data(pb, foirequests=foirequests_mapping)
+            self.get_item_data(pb, foirequests=foirequests_mapping)
             for pb in obj_or_list
         ]
         if not many:
@@ -230,8 +227,12 @@ class BaseProvider:
 
     def get_request_serializer(self, request, ident, language=None):
         obj = self.get_by_ident(ident)
-        data = self.get_provider_item_data(obj)
-        pbs = self.get_publicbodies(obj)
+        if isinstance(obj, InformationObject):
+            data = self.get_default_item_data(obj, detail=True)
+            pbs = self.get_default_publicbodies(obj)
+        else:
+            data = self.get_item_data(obj, detail=True)
+            pbs = self.get_publicbodies(obj)
         pb = pbs[0] if pbs else None
         data["publicbody"] = pb
         data["publicbodies"] = pbs
@@ -241,8 +242,45 @@ class BaseProvider:
         data["userRequestCount"] = self.get_user_request_count(request.user)
         return CampaignProviderRequestSerializer(data, context={"request": request})
 
+    def get_default_publicbodies(self, obj):
+        if obj.publicbody:
+            return [obj.publicbody]
+        return []
+
     def get_publicbody(self, obj) -> Optional[PublicBody]:
         pbs = self.get_publicbodies(obj)
         if len(pbs) == 0:
             return None
         return pbs[0]
+
+    def can_add_items(self, request):
+        return False
+
+    def get_default_item_data(self, obj, foirequests=None, detail=False):
+        pb = self.get_publicbody(obj)
+        data = {
+            "id": obj.id,
+            "ident": obj.ident,
+            "title": obj.title,
+            "subtitle": obj.subtitle,
+            "address": obj.address,
+            "request_url": self.get_request_url_redirect(obj.ident),
+            "publicbody_name": pb.name if pb else None,
+            "description": obj.get_description(),
+            "lat": obj.get_latitude(),
+            "lng": obj.get_longitude(),
+            "foirequest": None,
+            "foirequests": [],
+            "resolution": "normal",
+            "context": obj.context,
+            # obj.categories + translations prefetched
+            "categories": [
+                {"id": c.id, "title": c.title} for c in obj.categories.all()
+            ],
+            "featured": obj.featured,
+        }
+
+        if foirequests and foirequests[obj.ident]:
+            data.update(self.get_foirequest_api_data(foirequests[obj.ident]))
+
+        return data

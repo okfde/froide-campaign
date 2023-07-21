@@ -2,6 +2,7 @@ import operator
 from functools import reduce
 
 from django.conf import settings
+from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db import models
@@ -153,6 +154,7 @@ def get_lat_lng(request):
 
 class GeoDistanceFilter(filters.BaseFilterBackend):
     DEFAULT_RADIUS = 1000
+    ORDER_ZOOM_LEVEL = 8
 
     def filter_queryset(self, request, queryset, view):
         # TODO: geocode
@@ -161,31 +163,51 @@ class GeoDistanceFilter(filters.BaseFilterBackend):
         #     location_search = True
         #     point, formatted_address = geocode(location, address=False)
 
-        try:
-            lat, lng = get_lat_lng(request)
-            coordinates = Point(lng, lat)
-        except ValueError:
+        coordinates = self.get_coordinates(request)
+        if coordinates is None:
             return queryset
-        zoom = None
-        try:
-            zoom = int(request.GET.get("zoom"))
-        except (ValueError, TypeError):
-            return queryset
+
         radius = self.DEFAULT_RADIUS
         try:
             radius = int(request.GET.get("radius"))
         except (ValueError, TypeError):
             return queryset
-        has_q = bool(request.GET.get("q"))
 
         queryset = self.filter_geo(
-            queryset, coordinates=coordinates, has_q=has_q, radius=radius, zoom=zoom
+            queryset,
+            coordinates=coordinates,
+            radius=radius,
         )
+        queryset = self.order_by_distance(request, queryset, coordinates=coordinates)
         return queryset
 
-    def filter_geo(
-        self, qs, has_q=False, coordinates=None, radius=None, zoom=None, **kwargs
-    ):
+    def get_coordinates(self, request):
+        try:
+            lat, lng = get_lat_lng(request)
+            return Point(lng, lat)
+        except ValueError:
+            return
+
+    def order_by_distance(self, request, queryset, coordinates=None):
+        if coordinates is None:
+            coordinates = self.get_coordinates(request)
+            if coordinates is None:
+                return queryset
+        zoom = None
+        try:
+            zoom = int(request.GET.get("zoom"))
+        except (ValueError, TypeError):
+            return queryset
+
+        has_q = bool(request.GET.get("q"))
+        order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
+        if not has_q and order_distance:
+            queryset = queryset.annotate(
+                distance=Distance("geo", coordinates)
+            ).order_by("distance")
+        return queryset
+
+    def filter_geo(self, qs, coordinates=None, radius=None, **kwargs):
         if coordinates is None:
             return qs
 
@@ -198,14 +220,5 @@ class GeoDistanceFilter(filters.BaseFilterBackend):
             .filter(geo__dwithin=(coordinates, radius))
             .filter(geo__distance_lte=(coordinates, D(m=radius)))
         )
-
-        # order_distance = zoom is None or zoom >= self.ORDER_ZOOM_LEVEL
-        # if not has_q and order_distance:
-        #     qs = (
-        #         qs.annotate(distance=Distance("geo", coordinates))
-        #         .order_by("distance")
-        #     )
-        # else:
-        #     qs = qs.order_by('?')
 
         return qs

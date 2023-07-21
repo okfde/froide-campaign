@@ -83,7 +83,8 @@ class CampaignPlugin(CMSPluginBase):
         city = self.get_city_from_request(request)
         campaign_id = instance.campaign.id
 
-        add_location_allowed = instance.campaign.get_provider().CREATE_ALLOWED
+        provider = instance.campaign.get_provider()
+        add_location_allowed = provider.can_add_items(request)
         plugin_settings = instance.settings
         request_extra_text = instance.request_extra_text
 
@@ -171,7 +172,7 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         mapping = provider.get_foirequests_mapping(iobjs)
         data = []
         for obj in iobjs:
-            provider_data = provider.get_provider_item_data(obj, foirequests=mapping)
+            provider_data = provider.get_item_data(obj, foirequests=mapping)
             report_id, answers = self.get_answers(obj)
             provider_data["report"] = report_id
             provider_data["answers"] = answers

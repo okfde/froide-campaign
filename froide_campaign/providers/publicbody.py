@@ -122,7 +122,7 @@ class PublicBodyProvider(BaseProvider):
         context = Context(self.get_request_url_context(obj))
         return mark_safe(template.render(context))
 
-    def get_provider_item_data(self, obj: PublicBody, foirequests=None):
+    def get_item_data(self, obj: PublicBody, foirequests=None, detail=False):
         ident = self.make_ident(obj)
         data = {
             "id": obj.id,
