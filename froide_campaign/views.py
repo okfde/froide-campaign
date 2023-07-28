@@ -191,7 +191,8 @@ def campaign_page(request, slug):
 def redirect_to_make_request(request, campaign_id, ident):
     campaign = get_object_or_404(Campaign, id=campaign_id)
     provider = campaign.get_provider()
-    url = provider.get_request_url(ident)
+    obj = provider.get_by_ident(ident)
+    url = provider.get_request_url(obj)
     return redirect(url)
 
 
