@@ -188,7 +188,6 @@ class Campaign(TranslatableModel):
 
 
 class InformationObjectManager(TranslatableManager):
-
     SEARCH_LANG = "simple"
 
     def get_queryset(self):
@@ -341,7 +340,6 @@ class InformationObject(TranslatableModel):
         )
 
     def get_search_text(self):
-
         titles = " ".join(
             [translation.title for translation in self.translations.all()]
         )
@@ -367,7 +365,7 @@ class InformationObject(TranslatableModel):
 
     def make_request_url(self):
         provider = self.campaign.get_provider()
-        return provider.get_request_url_with_object(self.ident, self)
+        return provider.get_request_url_redirect(self.ident)
 
     def get_best_foirequest(self):
         return self.foirequests.all().first()
