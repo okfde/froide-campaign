@@ -47,7 +47,6 @@
     "leaflet.icon.glyph": "^0.2.0",
     "lodash.debounce": "^4.0.8",
     "vue": "^3.3.4",
-    "vue-lazyload": "^3.0.0-rc.2",
     "vue3-slide-up-down": "^1.2.5"
   }
 }
