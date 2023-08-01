@@ -184,7 +184,7 @@ class GeoDistanceFilter(filters.BaseFilterBackend):
     def get_coordinates(self, request):
         try:
             lat, lng = get_lat_lng(request)
-            return Point(lng, lat)
+            return Point(lng, lat, srid=4326)
         except ValueError:
             return
 

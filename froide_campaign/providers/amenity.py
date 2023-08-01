@@ -153,8 +153,10 @@ class AmenityProvider(BaseProvider):
         # Clear any order bys
         iobj_qs = iobj_qs.order_by()
         qs = amenity_qs.union(iobj_qs, all=True)
-        # Apply order by from geo filter
-        qs = GeoDistanceFilter().order_by_distance(request, qs)
+        # Skip ordering, it's too expensive
+        # Instead if the geobox filters amenity qs to a small enough set
+        # it can't get topped up by iobj qs
+
         return qs.values_list(*VALUES_LIST, named=True)
 
     def get_serializer(self, obj_or_list, many=False, **kwargs):
