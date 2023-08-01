@@ -9,7 +9,6 @@ import parler.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0035_auto_20210108_1915"),
     ]

@@ -7,7 +7,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("foirequest", "0053_alter_foimessage_email_headers"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

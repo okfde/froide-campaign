@@ -12,7 +12,6 @@ def fill_foirequests_field(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0022_informationobject_foirequests"),
     ]

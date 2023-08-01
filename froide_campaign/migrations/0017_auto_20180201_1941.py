@@ -9,7 +9,6 @@ import froide_campaign.storage
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0016_auto_20180125_1603"),
     ]

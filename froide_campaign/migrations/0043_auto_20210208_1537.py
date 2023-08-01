@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0042_move_campaign_translation"),
     ]
