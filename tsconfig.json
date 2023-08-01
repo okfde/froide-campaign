@@ -14,7 +14,8 @@
     "downlevelIteration": true
   },
   "include": [
-    "./frontend/javascript/**/*"
+    "./frontend/javascript/**/*",
+    ".eslintrc.js"
   ],
   "exclude": [
     "node_modules"
