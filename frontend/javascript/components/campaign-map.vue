@@ -848,7 +848,10 @@ export default {
         this.map.distance(bounds.getNorthEast(), bounds.getNorthWest()),
         this.map.distance(bounds.getNorthEast(), bounds.getSouthEast())
       )
-      radius = Math.max(Math.round(Math.min(radius, 100000) / 100) * 100, 500)
+      radius = Math.max(
+        Math.round(Math.min(radius, 100000) / 100 / 1.5) * 100,
+        500
+      )
       const reqCoords = latlngToGrid(this.searchCenter, radius)
       let locationParam = ''
       if (
