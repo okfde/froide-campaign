@@ -182,7 +182,8 @@
                 @update:zoom="zoom = $event"
                 :center="center"
                 :options="mapOptions"
-                :max-bounds="maxBounds">
+                :max-bounds="maxBounds"
+                @ready="mapReady">
                 <l-tile-layer
                   :url="tileUrl"
                   :prefix="tileProvider.attribution"
@@ -211,8 +212,7 @@
                   :title="location.title"
                   :draggable="false"
                   :icon="getMarker(getStatus(location), location.featured)"
-                  :options="markerOptions"
-                  v-focusmarker>
+                  :options="markerOptions">
                   <l-tooltip
                     :content="location.title"
                     :options="tooltipOptions"
@@ -288,6 +288,7 @@
 
 <script>
 /* global L */
+import 'leaflet/dist/leaflet.js'
 import 'leaflet/dist/leaflet.css'
 
 import {
@@ -300,9 +301,8 @@ import {
   LTooltip
 } from '@vue-leaflet/vue-leaflet'
 import Modal from 'bootstrap/js/dist/modal'
-import 'leaflet.icon.glyph'
 import bbox from '@turf/bbox'
-import SlideUpDown from 'vue-slide-up-down'
+import SlideUpDown from 'vue3-slide-up-down'
 import CampaignLocator from './campaign-locator'
 import CampaignSidebarItem from './campaign-sidebar-item'
 import CampaignPopup from './campaign-popup'
@@ -334,17 +334,6 @@ const scroll = {
   }
 }
 
-const focusmarker = {
-  // When the bound element is inserted into the DOM...
-  updated: (el, binding, vnode) => {
-    if (vnode.key === binding.instance.selectedVenueId) {
-      binding.instance.mapObject.setZIndexOffset(300)
-    } else {
-      binding.instance.mapObject.setZIndexOffset(0)
-    }
-  }
-}
-
 const GERMANY_BOUNDS = [
   [56.9449741808516, 24.609375000000004],
   [44.402391829093915, -3.5156250000000004]
@@ -361,8 +350,7 @@ function getColorMode() {
 
 export default {
   directives: {
-    scroll,
-    focusmarker
+    scroll
   },
   name: 'CampaignMap',
   props: {
@@ -510,7 +498,7 @@ export default {
       tileProvider: {
         name: 'Carto',
         url: `//cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}${
-          window.L.Browser.retina ? '@2x' : ''
+          window.devicePixelRatio > 1 ? '@2x' : ''
         }.png`,
         // url: 'https://api.mapbox.com/styles/v1/{username}/{style}/tiles/{tileSize}/{z}/{x}/{y}{r}?access_token={accessToken}',
         // url: 'https://api.tiles.mapbox.com/v4/{style}/{z}/{x}/{y}.png?access_token={accessToken}',
@@ -536,33 +524,6 @@ export default {
       attributeOldValue: true
     })
   },
-  mounted() {
-    this.$nextTick(() => {
-      this.map.attributionControl.setPrefix('')
-      this.map.on('zoomend', () => {
-        this.mapHasMoved()
-        this.recordMapPosition()
-      })
-      this.map.on('moveend', () => {
-        if (this.searchCenter !== null) {
-          const currentPosition = this.map.getCenter()
-          const distance = this.searchCenter.distanceTo(currentPosition)
-          if (distance < MIN_DISTANCE_MOVED_REFRESH) {
-            return
-          }
-        }
-        this.mapHasMoved()
-        this.recordMapPosition()
-      })
-      window.addEventListener('resize', () => {
-        this.isStacked()
-      })
-      this.search()
-    })
-    this.map.on('popupopen', () => {
-      this.preventMapMoved()
-    })
-  },
   computed: {
     tileUrl() {
       return `//cartodb-basemaps-{s}.global.ssl.fastly.net/${
@@ -571,10 +532,7 @@ export default {
     },
     currentUrl() {
       let url = `${this.config.appUrl}?latlng=${this.center[0]},${this.center[1]}`
-      if (this.selectedVenueId) {
-        url += `&ident=${encodeURIComponent(this.selectedVenue.ident)}`
-        url += `&query=${encodeURIComponent(this.selectedVenue.name)}`
-      } else if (this.query) {
+      if (this.query) {
         url += `&query=${encodeURIComponent(this.query)}`
       }
       return url
@@ -631,10 +589,10 @@ export default {
       }
     },
     isMobile() {
-      return this.stacked || L.Browser.mobile
+      return this.stacked
     },
     map() {
-      return this.$refs.map.mapObject
+      return this.$refs.map.leafletObject
     },
     colorLegend() {
       return {
@@ -672,6 +630,34 @@ export default {
     }
   },
   methods: {
+    async mapReady() {
+      // Import here, so that window.L is available
+      await import('leaflet.icon.glyph')
+
+      this.map.attributionControl.setPrefix('')
+      this.map.on('zoomend', () => {
+        this.mapHasMoved()
+        this.recordMapPosition()
+      })
+      this.map.on('moveend', () => {
+        if (this.searchCenter !== null) {
+          const currentPosition = this.map.getCenter()
+          const distance = this.searchCenter.distanceTo(currentPosition)
+          if (distance < MIN_DISTANCE_MOVED_REFRESH) {
+            return
+          }
+        }
+        this.mapHasMoved()
+        this.recordMapPosition()
+      })
+      window.addEventListener('resize', () => {
+        this.isStacked()
+      })
+      this.map.on('popupopen', () => {
+        this.preventMapMoved()
+      })
+      this.search()
+    },
     updatePublicBody(publicbody) {
       this.publicbody = publicbody
     },
@@ -1022,6 +1008,7 @@ $icon-failure: #dc3545;
 .icon-normal {
   fill: $icon-normal;
 }
+
 .icon-normal.selected {
   fill: darken($icon-normal, 30%);
 }
@@ -1029,6 +1016,7 @@ $icon-failure: #dc3545;
 .icon-pending {
   fill: $icon-pending;
 }
+
 .icon-pending.selected {
   fill: darken($icon-pending, 30%);
 }
@@ -1036,6 +1024,7 @@ $icon-failure: #dc3545;
 .icon-success {
   fill: $icon-normal;
 }
+
 .icon-success.selected {
   fill: darken($icon-success, 30%);
 }
@@ -1043,6 +1032,7 @@ $icon-failure: #dc3545;
 .icon-failure {
   fill: $icon-failure;
 }
+
 .icon-failure.selected {
   fill: darken($icon-failure, 30%);
 }
@@ -1100,6 +1090,7 @@ $icon-failure: #dc3545;
     color: var(--bs-body);
     background-color: var(--bs-body-bg);
   }
+
   .btn:hover,
   .btn:active {
     background-color: var(--bs-secondary-bg-subtle);
@@ -1114,6 +1105,7 @@ $icon-failure: #dc3545;
   .map-search {
     width: 60%;
   }
+
   .map-search-full {
     width: 90%;
   }
@@ -1133,6 +1125,7 @@ $icon-failure: #dc3545;
   margin-top: 1rem;
 
   pointer-events: none;
+
   .btn {
     pointer-events: auto;
   }
@@ -1144,6 +1137,7 @@ $icon-failure: #dc3545;
     width: 30%;
     text-align: left;
     margin-left: 1rem;
+
     .btn {
       font-size: 0.85rem;
     }
@@ -1192,9 +1186,11 @@ $icon-failure: #dc3545;
   .searchbar {
     padding: 10px 0 0;
   }
+
   .map-column {
     top: 53px;
   }
+
   .divider-column {
     top: 47px;
   }
@@ -1213,6 +1209,7 @@ $icon-failure: #dc3545;
       margin-top: 1rem;
       height: calc(100vh - 2em - 2px);
     }
+
     .sidebar {
       height: calc(100vh - 2em - 2px);
       overflow: scroll;
@@ -1254,6 +1251,7 @@ $icon-failure: #dc3545;
 
 .divider-button {
   margin: 0;
+
   a {
     padding: 0.25rem 0.5rem;
     background: var(--bs-tertiary-bg-subtle);
@@ -1270,6 +1268,7 @@ $icon-failure: #dc3545;
   border-bottom-end-radius: 0;
   margin-bottom: 0;
 }
+
 .clearer {
   position: absolute;
   right: 10px;
@@ -1277,6 +1276,7 @@ $icon-failure: #dc3545;
   color: #999;
   cursor: pointer;
 }
+
 .search-query-active {
   background-color: var(--bs-primary-bg-subtle);
 }
@@ -1318,12 +1318,15 @@ $icon-failure: #dc3545;
   background: var(--bs-body-bg);
   color: var(--bs-body);
 }
+
 .leaflet-bar a.leaflet-disabled {
   background: var(--bs-body-bg);
 }
+
 .leaflet-container {
   background-color: var(--bs-secondary-bg);
 }
+
 .leaflet-container .leaflet-control-attribution,
 .leaflet-container .leaflet-control-attribution a {
   background: var(--bs-body-bg);
