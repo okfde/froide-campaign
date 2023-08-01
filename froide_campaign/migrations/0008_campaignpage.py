@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0007_campaign_subject_template"),
     ]

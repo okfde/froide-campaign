@@ -8,7 +8,6 @@ import parler
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("foirequest", "0002_auto_20150728_1829"),
         ("publicbody", "0003_auto_20160123_1336"),

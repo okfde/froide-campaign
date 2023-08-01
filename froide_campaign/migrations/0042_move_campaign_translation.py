@@ -51,7 +51,6 @@ def _get_translation(object, MyModelTranslation):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0041_auto_20210208_1530"),
     ]

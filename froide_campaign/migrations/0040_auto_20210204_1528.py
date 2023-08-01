@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0039_auto_20210204_1319"),
     ]

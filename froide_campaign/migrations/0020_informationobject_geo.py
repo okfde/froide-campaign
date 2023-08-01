@@ -5,7 +5,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("froide_campaign", "0019_campaignrequestscmsplugin"),
     ]
