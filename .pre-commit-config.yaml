@@ -31,4 +31,4 @@ repos:
           - prettier
           - eslint-plugin-prettier
           - eslint-config-standard
-exclude: ^.*/migrations/.*$
+exclude: ^.*/migrations/.*$|eslintrc.js
