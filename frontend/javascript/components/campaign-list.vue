@@ -91,7 +91,12 @@
             #{{ category.title }}
           </CampaignListTag>
         </div>
-
+        <campaign-filter
+          v-for="filter in filters"
+          :filter="filter"
+          :value="activeFilters.get(filter.id)"
+          :key="filter.id"
+          @input="setFilter" />
         <transition-group
           name="list"
           tag="div"
@@ -147,6 +152,7 @@ import deepmerge from 'deepmerge'
 import debounce from 'lodash.debounce'
 
 import CampaignListTag from './campaign-list-tag'
+import CampaignFilter from './campaign-filter'
 import CampaignListItem from './campaign-list-item'
 import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
@@ -163,7 +169,12 @@ function uuidv4() {
 
 export default {
   name: 'CampaignList',
-  components: { CampaignListTag, CampaignListItem, CampaignRequest },
+  components: {
+    CampaignListTag,
+    CampaignListItem,
+    CampaignRequest,
+    CampaignFilter
+  },
   props: {
     config: {
       type: Object,
@@ -225,6 +236,7 @@ export default {
       currentCategory: null,
       resolution: null,
       resolutions: ['normal', 'pending', 'successful', 'refused'],
+      activeFilters: new Map(),
       showRequestForm: null,
       publicbody: {},
       publicbodies: [],
@@ -263,6 +275,9 @@ export default {
     },
     localRequestCount() {
       return this.alreadyRequested.size
+    },
+    filters() {
+      return this.settings.filters || []
     }
   },
   created() {
@@ -394,6 +409,9 @@ export default {
       if (query.length === 0 && this.settings.order) {
         query = [['order', this.settings.order]]
       }
+      this.activeFilters.forEach((value, key) => {
+        query.push([key, value])
+      })
       const queryString = query
         .map((p) => `${p[0]}=${encodeURIComponent(p[1])}`)
         .join('&')
@@ -412,6 +430,14 @@ export default {
         this.currentCategory = null
       } else {
         this.currentCategory = category
+      }
+      this.updateData()
+    },
+    setFilter(filterValue) {
+      if (filterValue.value !== undefined) {
+        this.activeFilters.set(filterValue.id, filterValue.value)
+      } else {
+        this.activeFilters.delete(filterValue.id)
       }
       this.updateData()
     },
