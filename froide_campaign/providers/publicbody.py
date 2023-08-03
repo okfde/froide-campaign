@@ -38,6 +38,18 @@ class PublicBodySearchFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class PublicBodyJurisdictionFilter(filters.BaseFilterBackend):
+    def filter_queryset(self, request, queryset, view):
+        jurisdiction = request.GET.get("jurisdiction")
+        if jurisdiction:
+            try:
+                jurisdiction_id = int(jurisdiction)
+            except ValueError:
+                return queryset
+            return queryset.filter(jurisdiction_id=jurisdiction_id)
+        return queryset
+
+
 class StatusFilter(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, provider):
         if request.GET.get("status"):
@@ -71,6 +83,7 @@ class PublicBodyProvider(BaseProvider):
 
     filter_backends = [
         PublicBodySearchFilter,
+        PublicBodyJurisdictionFilter,
         StatusFilter,
         InformationObjectRequestedFilter,
         RandomOrderFilter,
