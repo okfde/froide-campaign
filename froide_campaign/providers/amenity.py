@@ -170,7 +170,7 @@ class AmenityProvider(BaseProvider):
         return obj.ident
 
     def get_by_ident(self, ident: str) -> Amenity:
-        pk, rest = ident.split("_")[0]
+        pk, rest = ident.split("_", 1)
         if pk == "custom":
             return InformationObject.objects.get(ident=ident)
         return self.get_queryset().get(id=pk)
