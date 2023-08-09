@@ -166,9 +166,9 @@ class CampaignQuestionairePlugin(CMSPluginBase):
         return reports[0].id, answer_list
 
     def get_iobjs_list(self, instance, iobjs):
-        from .providers import BaseProvider
+        from .providers.informationobject import InformationObjectProvider
 
-        provider = BaseProvider(campaign=instance.questionaire.campaign)
+        provider = InformationObjectProvider(campaign=instance.questionaire.campaign)
         mapping = provider.get_foirequests_mapping(iobjs)
         data = []
         for obj in iobjs:
