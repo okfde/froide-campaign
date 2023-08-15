@@ -173,7 +173,9 @@ class AmenityProvider(BaseProvider):
         pk, rest = ident.split("_", 1)
         if pk == "custom":
             return InformationObject.objects.get(ident=ident)
-        return self.get_queryset().get(id=pk)
+        qs = self.get_queryset()
+        qs = qs.annotate(title=F("name"))
+        return qs.get(id=pk)
 
     def get_item_data(self, obj: InformationObjectLike, foirequests=None, detail=False):
         data = {
