@@ -163,7 +163,13 @@ class AmenityProvider(BaseProvider):
         if many:
             obj_or_list = [InformationObjectLike._make(o) for o in obj_or_list]
         else:
-            obj_or_list = InformationObjectLike._make(obj_or_list)
+            obj_or_list = InformationObjectLike(
+                id=obj_or_list.id,
+                ident=obj_or_list.ident,
+                title=obj_or_list.title,
+                address=obj_or_list.address,
+                geo=obj_or_list.geo,
+            )
         return super().get_serializer(obj_or_list, many, **kwargs)
 
     def make_ident(self, obj) -> str:
