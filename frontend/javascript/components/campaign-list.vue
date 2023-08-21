@@ -32,11 +32,7 @@
       @close="requestFormClosed" />
 
     <div v-show="!showRequestForm">
-      <div
-        v-if="!settings.input_field"
-        ref="searchTop"
-        class="container mx-auto"
-        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']">
+      <div v-if="!settings.input_field" ref="searchTop">
         <h5>Filter</h5>
         <input
           v-model="search"
@@ -69,9 +65,7 @@
         </div>
       </div>
 
-      <div
-        class="container mx-auto mb-3"
-        :class="[settings.twoColumns ? 'col-md-12' : 'col-md-5']">
+      <div>
         <div v-if="!settings.hide_status_filter">
           <CampaignListTag
             v-for="res in resolutions"
