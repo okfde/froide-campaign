@@ -275,7 +275,7 @@ class InformationObjectViewSet(
         except ValueError:
             return Response([])
 
-        if not type(provider) == BaseProvider:
+        if type(provider) is not BaseProvider:
             try:
                 iobjs = BaseProvider(campaign).search(**filters)
                 data = data + iobjs
