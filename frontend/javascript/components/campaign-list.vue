@@ -152,15 +152,6 @@ import i18n from '../../i18n/campaign-list.json'
 import CampaignRequest from './campaign-request'
 import Room from 'froide/frontend/javascript/lib/websocket.ts'
 
-function uuidv4() {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-    (
-      c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
-  )
-}
-
 export default {
   name: 'CampaignList',
   components: {
@@ -280,7 +271,7 @@ export default {
       const key = 'campaign_temp_client_id'
       const clientId = window.localStorage.getItem(key)
       if (!clientId) {
-        this.clientId = uuidv4()
+        this.clientId = crypto.randomUUID()
         localStorage.setItem(key, this.clientId)
       } else {
         this.clientId = clientId
