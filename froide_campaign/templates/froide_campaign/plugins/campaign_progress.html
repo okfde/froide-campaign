@@ -2,7 +2,7 @@
 {% load humanize %}
 
 <div>
-    <div class="progress" style="height: 25px;">
+    <div class="progress">
         <div class="progress-bar" role="progressbar" title="{% trans 'Requests received' %}" style="width: {{ percentage }}%;" aria-valuenow="{{ percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
         <div class="progress-bar bg-success" role="progressbar" title="{% trans 'Successful requests' %}" style="width: {{ percentage_success }}%" aria-valuenow="{{ percentage_success }}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
