@@ -1,5 +1,6 @@
-include README.md LICENSE
+include README.md LICENSE package.json
 recursive-include froide_campaign/templates *
 recursive-include froide_campaign/static *
 recursive-include froide_campaign/locale *.po
 recursive-include froide_campaign/locale *.mo
+recursive-include frontend *
