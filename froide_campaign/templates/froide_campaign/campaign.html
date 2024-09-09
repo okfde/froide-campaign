@@ -1,103 +1,96 @@
 {% extends "froide_campaign/base.html" %}
-
 {% load i18n %}
 {% load static %}
 {% load markup %}
-
 {% block extra_head %}
-  {{ block.super }}
-  {% if not campaign_page.requires_foi %}
-    <link rel="stylesheet" href="{% static "campaign/css/confetti.css" %}">
-  {% endif %}
-  <style>
+    {{ block.super }}
+    {% if not campaign_page.requires_foi %}
+        <link rel="stylesheet" href="{% static "campaign/css/confetti.css" %}">
+    {% endif %}
+    <style>
     ul > li > a.selected {
       color: #333;
     }
-  </style>
-{% endblock %}
-
+    </style>
+{% endblock extra_head %}
 {% block main %}
-
-{% url "campaign-page" slug=campaign_page.slug as campaign_url %}
-
-<h2>{{ campaign_page.title }}</h2>
-
-{% if campaign_page.requires_foi %}
-<div class="progress">
-  <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}" class="progress-bar progress-bar-success" style="width: {{ progress_done }}%">
-    <span class="visually-hidden">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
-  </div>
-  <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}" class="progress-bar progress-bar-warning progress-bar-striped" style="width: {{ progress_pending }}%">
-    <span class="visually-hidden">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
-  </div>
-</div>
-{% endif %}
-
-{% if campaign_page.description %}
-  {{ campaign_page.description|markdown }}
-{% endif %}
-
-<form method="GET" action=".">
-
-<div class="row">
-  <div class="col-lg-9 col-md-8">
-
-    <div class="input-group">
-     <input name="q" type="text" class="form-control" placeholder="{% trans "Search" %}" value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
-     <span class="input-group-btn">
-       <button class="btn btn-success" type="submit">
-         <i class="fa fa-search" aria-hidden="true"></i>
-         {% trans "Search" %}
-       </button>
-       <button class="btn btn-secondary" name="random" value="1" type="submit">
-         <i class="fa fa-random" aria-hidden="true"></i>
-         {% trans "Random" %}
-       </button>
-     </span>
+    {% url "campaign-page" slug=campaign_page.slug as campaign_url %}
+    <h2>{{ campaign_page.title }}</h2>
+    {% if campaign_page.requires_foi %}
+        <div class="progress">
+            <div title="{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}"
+                 class="progress-bar progress-bar-success"
+                 style="width: {{ progress_done }}%">
+                <span class="visually-hidden">{{ progress_done }}% ({{ done_count }}) {% trans "Complete" %}</span>
+            </div>
+            <div title="{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}"
+                 class="progress-bar progress-bar-warning progress-bar-striped"
+                 style="width: {{ progress_pending }}%">
+                <span class="visually-hidden">{{ progress_pending }}% ({{ pending_count }}) {% trans "Pending" %}</span>
+            </div>
+        </div>
+    {% endif %}
+    {% if campaign_page.description %}{{ campaign_page.description|markdown }}{% endif %}
+    <form method="get" action=".">
+        <div class="row">
+            <div class="col-lg-9 col-md-8">
+                <div class="input-group">
+                    <input name="q"
+                           type="text"
+                           class="form-control"
+                           placeholder="{% trans "Search" %}"
+                           value="{% if filtered.form.q.value %}{{ filtered.form.q.value }}{% endif %}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                            {% trans "Search" %}
+                        </button>
+                        <button class="btn btn-secondary" name="random" value="1" type="submit">
+                            <i class="fa fa-random" aria-hidden="true"></i>
+                            {% trans "Random" %}
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-lg-3 order-2 col-md-4">
+            <h3>{% trans "Filter by status" %}</h3>
+            {{ filtered.form.status }}
+            <h3>{% trans "Filter by type" %}</h3>
+            {{ filtered.form.campaign }}
+            {{ filtered.form.page }}
+        </div>
+        <div class="col-lg-9  order-1 col-md-8">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Titel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for object in object_list %}
+                            {% if object.campaign.requires_foi %}
+                                {% include "froide_campaign/_info_object.html" %}
+                            {% else %}
+                                {% include "froide_campaign/_info_object_no_foi.html" %}
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-</form>
-<div class="row">
-  <div class="col-lg-3 order-2 col-md-4">
-    <h3>{% trans "Filter by status" %}</h3>
-      {{ filtered.form.status}}
-
-      <h3>{% trans "Filter by type" %}</h3>
-        {{ filtered.form.campaign }}
-
-    {{ filtered.form.page }}
-  </div>
-  <div class="col-lg-9  order-1 col-md-8">
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Titel</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for object in object_list %}
-            {% if object.campaign.requires_foi %}
-              {% include "froide_campaign/_info_object.html" %}
-            {% else %}
-              {% include "froide_campaign/_info_object_no_foi.html" %}
-            {% endif %}
-          {% endfor %}
-      </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-{% include "pagination/pagination.html" with page_obj=object_list %}
-{% endblock %}
-
+    {% include "pagination/pagination.html" with page_obj=object_list %}
+{% endblock main %}
 {% block scripts %}
-  {{ block.super }}
-  {% if not campaign_page.requires_foi %}
-    <script type="text/javascript" src="{% static "campaign/js/jquery.confetti.min.js" %}"></script>
-    <script>
+    {{ block.super }}
+    {% if not campaign_page.requires_foi %}
+        <script type="text/javascript" src="{% static "campaign/js/jquery.confetti.min.js" %}"></script>
+        <script>
     $(function(){
       $('html').click(function(e){
         $('[class*=confetti]').remove();
@@ -107,6 +100,6 @@
         });
       });
     });
-    </script>
-  {% endif %}
-{% endblock %}
+        </script>
+    {% endif %}
+{% endblock scripts %}

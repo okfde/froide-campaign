@@ -1,31 +1,30 @@
 {% load i18n %}
-
 {% load markup %}
 {% load form_helper %}
-
 {% if questionaire and iobj and foirequest %}
-  <form method="post" action="{% url 'campaign-add_campaign_report' questionaire_id=questionaire.id iobj_id=iobj.id foirequest_id=foirequest.id %}">
-    {% csrf_token %}
-    <h3>{{ questionaire.title }}</h3>
-    <div>{{ questionaire.description|markdown }}</div>
-    {% if report_count %}
-      <p>
-        {% blocktranslate count report_count=report_count %}
+    <form method="post"
+          action="{% url 'campaign-add_campaign_report' questionaire_id=questionaire.id iobj_id=iobj.id foirequest_id=foirequest.id %}">
+        {% csrf_token %}
+        <h3>{{ questionaire.title }}</h3>
+        <div>{{ questionaire.description|markdown }}</div>
+        {% if report_count %}
+            <p>
+                {% blocktranslate count report_count=report_count %}
         You already made a submission.
         {% plural %}
         You already made {{ report_count }} submissions.
         {% endblocktranslate %}
-      </p>
-    {% endif %}
-    {% render_form form %}
-    <p class="text-end">
-      <button class="btn btn-primary" type="submit">
-        {% if questionaire.multiple_reports %}
-          {% translate "Add entry" %}
-        {% else %}
-          {% translate "Save" %}
+            </p>
         {% endif %}
-      </button>
-    </p>
-  </form>
+        {% render_form form %}
+        <p class="text-end">
+            <button class="btn btn-primary" type="submit">
+                {% if questionaire.multiple_reports %}
+                    {% translate "Add entry" %}
+                {% else %}
+                    {% translate "Save" %}
+                {% endif %}
+            </button>
+        </p>
+    </form>
 {% endif %}
