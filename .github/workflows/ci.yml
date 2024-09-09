@@ -9,34 +9,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
+      - uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
           cache: 'pnpm'
-      - uses: actions/cache@v1
-        with:
-          key: v0-${{ runner.os }}-pip-lint-${{ hashFiles('setup.py') }}
-          path: ~/.cache/pip
-          restore-keys: |
-            v0-${{ runner.os }}-pip-lint-
-            v0-${{ runner.os }}-pip-
-      - name: Install dependencies # TODO: move to requirements.txt
-        run: |
-          pip install flake8 black isort
-          pnpm install
-      - name: Run flake8
-        run: flake8 froide_campaign --statistics
-      - name: Run black
-        run: black --check froide_campaign
-      - name: Run isort
-        run: isort --check froide_campaign
-      - name: Run eslint
-        run: pnpm lint
+      - name: Install dependencies
+        run: pnpm install
+      - uses: pre-commit/action@v3.0.1
