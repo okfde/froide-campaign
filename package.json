@@ -48,5 +48,8 @@
     "lodash.debounce": "^4.0.8",
     "vue": "^3.3.4",
     "vue3-slide-up-down": "^1.2.5"
+  },
+  "peerDependencies": {
+    "froide": "github:okfde/froide"
   }
 }
