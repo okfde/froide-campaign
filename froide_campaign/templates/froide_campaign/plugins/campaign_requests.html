@@ -1,24 +1,14 @@
 {% load follow_tags i18n %}
-
 {% for iobj in iobjs %}
-
-<div class="card mb-2">
-  <div class="card-body">
-    <h5 class="card-title">
-      {{ iobj.title }}
-    </h5>
-
-    {% if iobj.foirequest.user != request.user %}
-      <div class="ajax-parent">
-        {% follow_form "request" iobj.foirequest %}
-      </div>
-    {% endif %}
-
-    <div class="text-end">
-      <a href="{{ iobj.foirequest.get_absolute_url }}" class="btn btn-primary">{% trans "Go to request" %}</a>
+    <div class="card mb-2">
+        <div class="card-body">
+            <h5 class="card-title">{{ iobj.title }}</h5>
+            {% if iobj.foirequest.user != request.user %}
+                <div class="ajax-parent">{% follow_form "request" iobj.foirequest %}</div>
+            {% endif %}
+            <div class="text-end">
+                <a href="{{ iobj.foirequest.get_absolute_url }}" class="btn btn-primary">{% trans "Go to request" %}</a>
+            </div>
+        </div>
     </div>
-
-  </div>
-</div>
-
 {% endfor %}

@@ -15,7 +15,7 @@ function canUseLocalStorage(window) {
     window.localStorage.setItem(key, key)
     window.localStorage.removeItem(key)
     return true
-  } catch (e) {
+  } catch {
     return false
   }
 }

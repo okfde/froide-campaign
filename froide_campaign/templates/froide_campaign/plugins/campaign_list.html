@@ -1,16 +1,7 @@
 {% csrf_token %}
-
-<campaign-list
-    id="campaign-list-component"
-    :config="{{ config }}"
-    :language="{{ language }}"
-    :settings="{{ settings }}"
-    :request-config="{{ request_config }}"
-    {% if request.user.is_authenticated %}:user-info="{{ request.user.as_json }}"{% endif %}
-    {% if proof_form %}:proof-form="{{ proof_form.as_json }}"{% endif %}
-    :user-form="{{ user_form.as_json }}"
-    :request-form="{{ request_form.as_json }}"
-  >
+<campaign-list id="campaign-list-component" :config="{{ config }}" :language="{{ language }}" :settings="{{ settings }}" :request-config="{{ request_config }}"
+{% if request.user.is_authenticated %}:user-info="{{ request.user.as_json }}"{% endif %}
+{% if proof_form %}:proof-form="{{ proof_form.as_json }}"{% endif %}
+:user-form="{{ user_form.as_json }}" :request-form="{{ request_form.as_json }}">
 </campaign-list>
-
 {% include "_frontend.html" with entry_point="campaign_list.js" %}

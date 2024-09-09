@@ -1,22 +1,13 @@
 {% load i18n %}
-
 <tr>
-  <td>
-    <a class="btn btn-primary" href="{{ object.get_search_url }}">
-      {% trans "Search online" %}
-    </a>
-  </td>
-  <td>
-    {% if object.foirequest %}
-      <a href="{{ object.foirequest.get_absolute_url }}">
-    {% endif %}
-    {{ object.get_description }}
-    {% if object.foirequest %}
-      </a>
-    {% endif %}
-    <br/>
-    {% if object.foirequest %}
-      {{ object.foirequest.readable_status }}
-    {% endif %}
-  </td>
+    <td>
+        <a class="btn btn-primary" href="{{ object.get_search_url }}">{% trans "Search online" %}</a>
+    </td>
+    <td>
+        {% if object.foirequest %}<a href="{{ object.foirequest.get_absolute_url }}">{% endif %}
+            {{ object.get_description }}
+            {% if object.foirequest %}</a>{% endif %}
+        <br />
+        {% if object.foirequest %}{{ object.foirequest.readable_status }}{% endif %}
+    </td>
 </tr>

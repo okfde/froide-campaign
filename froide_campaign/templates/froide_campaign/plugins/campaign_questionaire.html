@@ -1,13 +1,4 @@
 {% csrf_token %}
-
-<campaign-questionaire
-    id="campaign-questionaire-component"
-    :questionaire="{{ questionaire }}"
-    :informationobjects="{{ informationobjects }}"
-    :questions="{{ questions }}"
-    :config="{{ config }}"
-    :description="{{ description }}"
-  >
+<campaign-questionaire id="campaign-questionaire-component" :questionaire="{{ questionaire }}" :informationobjects="{{ informationobjects }}" :questions="{{ questions }}" :config="{{ config }}" :description="{{ description }}">
 </campaign-questionaire>
-
 {% include "_frontend.html" with entry_point="campaign_questionaire.js" %}

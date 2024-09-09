@@ -1,50 +1,56 @@
 {% extends CMS_TEMPLATE %}
 {% load humanize %}
 {% load campaign_tags %}
-
-{% block top_block %}{% endblock %}
-
+{% block top_block %}
+{% endblock top_block %}
 {% block body %}
-  <div class="container">
-    <h1>{{ object.title }} – Aktuelle Zahlen</h1>
-    <dl>
-      <dt>Zeitpunkt</dt>
-      <dd>{{ now | date:"SHORT_DATETIME_FORMAT" }}</dd>
-      <dt>Anfragen insgesamt</dt>
-      <dd>{{ stats.all_requests |intcomma }}</dd>
-      <dt>erfolgreiche Anfragen insgesamt</dt>
-      <dd>{{ stats.successfull_requests|intcomma }}</dd>
-      <dt>NutzerInnen insgesamt</dt>
-      <dd>{{ stats.all_users|intcomma }}</dd>
-    </dl>
-    <h2>Nach Bundesland</h2>
-    <div class="responsive-table">
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Bundesland</th>
-            <th class="text-end">Anfragen</th>
-            <th class="text-end">NutzerInnen</th>
-            <th class="text-end">Bevölkerung in Mio.</th>
-            <th class="text-end">Anfragen pro 100.000 Einwohner</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for line in stats.by_jurisdiction %}
-            <tr>
-              <th>{{ forloop.counter }}.</th>
-              <td>{{ line.public_body__jurisdiction__name }}</td>
-              <td class="text-end">{{ line.request_count|intcomma }}</td>
-              <td class="text-end">{{ line.user_count|intcomma }}</td>
-              <td class="text-end">{{ line.population|in_mio }}</td>
-              <td class="text-end">{{ line|request_population_ratio|intcomma }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="container">
+        <h1>{{ object.title }} – Aktuelle Zahlen</h1>
+        <dl>
+            <dt>Zeitpunkt</dt>
+            <dd>
+                {{ now | date:"SHORT_DATETIME_FORMAT" }}
+            </dd>
+            <dt>Anfragen insgesamt</dt>
+            <dd>
+                {{ stats.all_requests |intcomma }}
+            </dd>
+            <dt>erfolgreiche Anfragen insgesamt</dt>
+            <dd>
+                {{ stats.successfull_requests|intcomma }}
+            </dd>
+            <dt>NutzerInnen insgesamt</dt>
+            <dd>
+                {{ stats.all_users|intcomma }}
+            </dd>
+        </dl>
+        <h2>Nach Bundesland</h2>
+        <div class="responsive-table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Bundesland</th>
+                        <th class="text-end">Anfragen</th>
+                        <th class="text-end">NutzerInnen</th>
+                        <th class="text-end">Bevölkerung in Mio.</th>
+                        <th class="text-end">Anfragen pro 100.000 Einwohner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in stats.by_jurisdiction %}
+                        <tr>
+                            <th>{{ forloop.counter }}.</th>
+                            <td>{{ line.public_body__jurisdiction__name }}</td>
+                            <td class="text-end">{{ line.request_count|intcomma }}</td>
+                            <td class="text-end">{{ line.user_count|intcomma }}</td>
+                            <td class="text-end">{{ line.population|in_mio }}</td>
+                            <td class="text-end">{{ line|request_population_ratio|intcomma }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr />
     </div>
-    <hr/>
-  </div>
-
-{% endblock %}
+{% endblock body %}
