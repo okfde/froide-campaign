@@ -8,7 +8,6 @@ from django.contrib.gis.measure import D
 from django.db import models
 
 from rest_framework import filters
-from rest_framework.compat import distinct
 
 from .models import InformationObject
 
@@ -126,7 +125,8 @@ class CustomSearchFilter(filters.SearchFilter):
         )
 
         if self.must_call_distinct(queryset, search_fields):
-            queryset = distinct(queryset, base)
+            queryset = queryset.filter(pk=models.OuterRef("pk"))
+            queryset = base.filter(models.Exists(queryset))
         return queryset
 
 
