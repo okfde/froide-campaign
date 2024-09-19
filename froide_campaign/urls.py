@@ -1,8 +1,5 @@
 from django.urls import path
 
-from froide.api import api_router
-
-from .api_views import InformationObjectViewSet
 from .views import (
     AssignCampaignPageTeamView,
     CampaignPageEditView,
@@ -46,10 +43,3 @@ urlpatterns = [
         name="campaign-add_campaign_report",
     ),
 ]
-
-
-api_router.register(
-    r"campaigninformationobject",
-    InformationObjectViewSet,
-    basename="campaigninformationobject",
-)

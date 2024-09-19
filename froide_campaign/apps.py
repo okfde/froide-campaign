@@ -23,6 +23,16 @@ class FroideCampaignConfig(AppConfig):
         registry.register(export_user_data)
         account_merged.connect(merge_user)
 
+        from froide.api import api_router
+
+        from .api_views import InformationObjectViewSet
+
+        api_router.register(
+            r"campaigninformationobject",
+            InformationObjectViewSet,
+            basename="campaigninformationobject",
+        )
+
         @menu_registry.register
         def get_campaign_menu_item(request):
             if not request.user.has_perm("froide_campaign.can_use_campaigns"):
