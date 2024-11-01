@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.throttling import UserRateThrottle
 
-from froide.foirequest.api_views import throttle_action
+from froide.foirequest.auth import throttle_action
 
 from .geocode import run_geocode
 from .models import (
