@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from froide.publicbody.api_views import PublicBodySerializer
+from froide.publicbody.serializers import PublicBodySerializer
 
 from .models import InformationObject
 
