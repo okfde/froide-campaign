@@ -1,6 +1,6 @@
 <template>
   <div>
-    <campaign-request
+    <CampaignRequest
       v-if="showRequestForm"
       :config="requestConfig"
       :button-text="config.button_text"
@@ -24,7 +24,7 @@
       :max-requests-per-user="maxRequestsPerUser"
       :address-required="settings.addressRequired"
       :private-requests="config.privateRequests"
-      @publicBodyChanged="updatePublicBody"
+      @public-body-changed="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"
@@ -85,7 +85,7 @@
             #{{ category.title }}
           </CampaignListTag>
         </div>
-        <campaign-filter
+        <CampaignFilter
           v-for="filter in filters"
           :filter="filter"
           :value="activeFilters.get(filter.id)"
@@ -107,8 +107,8 @@
             :client-id="clientId"
             class="list-item"
             :class="[settings.twoColumns ? 'col-md-6 px-2' : 'w-100']"
-            @startRequest="startRequest"
-            @setCategoryFilter="setCategoryFilter"
+            @start-request="startRequest"
+            @set-category-filter="setCategoryFilter"
             @followed="followedRequest(object, $event)"
             @unfollowed="object.follow.follows = false" />
 
@@ -277,7 +277,7 @@ export default {
         this.clientId = clientId
       }
     } catch {
-      // eslint-disable-next-line no-console
+       
       console.error('Could not access localstorage')
     }
   },
@@ -328,7 +328,7 @@ export default {
             }, (event.timeout || 5 * 60) * 1000)
           })
       } catch (e) {
-        // eslint-disable-next-line no-console
+         
         console.error(e)
       }
     },
@@ -469,7 +469,7 @@ export default {
           this.getFollowers()
         })
         .catch((e) => {
-          // eslint-disable-next-line no-console
+           
           console.warn(`Fetch 1 error: ${e.message}`)
         })
     },
