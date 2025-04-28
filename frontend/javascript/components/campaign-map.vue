@@ -23,13 +23,15 @@
       @requestmade="requestMade"
       @userupdated="userUpdated"
       @tokenupdated="tokenUpdated"
-      @close="requestFormClosed"></CampaignRequest>
+      @close="requestFormClosed"
+    ></CampaignRequest>
 
     <div v-show="!showRequestForm">
       <div
         class="campaign-map-container container-fluid"
         ref="campaignMapContainer"
-        id="campaign-map-container">
+        id="campaign-map-container"
+      >
         <div class="searchbar d-block d-md-none" id="searchbar">
           <div class="searchbar-inner">
             <div class="input-group">
@@ -40,22 +42,26 @@
                   :class="{ 'search-query-active': !!lastQuery }"
                   class="form-control"
                   :placeholder="placeholderText"
-                  @keydown.enter.prevent="userSearch" />
+                  @keydown.enter.prevent="userSearch"
+                />
                 <span
                   class="clearer fa fa-close"
                   v-if="query.length > 0"
-                  @click="clearSearch"></span>
+                  @click="clearSearch"
+                ></span>
               </div>
               <button
                 class="btn btn-outline-secondary"
                 type="button"
-                @click="userSearch">
+                @click="userSearch"
+              >
                 <i class="fa fa-search" aria-hidden="true"></i>
                 <span class="d-none d-sm-none d-md-inline">Suchen</span>
               </button>
               <button
                 class="btn btn-outline-secondary"
-                @click="setLocator(true)">
+                @click="setLocator(true)"
+              >
                 <i class="fa fa-location-arrow" aria-hidden="true"></i>
                 <span class="d-none d-sm-none d-md-inline">Ort</span>
               </button>
@@ -66,7 +72,8 @@
                 "
                 class="btn btn-outline-secondary"
                 :class="{ active: showFilter }"
-                @click="openFilter">
+                @click="openFilter"
+              >
                 <i class="fa fa-gears" aria-hidden="true"></i>
                 <span class="d-none d-sm-none d-md-inline">Filter</span>
               </button>
@@ -77,14 +84,12 @@
                   v-if="!this.config.hide_status_filter"
                   v-model="onlyRequested"
                   color="#FFC006"
-                  @toggle="search"
                   >nur angefragte Orte zeigen</SwitchButton
                 >
                 <SwitchButton
                   v-if="this.config.show_featured_only_filter"
                   color="#FFC006"
                   v-model="onlyFeatured"
-                  @toggle="getFeatured"
                   >{{ this.showFeaturedSwitchText }}</SwitchButton
                 >
               </div>
@@ -99,14 +104,16 @@
               ref="campaignMap"
               id="campaign-map"
               :class="mapContainerClass"
-              :style="mapContainerStyle">
+              :style="mapContainerStyle"
+            >
               <div v-if="showRefresh || searching" class="redo-search">
                 <button v-if="showRefresh" class="btn btn-dark" @click="search">
                   Im aktuellen Bereich suchen
                 </button>
                 <button
                   v-if="searching"
-                  class="btn btn-secondary btn-sm disabled">
+                  class="btn btn-secondary btn-sm disabled"
+                >
                   <div class="spinner-border" role="status">
                     <span class="visually-hidden">Wird geladen...</span>
                   </div>
@@ -115,7 +122,8 @@
               </div>
               <div
                 class="map-search d-none d-md-block"
-                :class="{ 'map-search-full': !(showRefresh || searching) }">
+                :class="{ 'map-search-full': !(showRefresh || searching) }"
+              >
                 <div class="input-group">
                   <div class="clearable-input">
                     <input
@@ -124,32 +132,34 @@
                       :class="{ 'search-query-active': !!lastQuery }"
                       class="form-control"
                       :placeholder="placeholderText"
-                      @keydown.enter.prevent="userSearch" />
+                      @keydown.enter.prevent="userSearch"
+                    />
                     <span
                       class="clearer fa fa-close"
                       v-if="query.length > 0"
-                      @click="clearSearch"></span>
+                      @click="clearSearch"
+                    ></span>
                   </div>
                   <button
                     class="btn btn-outline-secondary"
                     type="button"
-                    @click="userSearch">
+                    @click="userSearch"
+                  >
                     <i class="fa fa-search me-1" aria-hidden="true"></i>
                     <span class="d-none d-sm-none d-lg-inline">Suchen</span>
                   </button>
                   <div
                     v-if="showFeaturedSwitch"
-                    class="switch-filter py-0 border-top border-bottom border-dark">
-                    <SwitchButton
-                      color="#FFC006"
-                      v-model="onlyFeatured"
-                      @toggle="getFeatured"
-                      >{{ this.showFeaturedSwitchText }}</SwitchButton
-                    >
+                    class="switch-filter py-0 border-top border-bottom border-dark"
+                  >
+                    <SwitchButton color="#FFC006" v-model="onlyFeatured">{{
+                      this.showFeaturedSwitchText
+                    }}</SwitchButton>
                   </div>
                   <button
                     class="btn btn-outline-secondary"
-                    @click="setLocator(true)">
+                    @click="setLocator(true)"
+                  >
                     <i class="fa fa-location-arrow me-1" aria-hidden="true"></i>
                     <span class="d-none d-lg-inline">Ort</span>
                   </button>
@@ -157,7 +167,8 @@
                     v-if="!hideStatusFilter"
                     class="btn btn-outline-secondary"
                     :class="{ active: showFilter }"
-                    @click="openFilter">
+                    @click="openFilter"
+                  >
                     <i class="fa fa-gears me-1" aria-hidden="true"></i>
                     <span class="d-none d-sm-none d-md-inline">Filter</span>
                   </button>
@@ -169,7 +180,6 @@
                       v-if="!this.config.hide_status_filter"
                       v-model="onlyRequested"
                       color="#FFC006"
-                      @toggle="search"
                       >nur angefragte Orte zeigen</SwitchButton
                     >
                   </div>
@@ -183,11 +193,13 @@
                 :center="center"
                 :options="mapOptions"
                 :max-bounds="maxBounds"
-                @ready="mapReady">
+                @ready="mapReady"
+              >
                 <LTileLayer
                   :url="tileUrl"
                   :prefix="tileProvider.attribution"
-                  :attribution="attribution" />
+                  :attribution="attribution"
+                />
                 <LControlZoom position="bottomright" />
                 <LControl position="bottomleft">
                   <ul class="color-legend">
@@ -212,11 +224,13 @@
                   :title="location.title"
                   :draggable="false"
                   :icon="getMarker(getStatus(location), location.featured)"
-                  :options="markerOptions">
+                  :options="markerOptions"
+                >
                   <LTooltip
                     :content="location.title"
                     :options="tooltipOptions"
-                    v-if="!isMobile" />
+                    v-if="!isMobile"
+                  />
                   <LPopup :options="popupOptions">
                     <CampaignPopup
                       :color="getStatusColor(getStatus(location))"
@@ -226,7 +240,8 @@
                       :button-text="config.button_text"
                       :allow-multiple-requests="allowMultipleRequests"
                       @start-request="startRequest"
-                      @detail="setDetail" />
+                      @detail="setDetail"
+                    />
                   </LPopup>
                 </LMarker>
               </LMap>
@@ -238,7 +253,8 @@
               :class="{ 'modal-active': modalActive }"
               ref="campaignList"
               id="campaign-list"
-              v-scroll.window="handleSidebarScroll">
+              v-scroll.window="handleSidebarScroll"
+            >
               <div class="new-venue-area" v-if="hasSearched || error">
                 <template v-if="searchEmpty">
                   <p>{{ nothingFoundText }}</p>
@@ -246,7 +262,8 @@
                 <button
                   v-if="config.addLocationAllowed"
                   class="btn btn-sm btn-secondary"
-                  @click="setNewPlace(true)">
+                  @click="setNewPlace(true)"
+                >
                   Ort nicht gefunden?
                 </button>
               </div>
@@ -259,7 +276,8 @@
                 :data="location"
                 :button-text="config.button_text"
                 :allow-multiple-requests="allowMultipleRequests"
-                @start-request="startRequest"></CampaignSidebarItem>
+                @start-request="startRequest"
+              ></CampaignSidebarItem>
             </div>
           </div>
           <CampaignLocator
@@ -274,12 +292,14 @@
             :is-mobile="isMobile"
             @close="setLocator(false)"
             @coordinates-chosen="coordinatesChosen"
-            @location-chosen="locationChosen"></CampaignLocator>
+            @location-chosen="locationChosen"
+          ></CampaignLocator>
           <CampaignNewLocation
             ref="newvenue"
             @close="setNewPlace(false)"
             @locationcreated="locationCreated"
-            :campaign-id="config.campaignId"></CampaignNewLocation>
+            :campaign-id="config.campaignId"
+          ></CampaignNewLocation>
         </div>
       </div>
     </div>
@@ -997,6 +1017,14 @@ export default {
           this.mapHeight = null
         }
       }
+    }
+  },
+  watch: {
+    onlyFeatured() {
+      this.getFeatured()
+    },
+    onlyRequested() {
+      this.search()
     }
   }
 }
