@@ -38,12 +38,12 @@
         </div>
         <div v-if="request">
           <p v-if="description" v-html="description"></p>
-          <campaign-questionair-message
+          <CampaignQuestionairMessage
             v-for="message in this.filteredMessages()"
             :key="message.id"
             :request="request"
             :message="message"
-            :config="config"></campaign-questionair-message>
+            :config="config"></CampaignQuestionairMessage>
         </div>
       </div>
       <div class="col-5">

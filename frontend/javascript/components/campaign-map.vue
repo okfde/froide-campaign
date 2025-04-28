@@ -1,6 +1,6 @@
 <template>
   <div>
-    <campaign-request
+    <CampaignRequest
       v-if="showRequestForm"
       :config="requestConfig"
       :button-text="config.button_text"
@@ -18,12 +18,12 @@
       :publicbody="publicbody"
       :publicbodies="[publicbody]"
       :publicbodies-options="publicbodies"
-      @publicBodyChanged="updatePublicBody"
+      @public-body-changed="updatePublicBody"
       @detailfetched="detailFetched"
       @requestmade="requestMade"
       @userupdated="userUpdated"
       @tokenupdated="tokenUpdated"
-      @close="requestFormClosed"></campaign-request>
+      @close="requestFormClosed"></CampaignRequest>
 
     <div v-show="!showRequestForm">
       <div
@@ -71,24 +71,24 @@
                 <span class="d-none d-sm-none d-md-inline">Filter</span>
               </button>
             </div>
-            <slide-up-down :active="showFilter" :duration="300">
+            <SlideUpDown :active="showFilter" :duration="300">
               <div class="switch-filter">
-                <switch-button
+                <SwitchButton
                   v-if="!this.config.hide_status_filter"
                   v-model="onlyRequested"
                   color="#FFC006"
                   @toggle="search"
-                  >nur angefragte Orte zeigen</switch-button
+                  >nur angefragte Orte zeigen</SwitchButton
                 >
-                <switch-button
+                <SwitchButton
                   v-if="this.config.show_featured_only_filter"
                   color="#FFC006"
                   v-model="onlyFeatured"
                   @toggle="getFeatured"
-                  >{{ this.showFeaturedSwitchText }}</switch-button
+                  >{{ this.showFeaturedSwitchText }}</SwitchButton
                 >
               </div>
-            </slide-up-down>
+            </SlideUpDown>
           </div>
         </div>
 
@@ -140,11 +140,11 @@
                   <div
                     v-if="showFeaturedSwitch"
                     class="switch-filter py-0 border-top border-bottom border-dark">
-                    <switch-button
+                    <SwitchButton
                       color="#FFC006"
                       v-model="onlyFeatured"
                       @toggle="getFeatured"
-                      >{{ this.showFeaturedSwitchText }}</switch-button
+                      >{{ this.showFeaturedSwitchText }}</SwitchButton
                     >
                   </div>
                   <button
@@ -163,20 +163,20 @@
                   </button>
                 </div>
 
-                <slide-up-down :active="showFilter" :duration="300">
+                <SlideUpDown :active="showFilter" :duration="300">
                   <div class="switch-filter">
-                    <switch-button
+                    <SwitchButton
                       v-if="!this.config.hide_status_filter"
                       v-model="onlyRequested"
                       color="#FFC006"
                       @toggle="search"
-                      >nur angefragte Orte zeigen</switch-button
+                      >nur angefragte Orte zeigen</SwitchButton
                     >
                   </div>
-                </slide-up-down>
+                </SlideUpDown>
               </div>
 
-              <l-map
+              <LMap
                 ref="map"
                 :zoom="zoom"
                 @update:zoom="zoom = $event"
@@ -184,12 +184,12 @@
                 :options="mapOptions"
                 :max-bounds="maxBounds"
                 @ready="mapReady">
-                <l-tile-layer
+                <LTileLayer
                   :url="tileUrl"
                   :prefix="tileProvider.attribution"
                   :attribution="attribution" />
-                <l-control-zoom position="bottomright" />
-                <l-control position="bottomleft">
+                <LControlZoom position="bottomright" />
+                <LControl position="bottomleft">
                   <ul class="color-legend">
                     <li :style="colorLegend.normal">
                       <span>{{ getStatusString('normal') }}</span>
@@ -204,8 +204,8 @@
                       <span>{{ getStatusString('failure') }}</span>
                     </li>
                   </ul>
-                </l-control>
-                <l-marker
+                </LControl>
+                <LMarker
                   v-for="(location, index) in locationWithGeo"
                   :key="index"
                   :lat-lng="[location.lat, location.lng]"
@@ -213,23 +213,23 @@
                   :draggable="false"
                   :icon="getMarker(getStatus(location), location.featured)"
                   :options="markerOptions">
-                  <l-tooltip
+                  <LTooltip
                     :content="location.title"
                     :options="tooltipOptions"
                     v-if="!isMobile" />
-                  <l-popup :options="popupOptions">
-                    <campaign-popup
+                  <LPopup :options="popupOptions">
+                    <CampaignPopup
                       :color="getStatusColor(getStatus(location))"
                       :status="getStatus(location)"
                       :status-string="getStatusString(getStatus(location))"
                       :data="location"
                       :button-text="config.button_text"
                       :allow-multiple-requests="allowMultipleRequests"
-                      @startRequest="startRequest"
+                      @start-request="startRequest"
                       @detail="setDetail" />
-                  </l-popup>
-                </l-marker>
-              </l-map>
+                  </LPopup>
+                </LMarker>
+              </LMap>
             </div>
           </div>
           <div class="col-md-4 col-lg-3 order-md-1 sidebar-column">
@@ -250,7 +250,7 @@
                   Ort nicht gefunden?
                 </button>
               </div>
-              <campaign-sidebar-item
+              <CampaignSidebarItem
                 v-for="(location, index) in locations"
                 :key="index"
                 :color="getStatusColor(getStatus(location))"
@@ -259,10 +259,10 @@
                 :data="location"
                 :button-text="config.button_text"
                 :allow-multiple-requests="allowMultipleRequests"
-                @startRequest="startRequest"></campaign-sidebar-item>
+                @start-request="startRequest"></CampaignSidebarItem>
             </div>
           </div>
-          <campaign-locator
+          <CampaignLocator
             ref="locator"
             :default-postcode="postcode"
             :default-location="locationName"
@@ -273,13 +273,13 @@
             :geolocation-disabled="geolocationDisabled"
             :is-mobile="isMobile"
             @close="setLocator(false)"
-            @coordinatesChosen="coordinatesChosen"
-            @locationChosen="locationChosen"></campaign-locator>
-          <campaign-new-location
+            @coordinates-chosen="coordinatesChosen"
+            @location-chosen="locationChosen"></CampaignLocator>
+          <CampaignNewLocation
             ref="newvenue"
             @close="setNewPlace(false)"
             @locationcreated="locationCreated"
-            :campaign-id="config.campaignId"></campaign-new-location>
+            :campaign-id="config.campaignId"></CampaignNewLocation>
         </div>
       </div>
     </div>

@@ -3,9 +3,9 @@
     <div class="row">
       <div class="col-12">
         <div v-if="fetching" class="loading">
-          <campaign-loader />
+          <CampaignLoader />
         </div>
-        <campaign-recommend
+        <CampaignRecommend
           v-else-if="showMaxRequestWarning"
           :user="userInfo"
           :request-count="userRequestCount"
@@ -15,11 +15,11 @@
             &lt; {{ messages.back }}
           </button>
           <div class="row justify-content-md-end mt-5">
-            <campaign-choose-publicbody
+            <CampaignChoosePublicbody
               v-if="!fetching && publicbodiesOptions.length > 1"
               :publicbodies="publicbodiesOptions"
               :publicbody="publicbody"
-              @publicBodyChanged="updatePublicBody" />
+              @public-body-changed="updatePublicBody" />
           </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
@@ -53,7 +53,7 @@
               type="hidden"
               :name="k"
               value="1" />
-            <request-form
+            <RequestForm
               v-if="!fetching"
               :publicbodies="[publicbody]"
               :request-form="requestForm"
@@ -72,14 +72,14 @@
               :use-pseudonym="false"
               :config="config"
               :submitting="submitting" />
-            <user-registration
+            <UserRegistration
               :form="userForm"
               :config="config"
               :user="userInfo"
               :default-law="defaultLaw"
               :address-help-text="addressHelpText"
               :address-required="addressRequired" />
-            <user-terms v-if="!userInfo" :form="userForm" />
+            <UserTerms v-if="!userInfo" :form="userForm" />
             <div v-if="!hideNewsletterCheckbox" class="row">
               <div class="col-md-12">
                 <div class="card mb-3">

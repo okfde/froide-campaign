@@ -66,7 +66,7 @@
           <div
             v-if="object.follow && object.follow.can_follow !== false"
             class="col">
-            <campaign-follow
+            <CampaignFollow
               :follow="object.follow"
               @followed="$emit('followed', $event)"
               @unfollowed="$emit('unfollowed')" />
