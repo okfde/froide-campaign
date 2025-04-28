@@ -2,13 +2,12 @@
   "name": "froide_campaign",
   "version": "1.0.0",
   "description": "Froide Campaign",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint frontend --ext .js,.ts,.vue"
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",
@@ -21,8 +20,11 @@
   },
   "homepage": "https://github.com/okfde/froide-campaign#readme",
   "devDependencies": {
-    "@okfde/eslint-config-froide": "github:okfde/eslint-config-froide",
-    "typescript": "^4.9.5"
+    "@okfde/eslint-config-froide": "^1.2.1",
+    "eslint": "^9.25.1",
+    "prettier": "^3.5.3",
+    "prettier-config-standard": "^7.0.0",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@turf/bbox": "^6.0.1",
