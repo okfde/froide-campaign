@@ -227,7 +227,7 @@
                   :options="markerOptions"
                 >
                   <LTooltip
-                    :content="location.title"
+                    :content="location.escapedTitle"
                     :options="tooltipOptions"
                     v-if="!isMobile"
                   />
@@ -338,6 +338,15 @@ import {
   STATUS_STRINGS,
   latlngToGrid
 } from '../lib/utils'
+
+function escapeHTML(str) {
+  return str.replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/'/g, '&apos;')
+      .replace(/"/g, '&quot;');
+}
+
 
 const scroll = {
   mounted(el, binding) {
@@ -780,6 +789,7 @@ export default {
     },
     locationCreated(data) {
       data.full = false
+      data.escapedTitle = escapeHTML(data.title)
       this.locations.push(data)
       this.startRequest(data)
     },
@@ -911,7 +921,10 @@ export default {
           console.warn('Error requesting the API')
         } else {
           this.searchEmpty = data.length === 0
-          this.locations = data
+          this.locations = data.map(d => {
+            d.escapedTitle = escapeHTML(d.title)
+            return d
+          })
           let bounds = bbox({
             type: 'MultiPoint',
             coordinates: data.map((l) => [l.lng, l.lat])
