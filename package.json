@@ -28,12 +28,12 @@
   },
   "dependencies": {
     "@turf/bbox": "^6.0.1",
-    "@types/leaflet": "^1.7.11",
-    "@vue-leaflet/vue-leaflet": "^0.8.3",
+    "@types/leaflet": "^1.9.18",
+    "@vue-leaflet/vue-leaflet": "0.8.1",
     "deepmerge": "^4.2.2",
     "froide": "okfde/froide",
-    "leaflet": "^1.5.1",
-    "leaflet.icon.glyph": "^0.2.0",
+    "leaflet": "^1.9.4",
+    "leaflet.icon.glyph": "^0.3.0",
     "lodash.debounce": "^4.0.8",
     "vue": "^3.3.4",
     "vue3-slide-up-down": "^1.2.5"
