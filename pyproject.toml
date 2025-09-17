@@ -20,6 +20,7 @@ dependencies = [
   "django-filter",
   "django-admin-sortable2",
   "djangorestframework",
+  "geopy",
 ]
 
 [build-system]
