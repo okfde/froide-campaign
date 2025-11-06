@@ -17,6 +17,7 @@ classifiers = [
 ]
 version = "0.0.1"
 dependencies = [
+  "django>=5.1",
   "django-filter",
   "django-admin-sortable2",
   "djangorestframework",
