@@ -7,6 +7,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchVectorField
+from django.core.files.storage import FileSystemStorage
 from django.db import models
 from django.template import Context, Template
 from django.urls import reverse
@@ -22,7 +23,6 @@ from froide.helper.csv_utils import export_csv
 from froide.publicbody.models import PublicBody
 from froide.team.models import Team
 
-from froide_campaign.storage import OverwriteStorage
 
 WORD_RE = re.compile(r"^\w+$", re.IGNORECASE)
 
@@ -77,7 +77,9 @@ class CampaignPage(models.Model):
 
     settings = models.JSONField(default=dict, blank=True)
     embed = models.FileField(
-        blank=True, upload_to=get_embed_path, storage=OverwriteStorage()
+        blank=True,
+        upload_to=get_embed_path,
+        storage=FileSystemStorage(allow_overwrite=True),
     )
 
     campaigns = models.ManyToManyField("Campaign")
