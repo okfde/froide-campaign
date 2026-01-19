@@ -17,7 +17,8 @@
     "socialSubject": "Help me out and take part!",
     "socialText": "Hey, I'm taking part in this online campaign. Could you help out and join in?",
     "socialMedia": "Or share this campaign on social media!",
-    "backToOverview": "Back to overview"
+    "backToOverview": "Back to overview",
+    "toPublicBody": "To: {name}"
   },
   "de": {
     "back": "Zurück",
@@ -37,6 +38,7 @@
     "socialSubject": "Hilf mir und nimm teil!",
     "socialText": "Hey, ich nehme an dieser Online-Kampagne teil. Könntest Du mir helfen und auch mitmachen?",
     "socialMedia": "Oder teilen Sie diese Kampagne in den sozialen Medien!",
-    "backToOverview": "Zurück zur Übersicht"
+    "backToOverview": "Zurück zur Übersicht",
+    "toPublicBody": "An: {name}"
   }
 }
