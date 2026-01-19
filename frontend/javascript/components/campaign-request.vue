@@ -21,6 +21,24 @@
               :publicbody="publicbody"
               @public-body-changed="updatePublicBody" />
           </div>
+          <div class="mt-5" v-if="!fetching && !publibodiesOptions && publicbody">
+            <div class="fs-3">
+              {{ config.i18n.toPublicBody.replace('${name}', publicbody.name) }}
+              <a :href="publicbody.site_url" target="_blank">
+                <span class="fa fa-info-circle" />
+              </a>
+            </div>
+            <div
+              v-if="defaultLaw?.request_note_html"
+              class="alert alert-warning my-2"
+              v-html="defaultLaw.request_note_html"
+              />
+            <div
+              v-if="publicbody?.request_note_html"
+              class="alert alert-warning my-2"
+              v-html="publicbody.request_note_html"
+              />
+          </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
             <button class="btn btn-secondary" @click="$emit('close')">
@@ -42,11 +60,12 @@
               type="hidden"
               name="redirect_url" />
             <input v-model="params.ref" type="hidden" name="reference" />
+            <!-- TODO is privateRequests ever true? if so, use froide/request-public.vue? -->
             <input
               v-if="!privateRequests"
               type="hidden"
               name="public"
-              value="1" />
+              value="True" />
             <input
               v-for="k in hideParams"
               :key="k"
@@ -60,7 +79,7 @@
               :user="userInfo"
               :default-law="defaultLaw"
               :user-form="userForm"
-              :proof-form="proofForm"
+              :proof-form-initial="proofForm"
               :proof-required="proofRequired"
               :initial-subject="subject"
               :initial-body="body"
@@ -69,17 +88,30 @@
               :hide-full-text="hideParams.includes('hide_full_text')"
               :hide-editing="hideParams.includes('hide_editing')"
               :law-type="lawType"
-              :use-pseudonym="false"
               :config="config"
               :submitting="submitting" />
-            <UserRegistration
-              :form="userForm"
-              :config="config"
-              :user="userInfo"
-              :default-law="defaultLaw"
-              :address-help-text="addressHelpText"
-              :address-required="addressRequired" />
-            <UserTerms v-if="!userInfo" :form="userForm" />
+            <div class="card mb-3">
+              <div class="card-body">
+                <UserCreateAccount
+                  v-if="!userInfo"
+                  :user="user"
+                  :config="config"
+                  :request-form="requestForm"
+                  :user-form="userForm"
+                  :default-law="defaultLaw"
+                  :address-help-text="addressHelpText"
+                  :address-required="addressRequired"
+                  :use-pseudonym="false"
+                  >
+                  <template #userPublicPreamble>
+                    <span v-html="userForm.fields.private.help_text" />
+                  </template>
+                </UserCreateAccount>
+                <UserConfirmation
+                  :form="userForm"
+                  />
+              </div>
+            </div>
             <div v-if="!hideNewsletterCheckbox" class="row">
               <div class="col-md-12">
                 <div class="card mb-3">
@@ -132,8 +164,9 @@
 <script>
 import CampaignChoosePublicbody from './campaign-choose-publicbody.vue'
 import RequestForm from 'froide/frontend/javascript/components/makerequest/request-form.vue'
-import UserRegistration from 'froide/frontend/javascript/components/makerequest/user-registration.vue'
-import UserTerms from 'froide/frontend/javascript/components/makerequest/user-terms.vue'
+import StoreValueMixin from 'froide/frontend/javascript/components/makerequest/lib/store-values-mixin'
+import UserCreateAccount from 'froide/frontend/javascript/components/makerequest/user-create-account.vue'
+import UserConfirmation from 'froide/frontend/javascript/components/makerequest/user-confirmation.vue'
 import { selectBestLaw } from 'froide/frontend/javascript/lib/law-select'
 import campaignI18n from '../../i18n/campaign-request.json'
 
@@ -147,12 +180,12 @@ export default {
   components: {
     RequestForm,
     CampaignLoader,
-    UserTerms,
-    UserRegistration,
+    UserCreateAccount,
+    UserConfirmation,
     CampaignChoosePublicbody,
     CampaignRecommend
   },
-  mixins: [CampaignDetailMixin, CampaignItemMixin],
+  mixins: [CampaignDetailMixin, CampaignItemMixin, StoreValueMixin],
   props: {
     buttonText: {
       type: String
@@ -242,6 +275,7 @@ export default {
     }
 
     return {
+      pbScope: 'campaign-',
       fetching: !this.data.full,
       submitting: false,
       submitted: false,
@@ -250,6 +284,9 @@ export default {
       language,
       messages
     }
+  },
+  created() {
+    this.initAllStoreValues()
   },
   computed: {
     csrfToken() {
