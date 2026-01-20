@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-18 09:06+0100\n"
-"PO-Revision-Date: 2021-11-18 09:06+0100\n"
+"POT-Creation-Date: 2026-01-19 11:46+0100\n"
+"PO-Revision-Date: 2026-01-20 13:04+0100\n"
 "Last-Translator: Stefan Wehrmeyer <stefan.wehrmeyer@okfn.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -16,184 +16,184 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 3.8\n"
 
-#: admin.py:77
+#: froide_campaign/admin.py
 msgid "Has request"
 msgstr "Hat Anfrage"
 
-#: admin.py:78
+#: froide_campaign/admin.py
 msgid "Has documents"
 msgstr "Hat Dokumente"
 
-#: admin.py:79
+#: froide_campaign/admin.py
 msgid "Has public body"
 msgstr "Hat Behörde"
 
-#: admin.py:80
+#: froide_campaign/admin.py
 msgid "Has geo"
 msgstr "Hat geographischen Punkt"
 
-#: admin.py:108
+#: froide_campaign/admin.py
 msgid "requests"
 msgstr "Anfragen"
 
-#: admin.py:126 admin.py:275
+#: froide_campaign/admin.py
 msgid "Export to CSV"
 msgstr "Export nach CSV"
 
-#: admin.py:157
+#: froide_campaign/admin.py
 msgid "Mark requests as successfully resolved"
 msgstr "Markiere Anfrage als erfolgreich abgeschlossen"
 
-#: admin.py:174
+#: froide_campaign/admin.py
 msgid "Clean out bad requests"
 msgstr "Schlechte Anfragen entkoppeln"
 
-#: apps.py:10
+#: froide_campaign/apps.py
 msgid "Froide Campaign App"
 msgstr "Froide Kampagnen-App"
 
-#: apps.py:32
+#: froide_campaign/apps.py
 msgid "My campaigns"
 msgstr "Meine Kampagnen"
 
-#: cms_plugins.py:37 cms_plugins.py:57 cms_plugins.py:130 cms_plugins.py:237
-#: cms_plugins.py:280 models/campaign.py:173
+#: froide_campaign/cms_plugins.py froide_campaign/models/campaign.py
 msgid "Campaign"
 msgstr "Kampagne"
 
-#: cms_plugins.py:38
+#: froide_campaign/cms_plugins.py
 msgid "Campaign Requests"
 msgstr "Kampagnen-Anfragen"
 
-#: cms_plugins.py:58
+#: froide_campaign/cms_plugins.py
 msgid "Campaign Map"
 msgstr "Kampagnenkarte"
 
-#: cms_plugins.py:131
+#: froide_campaign/cms_plugins.py
 msgid "Campaign Questionaire"
 msgstr "Kampagnenfragebogen"
 
-#: cms_plugins.py:238
+#: froide_campaign/cms_plugins.py
 msgid "Campaign List"
 msgstr "Kampagnenliste"
 
-#: cms_plugins.py:281
+#: froide_campaign/cms_plugins.py
 msgid "Campaign Progress"
 msgstr "Kampagnenfortschritt"
 
-#: models/campaign.py:45
+#: froide_campaign/models/campaign.py
 msgid "title"
-msgstr ""
+msgstr "Titel"
 
-#: models/campaign.py:47
+#: froide_campaign/models/campaign.py
 msgid "slug"
-msgstr ""
+msgstr "URL-Kürzel"
 
-#: models/campaign.py:48
+#: froide_campaign/models/campaign.py
 msgid "Used to build the category's URL."
-msgstr ""
+msgstr "Wird genutzt, um die Kategorie-URL zu erstellen."
 
-#: models/campaign.py:50
+#: froide_campaign/models/campaign.py
 msgid "description"
-msgstr ""
+msgstr "Beschreibung"
 
-#: models/campaign.py:56
+#: froide_campaign/models/campaign.py
 msgid "category"
-msgstr ""
+msgstr "Kategorie"
 
-#: models/campaign.py:57 models/campaign.py:156 models/campaign.py:266
+#: froide_campaign/models/campaign.py
 msgid "categories"
-msgstr ""
+msgstr "Kategorien"
 
-#: models/campaign.py:73 models/report.py:82
+#: froide_campaign/models/campaign.py froide_campaign/models/report.py
 msgid "User"
 msgstr "Nutzer"
 
-#: models/campaign.py:77
+#: froide_campaign/models/campaign.py
 msgid "Team"
 msgstr "Team"
 
-#: models/campaign.py:89
+#: froide_campaign/models/campaign.py
 msgid "Campaign page"
 msgstr "Kampagnenseite"
 
-#: models/campaign.py:90
+#: froide_campaign/models/campaign.py
 msgid "Campaign pages"
 msgstr "Kampagnenseiten"
 
-#: models/campaign.py:92
+#: froide_campaign/models/campaign.py
 msgid "Can use campaigns"
 msgstr "Ihre Kampagnen"
 
-#: models/campaign.py:174
+#: froide_campaign/models/campaign.py
 msgid "Campaigns"
 msgstr "Kampagnen"
 
-#: models/campaign.py:287
+#: froide_campaign/models/campaign.py
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
-#: models/campaign.py:295
+#: froide_campaign/models/campaign.py
 msgid "Information object"
 msgstr "Informationsobjekt"
 
-#: models/campaign.py:296
+#: froide_campaign/models/campaign.py
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
-#: models/report.py:25
+#: froide_campaign/models/report.py
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
-#: models/report.py:26
+#: froide_campaign/models/report.py
 msgid "Choices"
-msgstr ""
+msgstr "Auswahl"
 
-#: models/report.py:27
+#: froide_campaign/models/report.py
 msgid "Integer"
-msgstr ""
+msgstr "Integer"
 
-#: models/report.py:40
+#: froide_campaign/models/report.py
 msgid "Position"
-msgstr ""
+msgstr "Position"
 
-#: templates/admin/froide_campaign/informationobject/change_list.html:10
+#: froide_campaign/templates/admin/froide_campaign/informationobject/change_list.html
 msgid "Upload information objects as CSV"
 msgstr "Informationsobjekte als CSV hochladen"
 
-#: templates/froide_campaign/_info_object.html:16 views.py:70
+#: froide_campaign/templates/froide_campaign/_info_object.html
+#: froide_campaign/views.py
 msgid "Information already public"
 msgstr "Information schon öffentlich"
 
-#: templates/froide_campaign/_info_object.html:19
+#: froide_campaign/templates/froide_campaign/_info_object.html
 msgid "Campaign currently suspended"
 msgstr "Derzeit pausiert die Kampagne"
 
-#: templates/froide_campaign/_info_object.html:24
+#: froide_campaign/templates/froide_campaign/_info_object.html
 #, python-format
 msgid "Request %(name)s"
 msgstr "%(name)s anfragen"
 
-#: templates/froide_campaign/_info_object.html:26
+#: froide_campaign/templates/froide_campaign/_info_object.html
 msgid "Make request"
-msgstr "Anfragen!"
+msgstr "Anfrage stellen"
 
-#: templates/froide_campaign/_info_object_no_foi.html:6
+#: froide_campaign/templates/froide_campaign/_info_object_no_foi.html
 msgid "Search online"
 msgstr "Dokument suchen"
 
-#: templates/froide_campaign/_questionaire.html:13
+#: froide_campaign/templates/froide_campaign/_questionaire.html
 #, python-format
 msgid ""
 "\n"
-"      You already made a submission.\n"
-"      "
+"        You already made a submission.\n"
+"        "
 msgid_plural ""
 "\n"
-"      You already made %(report_count)s submissions.\n"
-"      "
+"        You already made %(report_count)s submissions.\n"
+"        "
 msgstr[0] ""
 "\n"
 "      Sie haben schon einen Eintrag angelegt.\n"
@@ -203,72 +203,68 @@ msgstr[1] ""
 "      Sie haben schon %(report_count)s Einträge angelegt.\n"
 "      "
 
-#: templates/froide_campaign/_questionaire.html:24
+#: froide_campaign/templates/froide_campaign/_questionaire.html
 msgid "Add entry"
 msgstr "Eintrag hinzufügen"
 
-#: templates/froide_campaign/_questionaire.html:26
+#: froide_campaign/templates/froide_campaign/_questionaire.html
 msgid "Save"
 msgstr "Speichern"
 
-#: templates/froide_campaign/campaign.html:27
-#: templates/froide_campaign/campaign.html:28
+#: froide_campaign/templates/froide_campaign/campaign.html
 msgid "Complete"
 msgstr "Abgeschlossen"
 
-#: templates/froide_campaign/campaign.html:30
-#: templates/froide_campaign/campaign.html:31
+#: froide_campaign/templates/froide_campaign/campaign.html
 msgid "Pending"
 msgstr "Laufend"
 
-#: templates/froide_campaign/campaign.html:46
-#: templates/froide_campaign/campaign.html:50
-#: templates/froide_campaign/embed.html:25
+#: froide_campaign/templates/froide_campaign/campaign.html
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "Search"
 msgstr "Suchen"
 
-#: templates/froide_campaign/campaign.html:54
+#: froide_campaign/templates/froide_campaign/campaign.html
 msgid "Random"
 msgstr "Zufall"
 
-#: templates/froide_campaign/campaign.html:63
+#: froide_campaign/templates/froide_campaign/campaign.html
 msgid "Filter by status"
 msgstr "Filtern nach Zustand"
 
-#: templates/froide_campaign/campaign.html:66
+#: froide_campaign/templates/froide_campaign/campaign.html
 msgid "Filter by type"
 msgstr "Filtern nach Typ"
 
-#: templates/froide_campaign/edit_campaign_page.html:28
+#: froide_campaign/templates/froide_campaign/edit_campaign_page.html
 msgid "Update iframe"
 msgstr "Iframe akualisieren"
 
-#: templates/froide_campaign/edit_campaign_page.html:30
+#: froide_campaign/templates/froide_campaign/edit_campaign_page.html
 msgid "Make iframe"
 msgstr "Iframe erstellen"
 
-#: templates/froide_campaign/edit_campaign_page.html:38
+#: froide_campaign/templates/froide_campaign/edit_campaign_page.html
 msgid "Assign team to campaign page"
 msgstr "Weise Team zur Kampagnenseite zu"
 
-#: templates/froide_campaign/edit_campaign_page.html:39
+#: froide_campaign/templates/froide_campaign/edit_campaign_page.html
 msgid "Set team for campaign page"
 msgstr "Team an Kampagnenseite zuweisen"
 
-#: templates/froide_campaign/embed.html:22
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "topic"
 msgstr "Thema"
 
-#: templates/froide_campaign/embed.html:44
-#: templates/froide_campaign/embed.html:87
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "Request this"
 msgstr "Anfragen"
 
-#: templates/froide_campaign/embed.html:53
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "Show me other requests I can make"
 msgstr "Zeige mir drei neue Anfragen"
 
-#: templates/froide_campaign/embed.html:65
+#: froide_campaign/templates/froide_campaign/embed.html
 #, python-format
 msgid ""
 "\n"
@@ -279,51 +275,60 @@ msgstr ""
 "                  %(pending)s von %(total)s Anfragen\n"
 "                "
 
-#: templates/froide_campaign/embed.html:88
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "No search results or no requests left!"
 msgstr "Keine Suchergebnisse oder keine Anfragen übrig!"
 
-#: templates/froide_campaign/embed.html:89
+#: froide_campaign/templates/froide_campaign/embed.html
 msgid "No requests left!"
 msgstr "Keine Anfragen übrig!"
 
-#: templates/froide_campaign/index.html:7
+#: froide_campaign/templates/froide_campaign/index.html
 msgid "Current Campaigns"
 msgstr "Aktuelle Kampagnen"
 
-#: templates/froide_campaign/list_campaign_page.html:8
+#: froide_campaign/templates/froide_campaign/list_campaign_page.html
 msgid "Your campaigns"
 msgstr "Ihre Kampagnen"
 
-#: templates/froide_campaign/list_campaign_page.html:17
+#: froide_campaign/templates/froide_campaign/list_campaign_page.html
 msgid "Change"
 msgstr "Ändern"
 
-#: templates/froide_campaign/plugins/campaign_progress.html:4
+#: froide_campaign/templates/froide_campaign/plugins/campaign_progress.html
 msgid "Requests received"
 msgstr "Anfragen erhalten"
 
-#: templates/froide_campaign/plugins/campaign_requests.html:18
+#: froide_campaign/templates/froide_campaign/plugins/campaign_progress.html
+msgid "Successful requests"
+msgstr "Erfolgreiche Anfragen"
+
+#: froide_campaign/templates/froide_campaign/plugins/campaign_progress.html
+#, python-format
+msgid "%(requests)s of %(total)s"
+msgstr "%(requests)s von %(total)s"
+
+#: froide_campaign/templates/froide_campaign/plugins/campaign_requests.html
 msgid "Go to request"
 msgstr "Zur Anfrage"
 
-#: views.py:67
+#: froide_campaign/views.py
 msgid "No request yet"
 msgstr "Noch keine Anfrage"
 
-#: views.py:68
+#: froide_campaign/views.py
 msgid "Pending request"
 msgstr "Anfrage läuft"
 
-#: views.py:69
+#: froide_campaign/views.py
 msgid "Resolved request"
 msgstr "Anfrage abgeschlossen"
 
-#: views.py:334
+#: froide_campaign/views.py
 msgid "Thank you, your answers were saved!"
 msgstr "Vielen Dank, Ihre Antworten wurden gespeichert!"
 
-#: views.py:339
+#: froide_campaign/views.py
 msgid "Please fix the errors in the form!"
 msgstr "Bitte korrigieren Sie die Fehler im Formular!"
 
