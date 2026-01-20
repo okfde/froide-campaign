@@ -88,7 +88,7 @@ class ProviderKwargsFilter(django_filters.FilterSet):
         method="category_filter", queryset=Category.objects.all()
     )
     region = django_filters.ModelMultipleChoiceFilter(
-        method="region_filter", queryset=Category.objects.all()
+        method="region_filter", queryset=GeoRegion.objects.all()
     )
     region_kind = django_filters.CharFilter(method="region_kind_filter")
 
