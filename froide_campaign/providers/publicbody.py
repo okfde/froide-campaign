@@ -1,14 +1,13 @@
 from typing import Optional
 
+import django_filters
 from django.template import Context
 from django.template.defaultfilters import slugify
 from django.utils.safestring import mark_safe
-
-from rest_framework import filters
-
 from froide.campaign.utils import connect_foirequest
 from froide.georegion.models import GeoRegion
-from froide.publicbody.models import Category, Classification, PublicBody
+from froide.publicbody.models import Category, Classification, Jurisdiction, PublicBody
+from rest_framework import filters
 
 from ..filters import RandomOrderFilter
 from ..models import InformationObject
@@ -78,6 +77,56 @@ class StatusFilter(filters.BaseFilterBackend):
         return queryset
 
 
+class ProviderKwargsFilter(django_filters.FilterSet):
+    jurisdiction = django_filters.ModelMultipleChoiceFilter(
+        field_name="jurisdiction_id", queryset=Jurisdiction.objects.all()
+    )
+    classification = django_filters.ModelMultipleChoiceFilter(
+        method="classification_filter", queryset=Classification.objects.all()
+    )
+    category = django_filters.ModelMultipleChoiceFilter(
+        method="category_filter", queryset=Category.objects.all()
+    )
+    region = django_filters.ModelMultipleChoiceFilter(
+        method="region_filter", queryset=Category.objects.all()
+    )
+    region_kind = django_filters.CharFilter(method="region_kind_filter")
+
+    class Meta:
+        model = PublicBody
+        fields = ["jurisdiction", "classification", "category", "region", "region_kind"]
+
+    def classification_filter(self, queryset, name, value):
+        if not value:
+            return queryset
+        classifications = Classification.objects.none().union(
+            *[Classification.get_tree(parent=c) for c in value]
+        )
+        return queryset.filter(classification__in=classifications)
+
+    def category_filter(self, queryset, name, value):
+        if not value:
+            return queryset
+        categories = Category.objects.none().union(
+            *[Category.get_tree(parent=c) for c in value]
+        )
+        queryset = queryset.filter(categories__in=categories)
+        return queryset
+
+    def region_filter(self, queryset, name, value):
+        if not value:
+            return queryset
+        ids = GeoRegion.objects.none().union(
+            *[GeoRegion.get_tree(parent=r) for r in value]
+        )
+        return queryset.filter(regions__in=ids)
+
+    def region_kind_filter(self, queryset, name, value):
+        if not value:
+            return queryset
+        return queryset.filter(regions__kind=value)
+
+
 class PublicBodyProvider(BaseProvider):
     IDENT_PREFIX = "pb-"
 
@@ -91,34 +140,8 @@ class PublicBodyProvider(BaseProvider):
 
     def get_queryset(self):
         qs = PublicBody.objects.all()
-        filters = {}
-        tree_filter = (
-            ("category", "categories", Category),
-            ("classification", "classification", Classification),
-            ("region", "regions", GeoRegion),
-        )
-
-        for key, field, model in tree_filter:
-            if key not in self.kwargs:
-                continue
-            try:
-                obj = model.objects.get(id=self.kwargs[key])
-            except model.DoesNotExist:
-                continue
-            filters[field + "__in"] = model.get_tree(obj)
-
-        attr_filters = (
-            (
-                "jurisdiction",
-                "jurisdiction_id",
-            ),
-        )
-        for key, field in attr_filters:
-            if key not in self.kwargs:
-                continue
-            filters[field] = self.kwargs[key]
-
-        return qs.filter(**filters)
+        provider_filter = ProviderKwargsFilter(self.kwargs, queryset=qs)
+        return provider_filter.qs
 
     def make_ident(self, obj: PublicBody):
         return "{}{}".format(self.IDENT_PREFIX, obj.id)
