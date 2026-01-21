@@ -33,7 +33,7 @@
 
     <div v-show="!showRequestForm">
       <div v-if="!settings.input_field" ref="searchTop">
-        <h5>Filter</h5>
+        <h5>{{ i18n.filter }}</h5>
         <input
           v-model="search"
           type="search"
