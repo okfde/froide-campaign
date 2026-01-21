@@ -14,7 +14,8 @@
     "search": "Search...",
     "noResults": "No results found.",
     "loadMore": "Load more",
-    "loadRandom": "Load random selection"
+    "loadRandom": "Load random selection",
+    "filter": "Filter"
   },
   "de": {
     "resolutions": {
@@ -31,6 +32,7 @@
     "search": "Suchen...",
     "noResults": "Keine Ergebnisse gefunden.",
     "loadMore": "Mehr laden",
-    "loadRandom": "Lade zufällige Auswahl"
+    "loadRandom": "Lade zufällige Auswahl",
+    "filter": "Filter"
   }
 }
