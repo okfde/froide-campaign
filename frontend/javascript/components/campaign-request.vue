@@ -9,7 +9,8 @@
           v-else-if="showMaxRequestWarning"
           :user="userInfo"
           :request-count="userRequestCount"
-          @close="$emit('close')" />
+          @close="$emit('close')"
+        />
         <template v-else>
           <button class="btn btn-sm btn-secondary" @click="$emit('close')">
             &lt; {{ messages.back }}
@@ -19,9 +20,13 @@
               v-if="!fetching && publicbodiesOptions.length > 1"
               :publicbodies="publicbodiesOptions"
               :publicbody="publicbody"
-              @public-body-changed="updatePublicBody" />
+              @public-body-changed="updatePublicBody"
+            />
           </div>
-          <div class="mt-5" v-if="!fetching && !publibodiesOptions && publicbody">
+          <div
+            class="mt-5"
+            v-if="!fetching && !publibodiesOptions && publicbody"
+          >
             <div class="fs-3">
               {{ config.i18n.toPublicBody.replace('${name}', publicbody.name) }}
               <a :href="publicbody.site_url" target="_blank">
@@ -32,12 +37,12 @@
               v-if="defaultLaw?.request_note_html"
               class="alert alert-warning my-2"
               v-html="defaultLaw.request_note_html"
-              />
+            />
             <div
               v-if="publicbody?.request_note_html"
               class="alert alert-warning my-2"
               v-html="publicbody.request_note_html"
-              />
+            />
           </div>
           <!-- <template v-if="!canRequest">
             <p>Dieser Betrieb wurde zwischenzeitlich schon angefragt.</p>
@@ -50,28 +55,33 @@
             :action="config.url.makeRequest"
             target="_blank"
             enctype="multipart/form-data"
-            @submit="formSubmit">
+            @submit="formSubmit"
+          >
             <input
               type="hidden"
               name="csrfmiddlewaretoken"
-              :value="csrfToken" />
+              :value="csrfToken"
+            />
             <input
               v-model="params.redirect_url"
               type="hidden"
-              name="redirect_url" />
+              name="redirect_url"
+            />
             <input v-model="params.ref" type="hidden" name="reference" />
             <!-- TODO is privateRequests ever true? if so, use froide/request-public.vue? -->
             <input
               v-if="!privateRequests"
               type="hidden"
               name="public"
-              value="True" />
+              value="True"
+            />
             <input
               v-for="k in hideParams"
               :key="k"
               type="hidden"
               :name="k"
-              value="1" />
+              value="1"
+            />
             <RequestForm
               v-if="!fetching"
               :publicbodies="[publicbody]"
@@ -89,11 +99,11 @@
               :hide-editing="hideParams.includes('hide_editing')"
               :law-type="lawType"
               :config="config"
-              :submitting="submitting" />
-            <div class="card mb-3">
+              :submitting="submitting"
+            />
+            <div class="card mb-3" v-if="!userInfo">
               <div class="card-body">
                 <UserCreateAccount
-                  v-if="!userInfo"
                   :user="user"
                   :config="config"
                   :request-form="requestForm"
@@ -102,14 +112,12 @@
                   :address-help-text="addressHelpText"
                   :address-required="addressRequired"
                   :use-pseudonym="false"
-                  >
+                >
                   <template #userPublicPreamble>
                     <span v-html="userForm.fields.private.help_text" />
                   </template>
                 </UserCreateAccount>
-                <UserConfirmation
-                  :form="userForm"
-                  />
+                <UserConfirmation :form="userForm" />
               </div>
             </div>
             <div v-if="!hideNewsletterCheckbox" class="row">
@@ -126,7 +134,8 @@
                               type="checkbox"
                               name="subscribe"
                               class="form-check-input"
-                              :value="userHasSubscription" />
+                              :value="userHasSubscription"
+                            />
                             <span v-if="subscribeText">{{
                               subscribeText
                             }}</span>
@@ -148,7 +157,8 @@
                 type="submit"
                 class="btn btn-lg btn-success"
                 @click="submitting = true"
-                :disabled="submitted">
+                :disabled="submitted"
+              >
                 <i class="fa fa-angle-double-right" aria-hidden="true" />
                 <template v-if="buttonText">{{ buttonText }}</template>
                 <template v-else>{{ messages.sendRequest }}</template>
