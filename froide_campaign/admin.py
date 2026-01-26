@@ -2,6 +2,7 @@ import csv
 import io
 from datetime import timedelta
 
+from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
 from django import forms
 from django.contrib import admin, messages
 from django.core.exceptions import PermissionDenied
@@ -11,13 +12,10 @@ from django.shortcuts import redirect
 from django.urls import path
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-from adminsortable2.admin import SortableAdminBase, SortableInlineAdminMixin
-from parler.admin import TranslatableAdmin
-
 from froide.georegion.models import GeoRegion
 from froide.helper.admin_utils import make_nullfilter
 from froide.helper.csv_utils import export_csv_response
+from parler.admin import TranslatableAdmin
 
 from .models import (
     Answer,
@@ -153,7 +151,7 @@ class InformationObjectAdmin(TranslatableAdmin):
             iobj.foirequest.save()
         return None
 
-    resolve_requests.short_description = _("Mark requests as " "successfully resolved")
+    resolve_requests.short_description = _("Mark requests as successfully resolved")
 
     def clean_requests(self, request, queryset):
         queryset = queryset.filter(foirequest__isnull=False)
@@ -164,7 +162,7 @@ class InformationObjectAdmin(TranslatableAdmin):
                 continue
             if iobj.foirequest.created_at >= a_day_ago:
                 continue
-            if iobj.foirequest.is_visible():
+            if iobj.foirequest.is_public():
                 continue
             iobj.foirequest = None
             iobj.save()
