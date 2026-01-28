@@ -107,7 +107,7 @@ export default {
     },
     btnClass() {
       if (this.object.resolution === 'pending') {
-        return 'btn-outline-warning'
+        return 'btn-outline-secondary'
       } else if (this.object.resolution === 'successful') {
         return 'btn-outline-success'
       } else if (this.object.resolution === 'refused') {
