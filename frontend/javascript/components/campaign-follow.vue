@@ -16,14 +16,14 @@
     </button>
     <button
       v-else
-      class="input-large btn hover-btn-success btn-sm"
+      class="input-large btn btn-outline-primary btn-sm"
       @click.stop="doFollow">
       <span class="on-hover">
-        <i class="fa fa-star" aria-hidden="true"></i>
+        <i class="fa fa-bell" aria-hidden="true"></i>
         {{ i18n.follow_q }}
       </span>
       <span class="on-display">
-        <i class="fa fa-star-o" aria-hidden="true"></i>
+        <i class="fa fa-bell-o" aria-hidden="true"></i>
         {{ i18n.follow_q }}
       </span>
     </button>

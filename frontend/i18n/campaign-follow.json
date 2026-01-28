@@ -2,11 +2,11 @@
   "en": {
     "unfollow": "Unfollow",
     "followed": "Followed",
-    "follow_q": "Follow?"
+    "follow_q": "Follow request?"
   },
   "de": {
     "unfollow": "Entfolgen",
     "followed": "Gefolgt",
-    "follow_q": "Folgen?"
+    "follow_q": "Anfrage folgen?"
   }
 }
