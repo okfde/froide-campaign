@@ -13,11 +13,14 @@
         />
         <template v-else>
           <button class="btn btn-sm btn-secondary" @click="$emit('close')">
-            &lt; {{ messages.back }}
+            <span aria-hidden="true">←</span>
+            {{ messages.back }}
           </button>
-          <div class="row justify-content-md-end mt-5">
+          <div
+            class="row justify-content-md-end mt-5"
+            v-if="!fetching && publicbodiesOptions.length > 1"
+          >
             <CampaignChoosePublicbody
-              v-if="!fetching && publicbodiesOptions.length > 1"
               :publicbodies="publicbodiesOptions"
               :publicbody="publicbody"
               @public-body-changed="updatePublicBody"
@@ -27,12 +30,12 @@
             class="mt-5"
             v-if="!fetching && !publibodiesOptions && publicbody"
           >
-            <div class="fs-3">
+            <h3>
               {{ config.i18n.toPublicBody.replace('${name}', publicbody.name) }}
               <a :href="publicbody.site_url" target="_blank">
                 <span class="fa fa-info-circle" />
               </a>
-            </div>
+            </h3>
             <div
               v-if="defaultLaw?.request_note_html"
               class="alert alert-warning my-2"
@@ -101,65 +104,62 @@
               :config="config"
               :submitting="submitting"
             />
-            <div class="card mb-3" v-if="!userInfo">
-              <div class="card-body">
-                <UserCreateAccount
-                  :user="user"
-                  :config="config"
-                  :request-form="requestForm"
-                  :user-form="userForm"
-                  :default-law="defaultLaw"
-                  :address-help-text="addressHelpText"
-                  :address-required="addressRequired"
-                  :use-pseudonym="false"
-                >
-                  <template #userPublicPreamble>
-                    <span v-html="userForm.fields.private.help_text" />
-                  </template>
-                </UserCreateAccount>
-                <UserConfirmation :form="userForm" />
-              </div>
+            <div
+              class="border border-2 border-gray-300 p-3 mb-3"
+              v-if="!userInfo"
+            >
+              <UserCreateAccount
+                :user="user"
+                :config="config"
+                :request-form="requestForm"
+                :user-form="userForm"
+                :default-law="defaultLaw"
+                :address-help-text="addressHelpText"
+                :address-required="addressRequired"
+                :use-pseudonym="false"
+              >
+                <template #userPublicPreamble>
+                  <span v-html="userForm.fields.private.help_text" />
+                </template>
+              </UserCreateAccount>
+              <UserConfirmation :form="userForm" />
             </div>
             <div v-if="!hideNewsletterCheckbox" class="row">
               <div class="col-md-12">
-                <div class="card mb-3">
-                  <div class="card-body">
-                    <div class="mb-3 row">
-                      <div class="col-lg-9">
-                        <div class="form-check">
-                          <label class="form-check-label">
-                            <input
-                              id="id_subscribe"
-                              v-model="userHasSubscription"
-                              type="checkbox"
-                              name="subscribe"
-                              class="form-check-input"
-                              :value="userHasSubscription"
-                            />
-                            <span v-if="subscribeText">{{
-                              subscribeText
-                            }}</span>
-                            <span v-else
-                              >Bitte senden Sie mir Informationen zu dieser
-                              Kampagne per E-mail</span
-                            >
-                          </label>
-                        </div>
+                <div class="border border-2 border-gray-300 p-3 mb-3">
+                  <div class="mb-3 row">
+                    <div class="col-lg-9">
+                      <div class="form-check">
+                        <label class="form-check-label">
+                          <input
+                            id="id_subscribe"
+                            v-model="userHasSubscription"
+                            type="checkbox"
+                            name="subscribe"
+                            class="form-check-input"
+                            :value="userHasSubscription"
+                          />
+                          <span v-if="subscribeText">{{ subscribeText }}</span>
+                          <span v-else
+                            >Bitte senden Sie mir Informationen zu dieser
+                            Kampagne per E-mail</span
+                          >
+                        </label>
                       </div>
                     </div>
-                    <p v-if="extraText" class="mb-0" v-html="extraText" />
                   </div>
+                  <p v-if="extraText" class="mb-0" v-html="extraText" />
                 </div>
               </div>
             </div>
-            <div class="text-end">
+            <div>
               <button
                 type="submit"
-                class="btn btn-lg btn-success"
+                class="btn btn-lg btn-primary"
                 @click="submitting = true"
                 :disabled="submitted"
               >
-                <i class="fa fa-angle-double-right" aria-hidden="true" />
+                <i class="fa fa-send me-2" aria-hidden="true" />
                 <template v-if="buttonText">{{ buttonText }}</template>
                 <template v-else>{{ messages.sendRequest }}</template>
               </button>
