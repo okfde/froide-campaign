@@ -142,6 +142,10 @@ msgstr "Informationsobjekt"
 msgid "Information objects"
 msgstr "Informationsobjekte"
 
+#: froide_campaign/models/campaign.py
+msgid "Questionaire"
+msgstr "Fragebogen"
+
 #: froide_campaign/models/report.py
 msgid "Text"
 msgstr "Text"

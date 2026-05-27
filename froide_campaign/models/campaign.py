@@ -242,6 +242,7 @@ class InformationObjectManager(TranslatableManager):
             "foirequest__status",
             "foirequest__resolution",
             "foirequest__created_at",
+            "questionaire_id",
             "resolved",
             "context_as_json",
             ("lat", lambda o: o.get_latitude()),
@@ -280,6 +281,14 @@ class InformationObject(TranslatableModel):
     )
     foirequests = models.ManyToManyField(
         FoiRequest, blank=True, related_name="information_objects"
+    )
+    questionaire = models.ForeignKey(
+        "froide_campaign.Questionaire",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="information_objects",
+        verbose_name=_("Questionaire"),
     )
 
     resolved = models.BooleanField(default=False)

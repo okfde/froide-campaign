@@ -83,7 +83,9 @@ def render_campaign_questionaire(foirequest):
     if not iobj:
         return None
 
-    questionaire = Questionaire.objects.filter(campaign=iobj.campaign).first()
+    questionaire = iobj.questionaire or (
+        Questionaire.objects.filter(campaign=iobj.campaign).first()
+    )
     if not questionaire:
         return None
 

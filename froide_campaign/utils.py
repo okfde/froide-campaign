@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from froide.foirequest.models import FoiRequest
 from froide.publicbody.models import PublicBody
 
-from .models import Campaign, CampaignCategory, InformationObject
+from .models import Campaign, CampaignCategory, InformationObject, Questionaire
 
 logger = logging.getLogger()
 
@@ -21,6 +21,7 @@ class CSVImporter(object):
         self.request = request
         self.pb_cache = {}
         self.campaign_cache = {}
+        self.questionaire_cache = {}
 
     def run(self, reader):
         for line in reader:
@@ -117,6 +118,17 @@ class CSVImporter(object):
                 foirequest = FoiRequest.objects.get(id=fr_id)
             except FoiRequest.DoesNotExist:
                 pass
+
+        questionaire_obj = None
+        if line.get("questionaire_id"):
+            q_id = line.pop("questionaire_id")
+            if q_id not in self.questionaire_cache:
+                try:
+                    self.questionaire_cache[q_id] = Questionaire.objects.get(id=q_id)
+                except Questionaire.DoesNotExist:
+                    self.questionaire_cache[q_id] = None
+            questionaire_obj = self.questionaire_cache[q_id]
+
         ordering = line.pop("ordering", "")
         point = None
 
@@ -152,6 +164,8 @@ class CSVImporter(object):
             iobj.subtitle = subtitle
             iobj.context = context_json
             iobj.featured = featured
+            if questionaire_obj is not None:
+                iobj.questionaire = questionaire_obj
             if foirequest:
                 iobj.foirequest = foirequest
                 iobj.foirequests.add(foirequest)
@@ -174,6 +188,7 @@ class CSVImporter(object):
             featured=featured,
             geo=point,
             foirequest=foirequest,
+            questionaire=questionaire_obj,
         )
         if foirequest:
             iobj.foirequests.add(foirequest)
