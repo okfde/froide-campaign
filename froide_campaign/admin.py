@@ -67,6 +67,7 @@ class InformationObjectAdmin(TranslatableAdmin):
     )
     list_filter = (
         "campaign",
+        "questionaire",
         "foirequest__status",
         "foirequest__resolution",
         "resolved",
@@ -76,7 +77,13 @@ class InformationObjectAdmin(TranslatableAdmin):
         make_nullfilter("publicbody", _("Has public body")),
         make_nullfilter("geo", _("Has geo")),
     )
-    raw_id_fields = ("publicbody", "foirequest", "foirequests", "documents")
+    raw_id_fields = (
+        "publicbody",
+        "foirequest",
+        "foirequests",
+        "questionaire",
+        "documents",
+    )
     search_fields = ("translations__title", "ident")
 
     actions = [
