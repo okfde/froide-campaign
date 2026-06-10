@@ -19,19 +19,21 @@ class StatusFilter(filters.BaseFilterBackend):
             if status == "normal":
                 return queryset.filter(foirequests__isnull=True)
             if status == "pending":
-                return queryset.filter(foirequests__isnull=False).exclude(
-                    foirequests__status="resolved"
+                return (
+                    queryset.filter(foirequests__isnull=False)
+                    .exclude(foirequests__status="resolved")
+                    .distinct()
                 )
             if status == "successful":
                 successful = ["successful", "partially_successful"]
                 return queryset.filter(
                     foirequests__status="resolved",
                     foirequests__resolution__in=successful,
-                )
+                ).distinct()
             if status == "refused":
                 return queryset.filter(
                     foirequests__status="resolved", foirequests__resolution="refused"
-                )
+                ).distinct()
         return queryset
 
 
@@ -62,7 +64,9 @@ class InformationObjectRequestedFilter(filters.BaseFilterBackend):
         if request.GET.get("requested") is not None:
             try:
                 is_requested = bool(request.GET["requested"])
-                queryset = queryset.filter(foirequests__isnull=not is_requested)
+                queryset = queryset.filter(
+                    foirequests__isnull=not is_requested
+                ).distinct()
             except ValueError:
                 pass
         return queryset
