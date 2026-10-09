@@ -9,7 +9,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <h5>
+        <h5 v-if="data.categories?.length">
           <CampaignListTag
             v-for="(category, i) in data.categories"
             :key="i"

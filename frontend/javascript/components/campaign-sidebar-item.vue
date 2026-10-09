@@ -12,7 +12,7 @@
             <p v-if="data.address" class="venue-address">{{ data.address }}</p>
           </div>
           <div class="col text-end">
-            <h5>
+            <h5 v-if="data.categories?.length">
               <CampaignListTag
                 v-for="(category, i) in data.categories"
                 :key="i"
