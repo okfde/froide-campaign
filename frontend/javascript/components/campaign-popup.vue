@@ -9,14 +9,14 @@
     </div>
     <div class="row">
       <div class="col">
-        <h5 v-if="data.categories?.length">
+        <div v-if="data.categories?.length" class="mb-2">
           <CampaignListTag
             v-for="(category, i) in data.categories"
             :key="i"
             :is-button="false">
             #{{ category.title }}
           </CampaignListTag>
-        </h5>
+        </div>
       </div>
     </div>
     <div class="row">
