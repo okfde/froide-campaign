@@ -14,16 +14,14 @@
               object.address
             }}</small>
           </div>
-          <div v-if="object.categories?.length" class="ms-auto text-end">
-            <h5>
-              <CampaignListTag
-                v-for="category in object.categories"
-                :key="category.id"
-                :active="currentCategory === category.id"
-                @click="$emit('setCategoryFilter', category.id)">
-                #{{ category.title }}
-              </CampaignListTag>
-            </h5>
+          <div v-if="object.categories?.length" class="ms-auto text-end mb-2">
+            <CampaignListTag
+              v-for="category in object.categories"
+              :key="category.id"
+              :active="currentCategory === category.id"
+              @click="$emit('setCategoryFilter', category.id)">
+              #{{ category.title }}
+            </CampaignListTag>
           </div>
         </div>
         <div class="row mt-auto">
