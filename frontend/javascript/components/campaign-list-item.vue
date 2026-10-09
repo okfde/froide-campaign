@@ -4,7 +4,7 @@
       <div class="card-body d-flex flex-column">
         <h5>{{ object.title }}</h5>
         <div
-          v-if="object.subtitle || object.address || object.categories"
+          v-if="object.subtitle || object.address || object.categories?.length"
           class="d-flex mt-1">
           <div v-if="object.subtitle || object.address" class="mb-3">
             <p class="text-muted mb-0">
@@ -14,7 +14,7 @@
               object.address
             }}</small>
           </div>
-          <div v-if="object.categories" class="ms-auto text-end">
+          <div v-if="object.categories?.length" class="ms-auto text-end">
             <h5>
               <CampaignListTag
                 v-for="category in object.categories"
