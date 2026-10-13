@@ -2,7 +2,7 @@
   <div class="d-flex mb-3">
     <div class="card flex-1 w-100">
       <div class="card-body d-flex flex-column">
-        <h5>{{ object.title }}</h5>
+        <h3 class="h5">{{ object.title }}</h3>
         <div
           v-if="object.subtitle || object.address || object.categories?.length"
           class="d-flex mt-1">

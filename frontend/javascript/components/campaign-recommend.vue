@@ -2,10 +2,9 @@
   <div>
     <div class="row justify-content-center mt-5">
       <div class="col-md-9">
-        <h1 v-if="user" class="text-center">
-          {{ i18n.holdOn }}, {{ userName }}!
-        </h1>
-        <h1 v-else class="text-center">{{ i18n.holdOn }}!</h1>
+        <h2 class="h1 text-center">
+          {{ i18n.holdOn }}<template v-if="user">, {{ userName }}</template>!
+        </h2>
 
         <p class="lead">
           <template v-if="requestCount == 1">

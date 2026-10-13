@@ -30,12 +30,12 @@
             class="mt-5"
             v-if="!fetching && !publibodiesOptions && publicbody"
           >
-            <h3>
+            <h2 class="h3">
               {{ config.i18n.toPublicBody.replace('${name}', publicbody.name) }}
               <a :href="publicbody.site_url" target="_blank">
                 <span class="fa fa-info-circle" />
               </a>
-            </h3>
+            </h2>
             <div
               v-if="defaultLaw?.request_note_html"
               class="alert alert-warning my-2"
