@@ -2,7 +2,7 @@
   <div class="campaign-popup" :id="'popup-' + itemId">
     <div class="row">
       <div class="col-12">
-        <h4 class="venue-name">{{ data.title }}</h4>
+        <h3 class="h4 venue-name">{{ data.title }}</h3>
         <p v-if="data.subtitle">{{ data.subtitle }}</p>
         <p v-if="data.address" class="venue-address">{{ data.address }}</p>
       </div>

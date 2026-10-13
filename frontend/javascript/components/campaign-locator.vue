@@ -3,7 +3,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Wo wollen Sie suchen?</h5>
+          <h1 class="h5 modal-title">Wo wollen Sie suchen?</h1>
           <button
             type="button"
             class="btn-close"

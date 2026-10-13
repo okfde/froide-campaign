@@ -4,9 +4,9 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col info-column">
-            <h5 v-if="data.title" class="venue-name">
+            <h3 v-if="data.title" class="h5 venue-name">
               {{ data.title }}
-            </h5>
+            </h3>
             <div v-else class="venue-name-dummy dummy dummy-blinker"></div>
             <p v-if="data.subtitle">{{ data.subtitle }}</p>
             <p v-if="data.address" class="venue-address">{{ data.address }}</p>
