@@ -3,20 +3,12 @@ from django.db import models
 try:
     from cms.models.pluginmodel import CMSPlugin
 
-    from .campaign import Campaign, CampaignPage
+    from .campaign import Campaign
     from .report import Questionaire
 except ImportError:
     CMSPlugin = None
 
 if CMSPlugin is not None:
-
-    class CampaignRequestsCMSPlugin(CMSPlugin):
-        campaign_page = models.ForeignKey(
-            CampaignPage, related_name="+", on_delete=models.CASCADE
-        )
-
-        def __str__(self):
-            return str(self.campaign_page)
 
     class CampaignCMSPlugin(CMSPlugin):
         campaign = models.ForeignKey(
