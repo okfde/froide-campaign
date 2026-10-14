@@ -2,21 +2,21 @@
   <div class="campaign-popup" :id="'popup-' + itemId">
     <div class="row">
       <div class="col-12">
-        <h4 class="venue-name">{{ data.title }}</h4>
+        <h3 class="h4 venue-name">{{ data.title }}</h3>
         <p v-if="data.subtitle">{{ data.subtitle }}</p>
         <p v-if="data.address" class="venue-address">{{ data.address }}</p>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <h5>
+        <div v-if="data.categories?.length" class="mb-2">
           <CampaignListTag
             v-for="(category, i) in data.categories"
             :key="i"
             :is-button="false">
             #{{ category.title }}
           </CampaignListTag>
-        </h5>
+        </div>
       </div>
     </div>
     <div class="row">

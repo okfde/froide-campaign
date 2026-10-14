@@ -2,9 +2,9 @@
   <div class="d-flex mb-3">
     <div class="card flex-1 w-100">
       <div class="card-body d-flex flex-column">
-        <h5>{{ object.title }}</h5>
+        <h3 class="h5">{{ object.title }}</h3>
         <div
-          v-if="object.subtitle || object.address || object.categories"
+          v-if="object.subtitle || object.address || object.categories?.length"
           class="d-flex mt-1">
           <div v-if="object.subtitle || object.address" class="mb-3">
             <p class="text-muted mb-0">
@@ -14,16 +14,14 @@
               object.address
             }}</small>
           </div>
-          <div v-if="object.categories" class="ms-auto text-end">
-            <h5>
-              <CampaignListTag
-                v-for="category in object.categories"
-                :key="category.id"
-                :active="currentCategory === category.id"
-                @click="$emit('setCategoryFilter', category.id)">
-                #{{ category.title }}
-              </CampaignListTag>
-            </h5>
+          <div v-if="object.categories?.length" class="ms-auto text-end mb-2">
+            <CampaignListTag
+              v-for="category in object.categories"
+              :key="category.id"
+              :active="currentCategory === category.id"
+              @click="$emit('setCategoryFilter', category.id)">
+              #{{ category.title }}
+            </CampaignListTag>
           </div>
         </div>
         <div class="row mt-auto">

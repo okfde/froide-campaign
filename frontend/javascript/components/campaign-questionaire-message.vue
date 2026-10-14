@@ -1,11 +1,11 @@
 <template>
   <div class="card mt-3">
     <div class="card-header">
-      <h4>
+      <h3 class="h4">
         <small>{{ date }}, {{ message.sender }}</small
         ><br />
         {{ message.subject }}
-      </h4>
+      </h3>
     </div>
     <div class="card-body">
       <div class="content" @mouseup="checkSelection" ref="content"></div>

@@ -2,10 +2,10 @@
   <div class="container-fluid my-5">
     <div class="row justify-content-center">
       <div class="col-md-4 text-center">
-        <h4 v-if="request">
+        <h2 v-if="request" class="h4">
           Anfrage: {{ request.title }} <br />
           <small>An: {{ currentObject.publicbody_name }}</small>
-        </h4>
+        </h2>
         <a
           v-if="request"
           :href="request.url"
@@ -48,7 +48,7 @@
       </div>
       <div class="col-5">
         <div class="sticky-top">
-          <h4>Fragen:</h4>
+          <h3 class="h4">Fragen:</h3>
           <form>
             <div class="mb-3" v-for="(answer, index) in answers" :key="index">
               <label
